@@ -1,26 +1,35 @@
-white = (0xFF, 0xFF, 0xFF)
-black = (0x0, 0x0, 0x0)
-red = (0xFF, 0x0, 0x0)
+# Definición de colores en formato RGB (Rojo, Verde, Azul)
 
-player_atk = (0xE0, 0xE0, 0xE0)
-enemy_atk = (0xFF, 0xC0, 0xC0)
-needs_target = (0x3F, 0xFF, 0xFF)
-status_effect_applied = (0x3F, 0xFF, 0x3F)
-descend = (0x9F, 0x3F, 0xFF)
+# Colores básicos
+white = (0xFF, 0xFF, 0xFF)  # Blanco
+black = (0x0, 0x0, 0x0)     # Negro
+red = (0xFF, 0x0, 0x0)      # Rojo
 
-player_die = (0xFF, 0x30, 0x30)
-enemy_die = (0xFF, 0xA0, 0x30)
+# Colores relacionados con las acciones del jugador y enemigos
+player_atk = (0xE0, 0xE0, 0xE0)  # Ataque del jugador (gris claro)
+enemy_atk = (0xFF, 0xC0, 0xC0)   # Ataque del enemigo (rojo claro)
+needs_target = (0x3F, 0xFF, 0xFF)  # Necesita un objetivo (azul claro)
+status_effect_applied = (0x3F, 0xFF, 0x3F)  # Efecto de estado aplicado (verde claro)
+descend = (0x9F, 0x3F, 0xFF)  # Descender a un nuevo nivel (azul oscuro)
 
-invalid = (0xFF, 0xFF, 0x00)
-impossible = (0x80, 0x80, 0x80)
-error = (0xFF, 0x40, 0x40)
+# Colores relacionados con las muertes
+player_die = (0xFF, 0x30, 0x30)  # Muerte del jugador (rojo brillante)
+enemy_die = (0xFF, 0xA0, 0x30)  # Muerte del enemigo (amarillo anaranjado)
 
-welcome_text = (0x20, 0xA0, 0xFF)
-health_recovered = (0x0, 0xFF, 0x0)
+# Colores para situaciones de error o imposible
+invalid = (0xFF, 0xFF, 0x00)  # Acción inválida (amarillo)
+impossible = (0x80, 0x80, 0x80)  # Acción imposible (gris)
+error = (0xFF, 0x40, 0x40)  # Error (rojo fuerte)
 
-bar_text = white
-bar_filled = (0x0, 0x60, 0x0)
-bar_empty = (0x40, 0x10, 0x10)
+# Colores de texto y recuperaciones
+welcome_text = (0x20, 0xA0, 0xFF)  # Texto de bienvenida (azul claro)
+health_recovered = (0x0, 0xFF, 0x0)  # Salud recuperada (verde brillante)
 
-menu_title = (255, 255, 63)
-menu_text = white
+# Colores de barra (por ejemplo, para mostrar la salud del jugador)
+bar_text = white  # Texto de la barra (blanco)
+bar_filled = (0x0, 0x60, 0x0)  # Barra llena (verde oscuro)
+bar_empty = (0x40, 0x10, 0x10)  # Barra vacía (rojo oscuro)
+
+# Colores de menú
+menu_title = (255, 255, 63)  # Título del menú (amarillo claro)
+menu_text = white  # Texto del menú (blanco)
