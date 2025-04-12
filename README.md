@@ -24,8 +24,8 @@ A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
 ### Interacción
 - **Tecla `g`**: Recoger objetos del suelo.
 - **Tecla `i`**: Abrir el inventario.
-- **Tecla `d`**: Soltar un objeto del inventario.
-- **Tecla `e`**: Equipar o desequipar un objeto.
+- **Tecla `f`**: Soltar un objeto del inventario.
+- **Tecla `e`**: Para acceder a las escaleras.
 
 ### Combate
 - Moverse hacia un enemigo para atacarlo cuerpo a cuerpo.
