@@ -68,7 +68,7 @@ class Level(BaseComponent):
         self.parent.fighter.hp += amount  # Restaura la salud al máximo
 
         # Mensaje de log indicando que el actor se siente más vigoroso
-        self.engine.message_log.add_message("Te sientes con más vigor.")
+        self.engine.message_log.add_message("Te sientes con mas vigor.")
 
         self.increase_level()  # Aumenta el nivel del actor después de mejorar su salud
 
@@ -77,7 +77,7 @@ class Level(BaseComponent):
         self.parent.fighter.base_power += amount  # Aumenta el poder de ataque
 
         # Mensaje de log indicando que el actor se siente más fuerte
-        self.engine.message_log.add_message("Te sientes más fuerte.")
+        self.engine.message_log.add_message("Te sientes mas fuerte.")
 
         self.increase_level()  # Aumenta el nivel del actor después de mejorar su poder
 
@@ -86,6 +86,6 @@ class Level(BaseComponent):
         self.parent.fighter.base_defense += amount  # Aumenta la defensa base
 
         # Mensaje de log indicando que el actor se siente más robusto
-        self.engine.message_log.add_message("Te sientes más robusto.")
+        self.engine.message_log.add_message("Te sientes mas robusto.")
 
         self.increase_level()  # Aumenta el nivel del actor después de mejorar su defensa

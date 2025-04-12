@@ -125,7 +125,7 @@ class TakeStairsAction(Action):
             )
         else:
             # Si no hay escalera, lanza una excepción
-            raise exceptions.Impossible("No hay ninguna escalera aquí.")
+            raise exceptions.Impossible("No hay ninguna escalera aqui.")
 
 
 class ActionWithDirection(Action):
@@ -175,7 +175,7 @@ class MeleeAction(ActionWithDirection):
         if damage > 0:
             # Si el daño es positivo, inflige el daño al objetivo
             self.engine.message_log.add_message(
-                f"{attack_desc} Hace {damage} puntos de daño.", attack_color
+                f"{attack_desc} Hace {damage} puntos de dano.", attack_color
             )
             target.fighter.hp -= damage
         else:

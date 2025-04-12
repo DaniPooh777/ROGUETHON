@@ -33,7 +33,7 @@ class Consumable(BaseComponent):
         raise NotImplementedError()
 
     def consume(self) -> None:
-        """Elimina el ítem consumido de su inventario."""
+        """Elimina el item consumido de su inventario."""
         entity = self.parent
         inventory = entity.parent
         if isinstance(inventory, components.inventory.Inventory):
@@ -112,7 +112,7 @@ class FireballDamageConsumable(Consumable):
         for actor in self.engine.game_map.actors:
             if actor.distance(*target_xy) <= self.radius:
                 self.engine.message_log.add_message(
-                    f"{actor.name} se ve envuelto en una gran explosion, tomando {self.damage} de dano."
+                    f"{actor.name} se ve envuelto en una gran explosion, recibe {self.damage} de dano."
                 )
                 actor.fighter.take_damage(self.damage)  # Aplica el daño al actor
                 targets_hit = True
