@@ -26,7 +26,7 @@ orc = Actor(
     name="Orco",  # Nombre del enemigo.
     ai_cls=HostileEnemy,  # IA de enemigo hostil.
     equipment=Equipment(),  # Equipamiento vacío.
-    fighter=Fighter(hp=10, base_defense=0, base_power=3),  # Atributos de lucha (10 HP, defensa 0, poder 3).
+    fighter=Fighter(hp=10, base_defense=0, base_power=4),  # Atributos de lucha (10 HP, defensa 0, poder 3).
     inventory=Inventory(capacity=0),  # Inventario vacío.
     level=Level(xp_given=35),  # Da 35 XP al ser derrotado.
 )
@@ -37,7 +37,7 @@ troll = Actor(
     name="Troll",  # Nombre del enemigo.
     ai_cls=HostileEnemy,  # IA de enemigo hostil.
     equipment=Equipment(),  # Equipamiento vacío.
-    fighter=Fighter(hp=16, base_defense=1, base_power=4),  # Atributos de lucha (16 HP, defensa 1, poder 4).
+    fighter=Fighter(hp=16, base_defense=1, base_power=5),  # Atributos de lucha (16 HP, defensa 1, poder 4).
     inventory=Inventory(capacity=0),  # Inventario vacío.
     level=Level(xp_given=100),  # Da 100 XP al ser derrotado.
 )

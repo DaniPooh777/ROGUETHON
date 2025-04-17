@@ -179,10 +179,11 @@ class MeleeAction(ActionWithDirection):
             )
             target.fighter.hp -= damage
         else:
-            # Si el daño es 0 o negativo, el ataque no afecta
+            # Si el daño es 0 o negativo, el ataque solo hace 1 de daño
             self.engine.message_log.add_message(
-                f"{attack_desc} pero no afecta a {target.name}.", attack_color
+                f"{attack_desc} Hace 1 punto de dano.", attack_color
             )
+            target.fighter.hp -= 1
 
 
 class MovementAction(ActionWithDirection):
