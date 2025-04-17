@@ -6,6 +6,7 @@ from typing import Iterator, List, Tuple, TYPE_CHECKING, Dict  # Importación de
 
 import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
 
+from components.equippable import ChainMail
 import entity_factories  # Importa las fábricas de entidades, donde se definen las entidades como pociones, monstruos, etc.
 from game_map import GameMap  # Importa la clase GameMap, que maneja el mapa del juego.
 import tile_types  # Importa los tipos de tiles del juego, como el suelo, las paredes, etc.
@@ -174,6 +175,100 @@ def tunnel_between(
         yield x, y
 
 
+def generate_secret_rooms(dungeon: GameMap, rooms: List[RectangularRoom], num_secrets: int, min_size: int = 4, max_size: int = 6) -> None:
+    """Genera habitaciones secretas conectadas a las habitaciones existentes mediante paredes falsas.
+    Las dimensiones de las salas secretas están limitadas por `min_size` y `max_size`.
+    """
+    for _ in range(num_secrets):
+        # Selecciona una habitación existente al azar para conectar la habitación secreta.
+        parent_room = random.choice(rooms)
+
+        # Genera una nueva habitación secreta con dimensiones aleatorias dentro de los límites.
+        secret_width = random.randint(min_size, max_size)
+        secret_height = random.randint(min_size, max_size)
+
+        # Determina la posición de la habitación secreta adyacente a la habitación principal.
+        direction = random.choice(["N", "S", "E", "W"])
+        if direction == "N":
+            secret_x = parent_room.x1 + 1
+            secret_y = parent_room.y1 - secret_height - 1
+        elif direction == "S":
+            secret_x = parent_room.x1 + 1
+            secret_y = parent_room.y2 + 1
+        elif direction == "E":
+            secret_x = parent_room.x2 + 1
+            secret_y = parent_room.y1 + 1
+        else:  # "W"
+            secret_x = parent_room.x1 - secret_width - 1
+            secret_y = parent_room.y1 + 1
+
+        # Verifica que las coordenadas sean válidas antes de crear la habitación secreta.
+        if not dungeon.in_bounds(secret_x, secret_y) or not dungeon.in_bounds(secret_x + secret_width - 1, secret_y + secret_height - 1):
+            continue
+
+        # Asegúrate de que las dimensiones cumplan con los valores mínimos y máximos.
+        if secret_width < min_size or secret_width > max_size or secret_height < min_size or secret_height > max_size:
+            continue
+
+        secret_room = RectangularRoom(secret_x, secret_y, secret_width, secret_height)
+
+        # Asegúrate de que la habitación secreta no se superponga con otras habitaciones o pasillos.
+        if any(secret_room.intersects(other_room) for other_room in rooms):
+            continue
+
+        # Verifica que la habitación secreta no se superponga con pasillos normales.
+        for x in range(secret_room.x1, secret_room.x2 + 1):
+            for y in range(secret_room.y1, secret_room.y2 + 1):
+                if dungeon.tiles[x, y] == tile_types.floor:
+                    break
+            else:
+                continue
+            break
+        else:
+            # Marca la habitación secreta como suelo y elimina cualquier pared interna.
+            for x in range(secret_room.x1, secret_room.x2 + 1):
+                for y in range(secret_room.y1, secret_room.y2 + 1):
+                    dungeon.tiles[x, y] = tile_types.floor
+
+            # Conecta la habitación secreta con la habitación principal mediante una pared falsa.
+            connect_secret_room(dungeon, parent_room, secret_room, direction)
+
+            # Añade la habitación secreta a la lista de habitaciones.
+            rooms.append(secret_room)
+
+            # Genera un objeto específico (poción de salud) en el centro de la habitación secreta.
+            center_x, center_y = secret_room.center
+            entity_factories.chain_mail.spawn(dungeon, center_x, center_y)
+
+            # Mensaje de depuración para verificar la generación.
+            print(f"Habitación secreta generada en: ({secret_x}, {secret_y}) con dimensiones ({secret_width}x{secret_height}) y poción de salud en el centro ({center_x}, {center_y})")
+
+def connect_secret_room(dungeon: GameMap, parent_room: RectangularRoom, secret_room: RectangularRoom, direction: str) -> None:
+    """Conecta una habitación secreta a una habitación principal mediante una pared falsa."""
+    if direction == "N":
+        wall_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
+        wall_y = parent_room.y1
+        tunnel_x, tunnel_y = wall_x, wall_y - 1
+    elif direction == "S":
+        wall_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
+        wall_y = parent_room.y2
+        tunnel_x, tunnel_y = wall_x, wall_y + 1
+    elif direction == "E":
+        wall_x = parent_room.x2
+        wall_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
+        tunnel_x, tunnel_y = wall_x + 1, wall_y
+    else:  # "W"
+        wall_x = parent_room.x1
+        wall_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
+        tunnel_x, tunnel_y = wall_x - 1, wall_y
+
+    # Marca el túnel como suelo.
+    dungeon.tiles[tunnel_x, tunnel_y] = tile_types.floor
+
+    # Marca la pared falsa en la habitación principal.
+    dungeon.tiles[wall_x, wall_y] = tile_types.hidden_wall_tile
+
+
 # Función que genera un mapa de mazmorras.
 def generate_dungeon(
     max_rooms: int,
@@ -220,10 +315,12 @@ def generate_dungeon(
 
         place_entities(new_room, dungeon, engine.game_world.current_floor)  # Coloca las entidades.
 
-        dungeon.tiles[center_of_last_room] = tile_types.down_stairs  # Coloca las escaleras en el centro de la última sala.
-        dungeon.downstairs_location = center_of_last_room  # Marca la ubicación de las escaleras.
-
-        # Añade la nueva sala a la lista de salas.
         rooms.append(new_room)
+
+    # Genera habitaciones secretas.
+    generate_secret_rooms(dungeon, rooms, num_secrets=2)
+
+    dungeon.tiles[center_of_last_room] = tile_types.down_stairs  # Coloca las escaleras en el centro de la última sala.
+    dungeon.downstairs_location = center_of_last_room  # Marca la ubicación de las escaleras.
 
     return dungeon  # Devuelve el mapa de mazmorras generado.

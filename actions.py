@@ -4,6 +4,7 @@ from typing import Optional, Tuple, TYPE_CHECKING
 
 import color
 import exceptions
+import tile_types
 
 # Importación condicional para las clases de la Engine y los actores solo en tiempo de comprobación de tipos
 if TYPE_CHECKING:
@@ -214,3 +215,22 @@ class BumpAction(ActionWithDirection):
         else:
             # Si no hay actor, se realiza un movimiento
             return MovementAction(self.entity, self.dx, self.dy).perform()
+
+
+class RevealHiddenWallAction(Action):
+    """Acción para revelar una pared falsa cuando el jugador interactúa con ella."""
+
+    def __init__(self, entity: Actor, target_x: int, target_y: int):
+        super().__init__(entity)
+        self.target_x = target_x
+        self.target_y = target_y
+
+    def perform(self) -> None:
+        tile = self.engine.game_map.tiles[self.target_x, self.target_y]
+
+        # Verifica si el tile es una pared falsa.
+        if tile == tile_types.hidden_wall_tile:
+            self.engine.game_map.tiles[self.target_x, self.target_y] = tile_types.floor  # Revela la pared.
+            self.engine.message_log.add_message("Has descubierto una pared falsa.", color.player_atk)
+        else:
+            raise exceptions.Impossible("No hay nada que revelar aquí.")

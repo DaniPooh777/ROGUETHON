@@ -12,10 +12,12 @@ from actions import (
     Action,
     BumpAction,
     PickupAction,
+    RevealHiddenWallAction,
     WaitAction,
 )
 import color
 import exceptions
+import tile_types
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -714,3 +716,16 @@ class HistoryViewer(EventHandler):
         else:  # Cualquier otra tecla regresa al manejador principal.
             return MainGameEventHandler(self.engine)
         return None
+
+
+class GameEventHandler(EventHandler):
+    def handle_action(self, action: Optional[Action]) -> None:
+        if isinstance(action, BumpAction):
+            target_x, target_y = action.target_x, action.target_y
+            tile = self.engine.game_map.tiles[target_x, target_y]
+
+            # Si el jugador intenta moverse hacia una pared falsa, intenta revelarla.
+            if tile == tile_types.hidden_wall_tile:
+                action = RevealHiddenWallAction(self.engine.player, target_x, target_y)
+
+        super().handle_action(action)
