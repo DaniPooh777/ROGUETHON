@@ -6,7 +6,8 @@ from typing import List, Optional, Tuple, TYPE_CHECKING  # Importación de tipos
 import numpy as np  # Importación de numpy (utilizado para manipular matrices y realizar cálculos numéricos)
 import tcod  # Importación de la librería tcod, utilizada para gráficos y mapas de caminos en juegos roguelike.
 
-from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction  # Importación de diferentes tipos de acciones (Acciones para mover, atacar, esperar, etc.)
+from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction
+import color  # Importación de diferentes tipos de acciones (Acciones para mover, atacar, esperar, etc.)
 
 # Este bloque solo importa las clases cuando se está realizando una verificación de tipos (en tiempo de desarrollo, no en ejecución).
 if TYPE_CHECKING:
@@ -150,3 +151,43 @@ class ConfusedEnemy(BaseAI):
 
             # El enemigo intenta moverse en la dirección aleatoria elegida o atacar si hay una entidad en esa dirección.
             return BumpAction(self.entity, direction_x, direction_y).perform()
+
+
+class RangedEnemy(BaseAI):
+    """IA para enemigos que atacan a distancia, como el goblin."""
+
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+        self.turns_to_attack = 3  # El goblin ataca cada 3 turnos.
+
+    def perform(self) -> None:
+        """Realiza la acción del goblin en su turno."""
+        target = self.engine.player  # El objetivo es el jugador.
+        dx = target.x - self.entity.x
+        dy = target.y - self.entity.y
+        distance = max(abs(dx), abs(dy))  # Distancia de Chebyshev.
+
+        # Verifica si el goblin está dentro del campo de visión del jugador.
+        if not self.engine.game_map.visible[self.entity.x, self.entity.y]:
+            return WaitAction(self.entity).perform()  # Espera si no está visible.
+
+        if distance <= 5:  # Si el jugador está dentro del rango de ataque.
+            if self.turns_to_attack <= 0:
+                # Ataca al jugador si es el turno de atacar.
+                self.engine.message_log.add_message(
+                    f"{self.entity.name} lanza un ataque a distancia contra {target.name}.",
+                    color.enemy_atk,
+                )
+                target.fighter.take_damage(4)  # Hace 4 puntos de daño.
+                self.turns_to_attack = 3  # Reinicia el contador de turnos.
+            else:
+                self.turns_to_attack -= 1  # Reduce el contador de turnos.
+            return  # No se mueve si está dentro del rango.
+
+        # Si el jugador está fuera del rango, se mueve hacia él.
+        self.path = self.get_path_to(target.x, target.y)
+        if self.path:
+            dest_x, dest_y = self.path.pop(0)
+            return MovementAction(self.entity, dest_x - self.entity.x, dest_y - self.entity.y).perform()
+
+        return WaitAction(self.entity).perform()  # Espera si no puede moverse.

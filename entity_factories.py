@@ -1,5 +1,5 @@
 # Importación de las clases necesarias desde otros módulos.
-from components.ai import HostileEnemy  # AI para enemigos hostiles.
+from components.ai import HostileEnemy, RangedEnemy  # AI para enemigos hostiles.
 from components import consumable, equippable  # Importa componentes de consumibles y equipables.
 from components.fighter import Fighter  # Importa la clase Fighter (luchador).
 from components.inventory import Inventory  # Importa la clase Inventory (inventario).
@@ -40,6 +40,17 @@ troll = Actor(
     fighter=Fighter(hp=16, base_defense=1, base_power=5),  # Atributos de lucha (16 HP, defensa 1, poder 4).
     inventory=Inventory(capacity=0),  # Inventario vacío.
     level=Level(xp_given=100),  # Da 100 XP al ser derrotado.
+)
+
+goblin = Actor(
+    char="g",  # Carácter que representa al goblin.
+    color=(0, 255, 0),  # Color verde.
+    name="Goblin",  # Nombre del enemigo.
+    ai_cls=RangedEnemy,  # IA de ataque a distancia.
+    equipment=Equipment(),  # Equipamiento vacío.
+    fighter=Fighter(hp=8, base_defense=0, base_power=4),  # Atributos de lucha (8 HP, defensa 0, poder 4).
+    inventory=Inventory(capacity=0),  # Inventario vacío.
+    level=Level(xp_given=25),  # Da 25 XP al ser derrotado.
 )
 
 # Se crean varios ítems, incluyendo pergaminos y pociones consumibles.

@@ -20,12 +20,13 @@ if TYPE_CHECKING:  # Esto solo es útil en tiempo de comprobación de tipos, no 
 max_items_by_floor = [
     (1, 1),
     (3, 2),
-    (5, 2),
+    (5, 3),
 ]
 
 # Definición de los máximos posibles de monstruos por nivel de piso.
 max_monsters_by_floor = [
-    (1, 2),
+    (1, 1),
+    (2, 2),
     (4, 3),
     (6, 5),
 ]
@@ -40,10 +41,11 @@ item_chances: Dict[int, List[Tuple[Entity, int]]] = {
 
 # Probabilidades de que ciertos monstruos aparezcan en niveles específicos.
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],  # 80% de probabilidad de que aparezca un orco en el nivel 0.
-    3: [(entity_factories.troll, 15)],  # 15% de probabilidad de que aparezca un troll en el nivel 3.
-    5: [(entity_factories.troll, 30)],  # 30% de probabilidad de que aparezca un troll en el nivel 5.
-    7: [(entity_factories.troll, 60)],  # 60% de probabilidad de que aparezca un troll en el nivel 7.
+    0: [(entity_factories.orc, 80)],  # Orco.
+    2: [(entity_factories.goblin, 30)],  # Goblin aparece a partir del nivel 2.
+    3: [(entity_factories.troll, 15)],
+    5: [(entity_factories.troll, 30), (entity_factories.goblin, 50)],  # Más goblins en niveles superiores.
+    7: [(entity_factories.troll, 60)],
 }
 
 # Función para obtener el valor máximo de ítems o monstruos por nivel de piso.
