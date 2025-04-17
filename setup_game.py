@@ -283,4 +283,4 @@ class MainMenu(input_handlers.BaseEventHandler):
 
     def ev_quit(self, event: tcod.event.Quit) -> None:
         """Maneja el evento de cierre de ventana (clic en la 'X')."""
-        raise exceptions.QuitWithoutSaving
+        raise SystemExit()

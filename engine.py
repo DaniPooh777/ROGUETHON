@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING  # Importa TYPE_CHECKING para la comprobación 
 from tcod.console import Console  # Importa la clase Console de la biblioteca tcod para la salida gráfica.
 from tcod.map import compute_fov  # Importa compute_fov para calcular el campo de visión (FOV).
 import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
+import tcod.event  # Asegúrate de que tcod.event esté importado
 
 import exceptions  # Importa las excepciones personalizadas.
 from message_log import MessageLog  # Importa el sistema de registro de mensajes.
@@ -29,7 +30,6 @@ class Engine:
         self.player = player  # Asigna el jugador al motor del juego.
         self.context = context  # Asigna el contexto de tcod.
         self.console = console  # Asigna la consola de tcod.
-
 
     def handle_enemy_turns(self) -> None:
         """Gestiona los turnos de los enemigos."""
@@ -95,3 +95,11 @@ class Engine:
         finally:
             self.context = context  # Restaura el contexto.
             self.console = console  # Restaura la consola.
+
+    def handle_events(self, events: list[tcod.event.Event]) -> None:
+        for event in events:
+            if isinstance(event, tcod.event.Quit):
+                if self.player.is_alive:
+                    self.save_as("savegame.sav")
+                raise SystemExit()
+            # ...existing event handling code...

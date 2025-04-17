@@ -42,6 +42,11 @@ def main() -> None:
                     try:
                         for event in tcod.event.wait():
                             context.convert_event(event)
+                            if isinstance(event, tcod.event.Quit):
+                                if isinstance(handler, input_handlers.EventHandler):
+                                    if handler.engine.player.is_alive:
+                                        save_game(handler, "savegame.sav")
+                                raise SystemExit()
                             handler = handler.handle_events(event)
                     except Exception:
                         traceback.print_exc()
@@ -57,12 +62,9 @@ def main() -> None:
                 handler = input_handlers.GameOverEventHandler(handler.engine)
                 continue
             except SystemExit:
-                save_game(handler, "savegame.sav")
-                # Continúa con la siguiente iteración del bucle exterior
-                continue  # <-- Este SÍ está dentro del while exterior
+                raise  # Asegura que el programa se cierre completamente
 
             except BaseException:
-                save_game(handler, "savegame.sav")
                 raise
 
 if __name__ == "__main__":

@@ -73,7 +73,9 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         """Manejador de eventos cuando el juego solicita salir."""
-        raise SystemExit()  # Sale del juego.
+        if hasattr(self, 'engine') and self.engine.player.is_alive:
+            self.engine.save_as("savegame.sav")
+        raise SystemExit()
 
 
 # Manejador de eventos que muestra un mensaje emergente (popup).
