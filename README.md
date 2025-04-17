@@ -18,8 +18,8 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
 
 ### Movimiento
-- **Teclas de dirección (↑,  ↓,  ←,  →)**: Mover al personaje en las direcciones correspondientes.
-- **Teclas (w, ,a ,s, d)**: Mover al personaje en las direcciones correspondientes.
+- **Teclas de dirección `(↑,  ↓,  ←,  →)`**: Mover al personaje en las direcciones correspondientes.
+- **Teclas `(w, a, s, d)`**: Mover al personaje en las direcciones correspondientes.
 
 ### Interacción
 - **Tecla `g`**: Recoger objetos del suelo.
@@ -31,11 +31,12 @@ A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
 - Moverse hacia un enemigo para atacarlo cuerpo a cuerpo.
 - Usar objetos consumibles (como pociones) desde el inventario.
 
-### Otros
+### Otros controles
 - **Tecla `Esc`**: Salir del juego.
 - **Tecla `Enter`**: Confirmar selecciones en menús.
-- **Tecla `h`**: Mostrar el historial de las acciones del jugador.
+- **Tecla `h`**: Mostrar el historial de acciones del jugador.
 - **Tecla `c`**: Mostrar las estadísticas del personaje.
+- **Tecla `(↑,  ↓)`**: En el historial de acciones del jugador para moverse arriba y abajo a lo largo de todos los mensajes.
 
 ## Cómo ejecutar el juego
 

@@ -610,28 +610,28 @@ class GameOverEventHandler(EventHandler):
             y=15,
             width=40,
             height=7,
-            title="Game Over",
+            title="Fin de la partida",
             clear=True,
             fg=(255, 255, 255),
             bg=(0, 0, 0),
         )
 
         # Muestra las opciones disponibles.
-        console.print(x=22, y=17, string="a) Iniciar nueva partida")
-        console.print(x=22, y=18, string="b) Volver al menu principal")
-        console.print(x=22, y=19, string="c) Salir del juego")
+        console.print(x=22, y=17, string="[N] Iniciar nueva partida")
+        console.print(x=22, y=18, string="[B] Volver al menu principal")
+        console.print(x=22, y=19, string="[Q] Salir del juego")
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
         """Maneja las opciones seleccionadas por el jugador."""
-        if event.sym == tcod.event.KeySym.a:  # Iniciar nueva partida
+        if event.sym == tcod.event.KeySym.n:  # Iniciar nueva partida
             from setup_game import new_game
             engine = new_game(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
             return MainGameEventHandler(engine)
         elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
             from setup_game import MainMenu
             return MainMenu(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
-        elif event.sym == tcod.event.KeySym.c:  # Salir del juego
-            raise SystemExit()
+        elif event.sym == tcod.event.KeySym.q:  # Salir del juego
+            raise exceptions.QuitWithoutSaving()  # Cierra la ventana sin guardar la partida.
         return None
 
 
