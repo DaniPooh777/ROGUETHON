@@ -23,6 +23,8 @@ class Fighter(BaseComponent):
         self.base_defense = base_defense  # Defensa base
         self.base_power = base_power  # Poder base de ataque
         self.defensive_turns = 0  # Turnos restantes de inmunidad al daño.
+        self.defense_bonus_turns = 0  # Turnos restantes del bono de defensa.
+        self.temp_defense_bonus = 0  # Bono de defensa temporal.
 
     @property
     def hp(self) -> int:
@@ -38,8 +40,8 @@ class Fighter(BaseComponent):
 
     @property
     def defense(self) -> int:
-        """Obtiene la defensa total del actor, sumando la defensa base y el bono de defensa de equipo."""
-        return self.base_defense + self.defense_bonus
+        """Obtiene la defensa total del actor, incluyendo el bono temporal."""
+        return self.base_defense + self.defense_bonus + self.temp_defense_bonus
 
     @property
     def power(self) -> int:
@@ -118,7 +120,20 @@ class Fighter(BaseComponent):
         """Activa el modo defensivo, ignorando daño por un número de turnos."""
         self.defensive_turns = turns
 
+    def activate_defense_bonus(self, bonus: int, turns: int) -> None:
+        """Activa un bono de defensa temporal."""
+        self.temp_defense_bonus += bonus
+        self.defense_bonus_turns = turns
+
     def on_turn_end(self) -> None:
         """Se ejecuta al final de cada turno, reduciendo los turnos restantes de inmunidad al daño."""
         if self.defensive_turns > 0:
             self.defensive_turns -= 1
+        if self.defense_bonus_turns > 0:
+            self.defense_bonus_turns -= 1
+        if self.defense_bonus_turns == 0 and self.temp_defense_bonus > 0:
+            self.engine.message_log.add_message(
+                f"{self.parent.name} siente que su piel vuelve a la normalidad.",
+                color.status_effect_applied,
+            )
+            self.temp_defense_bonus = 0  # Elimina el bono de defensa temporal.

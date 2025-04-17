@@ -548,6 +548,25 @@ class AreaRangedAttackHandler(SelectIndexHandler):
 
 # Clase principal que maneja los eventos del juego mientras está en curso.
 class MainGameEventHandler(EventHandler):
+    def handle_action(self, action: Optional[Action]) -> bool:
+        """Ejecuta una acción y maneja el final del turno."""
+        if action is None:
+            return False
+
+        try:
+            action.perform()
+        except exceptions.Impossible as exc:
+            self.engine.message_log.add_message(str(exc), color.impossible)
+            return False  # No termina el turno si la acción es imposible.
+
+        # Llama a on_turn_end para el jugador.
+        if self.engine.player.fighter:
+            self.engine.player.fighter.on_turn_end()
+
+        self.engine.handle_enemy_turns()  # Maneja los turnos de los enemigos.
+        self.engine.update_fov()  # Actualiza el campo de visión.
+        return True
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         action: Optional[Action] = None  # Inicializa una acción vacía.
 

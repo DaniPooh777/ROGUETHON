@@ -19,6 +19,9 @@ from input_handlers import (
 if TYPE_CHECKING:
     from entity import Actor, Item  # Importa las clases Actor e Item solo durante la comprobación de tipos
 
+# Agregar la importación de Actor para evitar el NameError.
+from entity import Actor
+
 
 class Consumable(BaseComponent):
     """Clase base para los ítems consumibles, como pociones o hechizos."""
@@ -178,24 +181,26 @@ class LightningDamageConsumable(Consumable):
             raise Impossible("Ningun enemigo a la vista para atacar.")  # Si no hay enemigo, lanza un error
 
 class DefensiveScrollConsumable(Consumable):
-    """Consumible que permite al jugador ignorar daño durante un número de turnos."""
+    """Consumible que aumenta la defensa del jugador durante un número de turnos."""
 
-    def __init__(self, number_of_turns: int):
+    def __init__(self, defense_bonus: int, number_of_turns: int):
+        self.defense_bonus = defense_bonus
         self.number_of_turns = number_of_turns
 
     def get_action(self, consumer: Actor) -> Optional[ActionOrHandler]:
         return actions.ItemAction(consumer, self.parent)
 
     def activate(self, action: actions.ItemAction) -> None:
-        consumer = action.entity
+        consumer = action.entity  # Aseguramos que consumer sea el actor que usa el ítem.
 
-        if not isinstance(consumer, Actor):
+        if not isinstance(consumer, Actor):  # Validamos que sea un Actor.
             raise exceptions.Impossible("Solo el jugador puede usar este pergamino.")
 
-        consumer.fighter.activate_defensive_mode(self.number_of_turns)
+        # Aumenta la defensa del jugador temporalmente.
+        consumer.fighter.activate_defense_bonus(self.defense_bonus, self.number_of_turns)
         self.consume()
 
         self.engine.message_log.add_message(
-            f"{consumer.name} esta protegido contra el dano durante {self.number_of_turns} turnos.",
+            f"{consumer.name} siente su piel endurecerse, ganando {self.defense_bonus} puntos de defensa durante {self.number_of_turns} turnos.",
             color.status_effect_applied,
         )

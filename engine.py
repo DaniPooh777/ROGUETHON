@@ -39,6 +39,8 @@ class Engine:
                     entity.ai.perform()  # Realiza la acción de la IA (turno del enemigo).
                 except exceptions.Impossible:
                     pass  # Si ocurre una excepción de acción imposible, se ignora.
+            if entity.fighter:  # Si el actor tiene un componente Fighter.
+                entity.fighter.on_turn_end()  # Llama a on_turn_end para manejar efectos temporales.
 
     def update_fov(self) -> None:
         """Recalcula el área visible basado en la posición del jugador."""
