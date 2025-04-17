@@ -65,6 +65,5 @@ def main() -> None:
                 save_game(handler, "savegame.sav")
                 raise
 
-
 if __name__ == "__main__":
     main()

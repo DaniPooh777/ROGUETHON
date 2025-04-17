@@ -19,7 +19,8 @@ if TYPE_CHECKING:  # Esto solo es útil en tiempo de comprobación de tipos, no 
 # Definición de los máximos posibles de ítems por nivel de piso.
 max_items_by_floor = [
     (1, 1),
-    (4, 2),
+    (3, 2),
+    (5, 2),
 ]
 
 # Definición de los máximos posibles de monstruos por nivel de piso.
@@ -33,7 +34,7 @@ max_monsters_by_floor = [
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
     0: [(entity_factories.health_potion, 35)],  # 35% de probabilidad de que aparezca una poción de salud en el nivel 0.
     2: [(entity_factories.confusion_scroll, 10)],  # 10% de probabilidad de que aparezca un pergamino de confusión en el nivel 2.
-    4: [(entity_factories.lightning_scroll, 25), (entity_factories.sword, 5)],  # 25% de probabilidad para un pergamino de rayos y 5% para una espada en el nivel 4.
+    4: [(entity_factories.lightning_scroll, 25), (entity_factories.sword, 10), (entity_factories.defensive_scroll, 20)],  # 25% de probabilidad para un pergamino de rayos y 5% para una espada en el nivel 4.
     6: [(entity_factories.fireball_scroll, 25), (entity_factories.chain_mail, 15)],  # 25% de probabilidad para un pergamino de bola de fuego y 15% para una cota de malla en el nivel 6.
 }
 

@@ -54,7 +54,7 @@ fireball_scroll = Item(
     char="~",  # Carácter que representa al pergamino de fuego.
     color=(255, 0, 0),  # Color rojo.
     name="Pergamino de fuego",  # Nombre del objeto.
-    consumable=consumable.FireballDamageConsumable(damage=12, radius=3),  # Causa 12 puntos de daño en un radio de 3.
+    consumable=consumable.FireballDamageConsumable(damage=12, radius=2),  # Causa 12 puntos de daño en un radio de 2.
 )
 
 health_potion = Item(
@@ -69,6 +69,13 @@ lightning_scroll = Item(
     color=(255, 255, 0),  # Color amarillo.
     name="Pergamino relampago",  # Nombre del objeto.
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=3),  # Causa 20 puntos de daño a un máximo de 3 casillas.
+)
+
+defensive_scroll = Item(
+    char="~",  # Carácter que representa al pergamino defensivo.
+    color=(0, 191, 255),  # Color azul claro.
+    name="Pergamino defensivo",  # Nombre del objeto.
+    consumable=consumable.DefensiveScrollConsumable(number_of_turns=5),  # Ignora daño durante 5 turnos.
 )
 
 # Se crean objetos equipables, como dagas y armaduras.

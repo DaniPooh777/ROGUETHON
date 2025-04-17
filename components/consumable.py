@@ -8,6 +8,7 @@ import components.ai
 import components.inventory
 from components.base_component import BaseComponent
 from exceptions import Impossible
+import exceptions
 from input_handlers import (
     ActionOrHandler,
     AreaRangedAttackHandler,
@@ -175,3 +176,26 @@ class LightningDamageConsumable(Consumable):
             self.consume()
         else:
             raise Impossible("Ningun enemigo a la vista para atacar.")  # Si no hay enemigo, lanza un error
+
+class DefensiveScrollConsumable(Consumable):
+    """Consumible que permite al jugador ignorar daño durante un número de turnos."""
+
+    def __init__(self, number_of_turns: int):
+        self.number_of_turns = number_of_turns
+
+    def get_action(self, consumer: Actor) -> Optional[ActionOrHandler]:
+        return actions.ItemAction(consumer, self.parent)
+
+    def activate(self, action: actions.ItemAction) -> None:
+        consumer = action.entity
+
+        if not isinstance(consumer, Actor):
+            raise exceptions.Impossible("Solo el jugador puede usar este pergamino.")
+
+        consumer.fighter.activate_defensive_mode(self.number_of_turns)
+        self.consume()
+
+        self.engine.message_log.add_message(
+            f"{consumer.name} esta protegido contra el dano durante {self.number_of_turns} turnos.",
+            color.status_effect_applied,
+        )

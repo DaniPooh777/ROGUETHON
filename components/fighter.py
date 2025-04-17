@@ -22,6 +22,7 @@ class Fighter(BaseComponent):
         self._hp = hp  # Salud actual
         self.base_defense = base_defense  # Defensa base
         self.base_power = base_power  # Poder base de ataque
+        self.defensive_turns = 0  # Turnos restantes de inmunidad al daño.
 
     @property
     def hp(self) -> int:
@@ -104,4 +105,20 @@ class Fighter(BaseComponent):
 
     def take_damage(self, amount: int) -> None:
         """Reduce la salud del actor por la cantidad de daño recibido."""
+        if self.defensive_turns > 0:
+            self.engine.message_log.add_message(
+                f"{self.parent.name} ignora el dano gracias al efecto defensivo.",
+                color.status_effect_applied,
+            )
+            return  # Ignora el daño si está en modo defensivo.
+
         self.hp -= amount  # Reduce la salud según el daño recibido
+
+    def activate_defensive_mode(self, turns: int) -> None:
+        """Activa el modo defensivo, ignorando daño por un número de turnos."""
+        self.defensive_turns = turns
+
+    def on_turn_end(self) -> None:
+        """Se ejecuta al final de cada turno, reduciendo los turnos restantes de inmunidad al daño."""
+        if self.defensive_turns > 0:
+            self.defensive_turns -= 1
