@@ -280,3 +280,7 @@ class MainMenu(input_handlers.BaseEventHandler):
             return handler  # Retorna el handler del juego.
 
         return None  # No cambia el estado si ninguna tecla es presionada.
+
+    def ev_quit(self, event: tcod.event.Quit) -> None:
+        """Maneja el evento de cierre de ventana (clic en la 'X')."""
+        raise exceptions.QuitWithoutSaving
