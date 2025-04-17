@@ -79,9 +79,17 @@ class Engine:
         )
 
     def save_as(self, filename: str) -> None:
-        """Guarda el estado del motor del juego en un archivo comprimido."""
-        # Serializa el estado del motor del juego con pickle y luego lo comprime con lzma.
-        save_data = lzma.compress(pickle.dumps(self))
-        # Guarda el archivo comprimido con el nombre proporcionado.
-        with open(filename, "wb") as f:
-            f.write(save_data)
+        """Guarda el estado del motor del juego en un archivo comprimido, excluyendo el contexto y la consola."""
+        context = self.context  # Excluye el contexto temporalmente.
+        console = self.console  # Excluye la consola temporalmente.
+        
+        self.context = None
+        self.console = None
+
+        try:
+            save_data = lzma.compress(pickle.dumps(self))  # Serializa y comprime el estado del motor.
+            with open(filename, "wb") as f:
+                f.write(save_data)  # Escribe los datos en el archivo.
+        finally:
+            self.context = context  # Restaura el contexto.
+            self.console = console  # Restaura la consola.

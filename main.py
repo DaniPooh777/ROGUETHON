@@ -55,7 +55,7 @@ def main() -> None:
 
             except exceptions.PlayerDied:  # Manejar la muerte del jugador.
                 handler = input_handlers.GameOverEventHandler(handler.engine)
-
+                continue
             except SystemExit:
                 save_game(handler, "savegame.sav")
                 # Continúa con la siguiente iteración del bucle exterior

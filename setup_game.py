@@ -12,7 +12,7 @@ import time  # Para manejar pausas y temporizadores.
 import tcod  # Librería principal para crear roguelikes.
 from tcod import libtcodpy  # Importa libtcodpy (funciones de bajo nivel).
 from tcod import context  # Maneja el contexto de la consola.
-
+from tcod import console  # Importa la clase Console para manejar la consola de salida.
 
 import color  # Módulo personalizado con colores para mensajes.
 from engine import Engine  # La clase principal para el motor del juego.
@@ -25,7 +25,7 @@ import exceptions
 background_image = tcod.image.load("menu_background.png")[:, :, :3]
 
 # Función para iniciar una nueva partida.
-def new_game() -> Engine:
+def new_game(context: tcod.context.Context, console: tcod.Console) -> Engine:
     """Retorna una nueva sesión de juego como una instancia de Engine."""
     map_width = 80  # Ancho del mapa.
     map_height = 43  # Alto del mapa.
@@ -70,11 +70,15 @@ def new_game() -> Engine:
     return engine  # Devuelve el motor de juego con todos los elementos inicializados.
 
 # Función para cargar una partida desde un archivo.
-def load_game(filename: str) -> Engine:
-    """Carga una instancia de Engine desde un archivo."""
+def load_game(filename: str, context: tcod.context.Context, console: tcod.Console) -> Engine:
+    """Carga una instancia de Engine desde un archivo y restaura el contexto y la consola."""
     with open(filename, "rb") as f:
         engine = pickle.loads(lzma.decompress(f.read()))  # Descomprime y carga el objeto.
     assert isinstance(engine, Engine)  # Asegura que el objeto cargado es una instancia de Engine.
+
+    engine.context = context  # Restaura el contexto.
+    engine.console = console  # Restaura la consola.
+
     return engine  # Devuelve el motor cargado.
 
 # Función para obtener el nombre del jugador (desde un cuadro de texto).
@@ -247,7 +251,7 @@ class MainMenu(input_handlers.BaseEventHandler):
             raise exceptions.QuitWithoutSaving
         elif event.sym == tcod.event.KeySym.c:  # Si se presiona C, intenta cargar una partida guardada.
             try:
-                return input_handlers.MainGameEventHandler(load_game("savegame.sav"))
+                return input_handlers.MainGameEventHandler(load_game("savegame.sav", self.context, self.console))
             except FileNotFoundError:
                 return input_handlers.PopupMessage(self, "No hay una anterior partida guardada.")
             except Exception as exc:
@@ -256,7 +260,7 @@ class MainMenu(input_handlers.BaseEventHandler):
         elif event.sym == tcod.event.KeySym.n:  # Si se presiona N, empieza una nueva partida.
             fade_to_black(self.console, self.context)  # Fade a negro antes de la transición.
 
-            engine = new_game()  # Inicia una nueva partida.
+            engine = new_game(self.context, self.console)  # Inicia una nueva partida.
             player_name = get_player_name(self.context, self.console)  # Obtiene el nombre del jugador.
             engine.player.name = player_name  # Asigna el nombre al jugador.
 

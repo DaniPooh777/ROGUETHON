@@ -609,7 +609,7 @@ class GameOverEventHandler(EventHandler):
             x=20,
             y=15,
             width=40,
-            height=10,
+            height=7,
             title="Game Over",
             clear=True,
             fg=(255, 255, 255),
@@ -618,7 +618,7 @@ class GameOverEventHandler(EventHandler):
 
         # Muestra las opciones disponibles.
         console.print(x=22, y=17, string="a) Iniciar nueva partida")
-        console.print(x=22, y=18, string="b) Volver al menú principal")
+        console.print(x=22, y=18, string="b) Volver al menu principal")
         console.print(x=22, y=19, string="c) Salir del juego")
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
