@@ -11,12 +11,15 @@ from tcod import console  # Importa la biblioteca tcod para consola y gráficos.
 import time  # Para manejar pausas y temporizadores.
 import tcod  # Librería principal para crear roguelikes.
 from tcod import libtcodpy  # Importa libtcodpy (funciones de bajo nivel).
+from tcod import context  # Maneja el contexto de la consola.
+
 
 import color  # Módulo personalizado con colores para mensajes.
 from engine import Engine  # La clase principal para el motor del juego.
 import entity_factories  # Factores para crear entidades (jugador, objetos, etc.).
 import input_handlers  # Gestiona las entradas del usuario.
 from game_map import GameWorld  # La clase que define el mundo del juego.
+import exceptions
 
 # Carga una imagen de fondo y elimina el canal alfa.
 background_image = tcod.image.load("menu_background.png")[:, :, :3]
@@ -34,7 +37,7 @@ def new_game() -> Engine:
 
     player = copy.deepcopy(entity_factories.player)  # Crea una copia del jugador.
 
-    engine = Engine(player=player)  # Crea una instancia de Engine con el jugador.
+    engine = Engine(player=player, context=context, console=console)  # Pasa el contexto y la consola.
 
     # Crea el mundo del juego con la configuración.
     engine.game_world = GameWorld(
@@ -241,7 +244,7 @@ class MainMenu(input_handlers.BaseEventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[input_handlers.BaseEventHandler]:
         """Maneja las entradas del teclado en el menú principal."""
         if event.sym in (tcod.event.KeySym.q, tcod.event.KeySym.ESCAPE):  # Si se presiona Q o Escape, sale del juego.
-            raise SystemExit()
+            raise exceptions.QuitWithoutSaving
         elif event.sym == tcod.event.KeySym.c:  # Si se presiona C, intenta cargar una partida guardada.
             try:
                 return input_handlers.MainGameEventHandler(load_game("savegame.sav"))

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING  # Importa TYPE_CHECKING para la comprobación 
 
 from tcod.console import Console  # Importa la clase Console de la biblioteca tcod para la salida gráfica.
 from tcod.map import compute_fov  # Importa compute_fov para calcular el campo de visión (FOV).
+import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
 
 import exceptions  # Importa las excepciones personalizadas.
 from message_log import MessageLog  # Importa el sistema de registro de mensajes.
@@ -21,11 +22,14 @@ class Engine:
     game_map: GameMap  # El mapa actual del juego.
     game_world: GameWorld  # El mundo de juego (contiene varios niveles).
 
-    def __init__(self, player: Actor):
-        """Inicializa el motor del juego con el jugador."""
+    def __init__(self, player: Actor, context: tcod.context.Context, console: tcod.Console):
+        """Inicializa el motor del juego con el jugador, contexto y consola."""
         self.message_log = MessageLog()  # Crea un objeto para registrar los mensajes del juego.
         self.mouse_location = (0, 0)  # Inicializa la ubicación del ratón.
         self.player = player  # Asigna el jugador al motor del juego.
+        self.context = context  # Asigna el contexto de tcod.
+        self.console = console  # Asigna la consola de tcod.
+
 
     def handle_enemy_turns(self) -> None:
         """Gestiona los turnos de los enemigos."""

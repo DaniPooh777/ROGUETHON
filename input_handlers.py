@@ -600,19 +600,39 @@ class MainGameEventHandler(EventHandler):
 
 # Clase que maneja los eventos cuando el juego ha terminado.
 class GameOverEventHandler(EventHandler):
-    def on_quit(self) -> None:
-        """Maneja la salida del juego terminado, eliminando el archivo de guardado."""
-        if os.path.exists("savegame.sav"):  # Si existe un archivo de guardado.
-            os.remove("savegame.sav")  # Elimina el archivo de guardado.
-        raise exceptions.QuitWithoutSaving()  # Lanza una excepción para evitar guardar el juego terminado.
+    def on_render(self, console: tcod.Console) -> None:
+        """Renderiza la pantalla de Game Over con opciones."""
+        super().on_render(console)  # Renderiza el estado actual del juego como fondo.
 
-    def ev_quit(self, event: tcod.event.Quit) -> None:
-        self.on_quit()  # Llama al método `on_quit` si el evento es salir.
+        # Dibuja un marco para el menú de Game Over.
+        console.draw_frame(
+            x=20,
+            y=15,
+            width=40,
+            height=10,
+            title="Game Over",
+            clear=True,
+            fg=(255, 255, 255),
+            bg=(0, 0, 0),
+        )
 
-    def ev_keydown(self, event: tcod.event.KeyDown) -> None:
-        """Si se presiona Escape, sale del juego sin guardar."""
-        if event.sym == tcod.event.KeySym.SCAPE:
-            self.on_quit()
+        # Muestra las opciones disponibles.
+        console.print(x=22, y=17, string="a) Iniciar nueva partida")
+        console.print(x=22, y=18, string="b) Volver al menú principal")
+        console.print(x=22, y=19, string="c) Salir del juego")
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
+        """Maneja las opciones seleccionadas por el jugador."""
+        if event.sym == tcod.event.KeySym.a:  # Iniciar nueva partida
+            from setup_game import new_game
+            engine = new_game(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
+            return MainGameEventHandler(engine)
+        elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
+            from setup_game import MainMenu
+            return MainMenu(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
+        elif event.sym == tcod.event.KeySym.c:  # Salir del juego
+            raise SystemExit()
+        return None
 
 
 # Diccionario de teclas para mover el cursor hacia arriba o hacia abajo en el historial.
