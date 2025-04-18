@@ -38,9 +38,40 @@ A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
 - **Tecla `c`**: Mostrar las estadísticas del personaje.
 - **Tecla `(↑,  ↓)`**: En el historial de acciones del jugador para moverse arriba y abajo a lo largo de todos los mensajes.
 
+## Enemigos
+
+En **ROGUETHON**, te enfrentarás a una variedad de enemigos, cada uno con habilidades y comportamientos únicos. Algunos ejemplos incluyen:
+
+- **Orcos**: Enemigos básicos con ataques cuerpo a cuerpo.
+- **Trolls**: Criaturas más fuertes con alta salud y poder de ataque.
+- **Goblins**: Enemigos rápidos que atacan a distancia.
+- **Magos oscuros**: Lanzan hechizos que infligen daño mágico.
+
+Cada enemigo tiene fortalezas y debilidades que deberás aprender para enfrentarlos de manera efectiva.
+
+## Objetos consumibles
+
+Durante tu aventura, encontrarás diversos objetos consumibles que te ayudarán a sobrevivir:
+
+- **Poción de salud**: Restaura puntos de vida.
+- **Pergamino de confusión**: Confunde a un enemigo, haciéndolo moverse aleatoriamente durante varios turnos.
+- **Pergamino de relámpago**: Lanza un rayo que inflige daño al enemigo más cercano.
+- **Pergamino de bola de fuego**: Causa daño en un área, afectando a múltiples enemigos.
+- **Pergamino defensivo**: Aumenta temporalmente tu defensa, reduciendo el daño recibido.
+
+Usa estos objetos estratégicamente para superar los desafíos de las mazmorras.
+
+## Imágenes del juego
+
+A continuación, se incluirán capturas de pantalla del juego para mostrar su estilo visual y mecánicas:
+
+![Captura de pantalla 1](c:/Users/Danie/OneDrive/Escritorio/Proyecto Python (ROGUETHON)/Imagen juego 2.png)
+![Captura de pantalla 2](c:/Users/Danie/OneDrive/Escritorio/Proyecto Python (ROGUETHON)/Imagen juego.png)
+
 ## Cómo ejecutar el juego
 
 1. Asegúrate de tener Python 3.10 o superior instalado.
 2. Instala las dependencias necesarias ejecutando:
    ```bash
    pip install tcod
+   ```

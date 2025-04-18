@@ -586,12 +586,9 @@ class MainGameEventHandler(EventHandler):
         elif key in WAIT_KEYS:
             action = WaitAction(player)
 
-        # Si se presiona la tecla Escape, guarda la partida y regresa al menú principal si el jugador está vivo.
+        # Si se presiona la tecla Escape, termina el juego.
         elif key == tcod.event.KeySym.ESCAPE:
-            if player.is_alive:
-                self.engine.save_as("savegame.sav")
-            from setup_game import MainMenu
-            return MainMenu(self.engine.context, self.engine.console)
+            raise SystemExit()
         # Si se presiona la tecla H, muestra el historial de mensajes.
         elif key == tcod.event.KeySym.h:
             return HistoryViewer(self.engine)
@@ -652,10 +649,6 @@ class GameOverEventHandler(EventHandler):
         if event.sym == tcod.event.KeySym.n:  # Iniciar nueva partida
             from setup_game import new_game
             engine = new_game(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
-
-            # Reutiliza el nombre del jugador almacenado antes de morir.
-            engine.player.name = self.engine.last_player_name
-
             return MainGameEventHandler(engine)
         elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
             from setup_game import MainMenu
