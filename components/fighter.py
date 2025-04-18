@@ -70,6 +70,7 @@ class Fighter(BaseComponent):
         if self.engine.player is self.parent:
             death_message = "Has muerto"
             death_message_color = color.player_die
+            self.engine.last_player_name = self.parent.name  # Guarda el nombre del jugador antes de cambiarlo
         else:
             death_message = f"{self.parent.name} esta muerto"
             death_message_color = color.enemy_die

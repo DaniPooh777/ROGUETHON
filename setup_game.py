@@ -178,6 +178,7 @@ class MainMenu(input_handlers.BaseEventHandler):
     def __init__(self, context: tcod.context.Context, console: tcod.Console):
         self.context = context
         self.console = console
+        self.last_player_name = None  # Almacena el nombre del jugador de la última partida
 
     def on_render(self, console: tcod.Console) -> None:
         """Renderiza el menú principal con una imagen de fondo."""
@@ -261,8 +262,12 @@ class MainMenu(input_handlers.BaseEventHandler):
             fade_to_black(self.console, self.context)  # Fade a negro antes de la transición.
 
             engine = new_game(self.context, self.console)  # Inicia una nueva partida.
-            player_name = get_player_name(self.context, self.console)  # Obtiene el nombre del jugador.
+            if self.last_player_name:
+                player_name = self.last_player_name  # Usa el nombre de la última partida si existe
+            else:
+                player_name = get_player_name(self.context, self.console)
             engine.player.name = player_name  # Asigna el nombre al jugador.
+            self.last_player_name = player_name  # Guarda el nombre para futuras partidas
 
             # Muestra un mensaje de bienvenida en el log.
             engine.message_log.add_message(
