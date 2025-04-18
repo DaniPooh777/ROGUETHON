@@ -3,13 +3,14 @@ from __future__ import annotations  # Permite la anotación de tipos con clases 
 
 import lzma  # Importa el módulo lzma para la compresión de datos.
 import pickle  # Importa el módulo pickle para la serialización de objetos.
-from typing import TYPE_CHECKING  # Importa TYPE_CHECKING para la comprobación de tipos en tiempo de desarrollo.
+from typing import TYPE_CHECKING, Callable  # Importa TYPE_CHECKING para la comprobación de tipos en tiempo de desarrollo.
 
 from tcod.console import Console  # Importa la clase Console de la biblioteca tcod para la salida gráfica.
 from tcod.map import compute_fov  # Importa compute_fov para calcular el campo de visión (FOV).
 import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
 import tcod.event  # Asegúrate de que tcod.event esté importado
 
+import color
 import exceptions  # Importa las excepciones personalizadas.
 from message_log import MessageLog  # Importa el sistema de registro de mensajes.
 import render_functions  # Importa funciones de renderizado personalizadas.
@@ -30,17 +31,39 @@ class Engine:
         self.player = player  # Asigna el jugador al motor del juego.
         self.context = context  # Asigna el contexto de tcod.
         self.console = console  # Asigna la consola de tcod.
+        self.turn_count = 0  # Inicializa el contador de turnos en 0
+        self.scheduled_tasks = []  # Lista para almacenar tareas programadas
+
+    def schedule_task(self, turns: int, callback: Callable) -> None:
+        """Programa una tarea para ejecutarse después de un número de turnos."""
+        self.scheduled_tasks.append((self.turn_count + turns, callback))
+
+    def process_scheduled_tasks(self) -> None:
+        """Procesa y ejecuta las tareas programadas si es el turno adecuado."""
+        current_turn = self.turn_count
+        for task in list(self.scheduled_tasks):
+            task_turn, callback = task
+            if current_turn >= task_turn:
+                callback()  # Ejecuta la tarea
+                self.scheduled_tasks.remove(task)
+
+    def increment_turn(self) -> None:
+        """Incrementa el contador de turnos."""
+        self.turn_count += 1
 
     def handle_enemy_turns(self) -> None:
-        """Gestiona los turnos de los enemigos."""
-        for entity in set(self.game_map.actors) - {self.player}:  # Itera sobre todos los actores excepto el jugador.
-            if entity.ai:  # Si el actor tiene una IA (es un enemigo).
-                try:
-                    entity.ai.perform()  # Realiza la acción de la IA (turno del enemigo).
-                except exceptions.Impossible:
-                    pass  # Si ocurre una excepción de acción imposible, se ignora.
-            if entity.fighter:  # Si el actor tiene un componente Fighter.
-                entity.fighter.on_turn_end()  # Llama a on_turn_end para manejar efectos temporales.
+        """Maneja los turnos de los enemigos y reduce el contador de invisibilidad del jugador."""
+        if self.player.invisibility_turns > 0:
+            self.player.invisibility_turns -= 1
+            if self.player.invisibility_turns == 0:
+                self.message_log.add_message(
+                    f"{self.player.name} vuelve a ser visible.",
+                    color.status_effect_applied,
+                )
+
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                entity.ai.perform()
 
     def update_fov(self) -> None:
         """Recalcula el área visible basado en la posición del jugador."""
@@ -103,3 +126,9 @@ class Engine:
                     self.save_as("savegame.sav")
                 raise SystemExit()
             # ...existing event handling code...
+
+class Actor:
+    @property
+    def is_alive(self) -> bool:
+        """El jugador está vivo si tiene puntos de vida positivos."""
+        return self.hp > 0  # Asegúrate de que esto no dependa de la IA o el estado de invisibilidad.

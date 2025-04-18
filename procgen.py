@@ -34,9 +34,13 @@ max_monsters_by_floor = [
 
 # Probabilidades de que ciertos ítems aparezcan en niveles específicos.
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.health_potion, 35)],  # 35% de probabilidad de que aparezca una poción de salud en el nivel 0.
+    0: [(entity_factories.health_potion, 35), ],  # 35% de probabilidad de que aparezca una poción de salud en el nivel 0.
     2: [(entity_factories.confusion_scroll, 10)],  # 10% de probabilidad de que aparezca un pergamino de confusión en el nivel 2.
-    4: [(entity_factories.lightning_scroll, 25), (entity_factories.sword, 10), (entity_factories.defensive_scroll, 20)],  # 25% de probabilidad para un pergamino de rayos y 5% para una espada en el nivel 4.
+    4: [
+        (entity_factories.lightning_scroll, 25),
+        (entity_factories.sword, 10),
+        (entity_factories.defensive_scroll, 20),
+    ],
     6: [(entity_factories.fireball_scroll, 25), (entity_factories.chain_mail, 15)],  # 25% de probabilidad para un pergamino de bola de fuego y 15% para una cota de malla en el nivel 6.
 }
 
@@ -46,7 +50,7 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     2: [(entity_factories.goblin, 30)],  # Goblin aparece a partir del nivel 2.
     3: [(entity_factories.troll, 15)],
     5: [(entity_factories.troll, 30), (entity_factories.goblin, 50)],  # Más goblins en niveles superiores.
-    7: [(entity_factories.troll, 60)],
+    7: [(entity_factories.troll, 60), (entity_factories.invisibility_scroll, 100)],
 }
 
 # Función para obtener el valor máximo de ítems o monstruos por nivel de piso.
@@ -175,98 +179,105 @@ def tunnel_between(
         yield x, y
 
 
-def generate_secret_rooms(dungeon: GameMap, rooms: List[RectangularRoom], num_secrets: int, min_size: int = 4, max_size: int = 6) -> None:
-    """Genera habitaciones secretas conectadas a las habitaciones existentes mediante paredes falsas.
-    Las dimensiones de las salas secretas están limitadas por `min_size` y `max_size`.
-    """
+def generate_secret_rooms(
+    dungeon: GameMap, rooms: List[RectangularRoom], num_secrets: int, width: int = 6, height: int = 6
+) -> None:
+    """Genera habitaciones secretas con dimensiones fijas conectadas a las habitaciones existentes."""
     for _ in range(num_secrets):
-        # Selecciona una habitación existente al azar para conectar la habitación secreta.
-        parent_room = random.choice(rooms)
+        attempts = 0
+        while attempts < 10:  # Intenta generar una habitación secreta hasta 10 veces.
+            # Selecciona una habitación existente al azar para conectar la habitación secreta.
+            parent_room = random.choice(rooms)
 
-        # Genera una nueva habitación secreta con dimensiones aleatorias dentro de los límites.
-        secret_width = random.randint(min_size, max_size)
-        secret_height = random.randint(min_size, max_size)
+            # Determina la posición de la habitación secreta adyacente a la habitación principal.
+            direction = random.choice(["N", "S", "E", "W"])
+            if direction == "N":
+                x1_start = parent_room.x1 + 1
+                x1_end = parent_room.x2 - width - 1
+                if x1_start > x1_end:  # Verifica si el rango es válido
+                    attempts += 1
+                    continue
+                x1 = random.randint(x1_start, x1_end)
+                y1 = parent_room.y1 - height - 1
+            elif direction == "S":
+                x1_start = parent_room.x1 + 1
+                x1_end = parent_room.x2 - width - 1
+                if x1_start > x1_end:  # Verifica si el rango es válido
+                    attempts += 1
+                    continue
+                x1 = random.randint(x1_start, x1_end)
+                y1 = parent_room.y2 + 1
+            elif direction == "E":
+                x1 = parent_room.x2 + 1
+                y1_start = parent_room.y1 + 1
+                y1_end = parent_room.y2 - height - 1
+                if y1_start > y1_end:  # Verifica si el rango es válido
+                    attempts += 1
+                    continue
+                y1 = random.randint(y1_start, y1_end)
+            else:  # "W"
+                x1 = parent_room.x1 - width - 1
+                y1_start = parent_room.y1 + 1
+                y1_end = parent_room.y2 - height - 1
+                if y1_start > y1_end:  # Verifica si el rango es válido
+                    attempts += 1
+                    continue
+                y1 = random.randint(y1_start, y1_end)
 
-        # Determina la posición de la habitación secreta adyacente a la habitación principal.
-        direction = random.choice(["N", "S", "E", "W"])
-        if direction == "N":
-            secret_x = parent_room.x1 + 1
-            secret_y = parent_room.y1 - secret_height - 1
-        elif direction == "S":
-            secret_x = parent_room.x1 + 1
-            secret_y = parent_room.y2 + 1
-        elif direction == "E":
-            secret_x = parent_room.x2 + 1
-            secret_y = parent_room.y1 + 1
-        else:  # "W"
-            secret_x = parent_room.x1 - secret_width - 1
-            secret_y = parent_room.y1 + 1
+            x2 = x1 + width
+            y2 = y1 + height
 
-        # Verifica que las coordenadas sean válidas antes de crear la habitación secreta.
-        if not dungeon.in_bounds(secret_x, secret_y) or not dungeon.in_bounds(secret_x + secret_width - 1, secret_y + secret_height - 1):
-            continue
-
-        # Asegúrate de que las dimensiones cumplan con los valores mínimos y máximos.
-        if secret_width < min_size or secret_width > max_size or secret_height < min_size or secret_height > max_size:
-            continue
-
-        secret_room = RectangularRoom(secret_x, secret_y, secret_width, secret_height)
-
-        # Asegúrate de que la habitación secreta no se superponga con otras habitaciones o pasillos.
-        if any(secret_room.intersects(other_room) for other_room in rooms):
-            continue
-
-        # Verifica que la habitación secreta no se superponga con pasillos normales.
-        for x in range(secret_room.x1, secret_room.x2 + 1):
-            for y in range(secret_room.y1, secret_room.y2 + 1):
-                if dungeon.tiles[x, y] == tile_types.floor:
-                    break
-            else:
+            # Verifica que las coordenadas sean válidas antes de crear la habitación secreta.
+            if not dungeon.in_bounds(x1, y1) or not dungeon.in_bounds(x2 - 1, y2 - 1):
+                attempts += 1
                 continue
-            break
-        else:
-            # Marca la habitación secreta como suelo y elimina cualquier pared interna.
-            for x in range(secret_room.x1, secret_room.x2 + 1):
-                for y in range(secret_room.y1, secret_room.y2 + 1):
-                    dungeon.tiles[x, y] = tile_types.floor
 
-            # Conecta la habitación secreta con la habitación principal mediante una pared falsa.
-            connect_secret_room(dungeon, parent_room, secret_room, direction)
+            # Verifica si la habitación secreta se superpone con otras habitaciones o pasillos.
+            secret_room = RectangularRoom(x1, y1, width, height)
+            if any(secret_room.intersects(other_room) for other_room in rooms):
+                attempts += 1
+                continue
 
-            # Añade la habitación secreta a la lista de habitaciones.
+            # Marca todos los tiles de la habitación secreta como suelo.
+            dungeon.tiles[secret_room.inner] = tile_types.floor
             rooms.append(secret_room)
 
-            # Genera un objeto específico (poción de salud) en el centro de la habitación secreta.
-            center_x, center_y = secret_room.center
-            entity_factories.chain_mail.spawn(dungeon, center_x, center_y)
+            # Conecta la habitación secreta con la habitación principal.
+            connect_secret_room(dungeon, parent_room, secret_room, direction)
 
-            # Mensaje de depuración para verificar la generación.
-            print(f"Habitación secreta generada en: ({secret_x}, {secret_y}) con dimensiones ({secret_width}x{secret_height}) y poción de salud en el centro ({center_x}, {center_y})")
+            # Imprime un mensaje en la terminal indicando que se generó una habitación secreta.
+            print(f"Se generó una habitación secreta en {secret_room.center} conectada a {parent_room.center}.")
 
-def connect_secret_room(dungeon: GameMap, parent_room: RectangularRoom, secret_room: RectangularRoom, direction: str) -> None:
-    """Conecta una habitación secreta a una habitación principal mediante una pared falsa."""
+            break  # Si se genera una habitación secreta válida, rompe el bucle.
+
+
+def connect_secret_room(
+    dungeon: GameMap, parent_room: RectangularRoom, secret_room: RectangularRoom, direction: str
+) -> None:
+    """Conecta una habitación secreta a una habitación principal mediante un túnel."""
     if direction == "N":
-        wall_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
-        wall_y = parent_room.y1
-        tunnel_x, tunnel_y = wall_x, wall_y - 1
+        door_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
+        door_y = parent_room.y1
+        tunnel_x, tunnel_y = door_x, secret_room.y2
     elif direction == "S":
-        wall_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
-        wall_y = parent_room.y2
-        tunnel_x, tunnel_y = wall_x, wall_y + 1
+        door_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
+        door_y = parent_room.y2
+        tunnel_x, tunnel_y = door_x, secret_room.y1
     elif direction == "E":
-        wall_x = parent_room.x2
-        wall_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
-        tunnel_x, tunnel_y = wall_x + 1, wall_y
+        door_x = parent_room.x2
+        door_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
+        tunnel_x, tunnel_y = secret_room.x1, door_y
     else:  # "W"
-        wall_x = parent_room.x1
-        wall_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
-        tunnel_x, tunnel_y = wall_x - 1, wall_y
+        door_x = parent_room.x1
+        door_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
+        tunnel_x, tunnel_y = secret_room.x2, door_y
 
-    # Marca el túnel como suelo.
-    dungeon.tiles[tunnel_x, tunnel_y] = tile_types.floor
+    # Genera un túnel desde la puerta hasta el interior de la sala secreta
+    for x, y in tunnel_between((door_x, door_y), (tunnel_x, tunnel_y)):
+        dungeon.tiles[x, y] = tile_types.floor
 
-    # Marca la pared falsa en la habitación principal.
-    dungeon.tiles[wall_x, wall_y] = tile_types.hidden_wall_tile
+    # Marca la puerta como un tile especial
+    dungeon.tiles[door_x, door_y] = tile_types.door
 
 
 # Función que genera un mapa de mazmorras.
@@ -311,16 +322,14 @@ def generate_dungeon(
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
 
-                center_of_last_room = new_room.center  # Actualiza el centro de la última sala.
-
-        place_entities(new_room, dungeon, engine.game_world.current_floor)  # Coloca las entidades.
-
         rooms.append(new_room)
+        center_of_last_room = new_room.center
 
-    # Genera habitaciones secretas.
-    generate_secret_rooms(dungeon, rooms, num_secrets=2)
+    # Genera habitaciones secretas con dimensiones fijas.
+    generate_secret_rooms(dungeon, rooms, num_secrets=2, width=6, height=6)
 
-    dungeon.tiles[center_of_last_room] = tile_types.down_stairs  # Coloca las escaleras en el centro de la última sala.
-    dungeon.downstairs_location = center_of_last_room  # Marca la ubicación de las escaleras.
+    # Coloca las escaleras en el centro de la última sala.
+    dungeon.tiles[center_of_last_room] = tile_types.down_stairs
+    dungeon.downstairs_location = center_of_last_room
 
     return dungeon  # Devuelve el mapa de mazmorras generado.

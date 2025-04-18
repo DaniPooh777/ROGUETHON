@@ -191,15 +191,15 @@ class MovementAction(ActionWithDirection):
     """Acción de movimiento (caminar o desplazarse)."""
 
     def perform(self) -> None:
-        dest_x, dest_y = self.dest_xy  # Ubicación de destino
+        dest_x, dest_y = self.dest_xy
 
         # Comprueba si el destino está fuera de los límites del mapa
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
-            raise exceptions.Impossible("Esto es una pared.")
+            return  # No hace nada si está fuera de los límites
         if not self.engine.game_map.tiles["walkable"][dest_x, dest_y]:
-            raise exceptions.Impossible("Esto es una pared.")
+            return  # No hace nada si no es caminable
         if self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
-            raise exceptions.Impossible("Esto es una pared.")
+            return  # No hace nada si hay una entidad bloqueando
 
         # Si no hay obstáculos, mueve la entidad
         self.entity.move(self.dx, self.dy)

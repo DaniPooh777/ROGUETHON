@@ -39,6 +39,10 @@ def main() -> None:
                     handler.on_render(console=root_console)
                     context.present(root_console)
 
+                    # Procesar tareas programadas
+                    if isinstance(handler, input_handlers.EventHandler):
+                        handler.engine.process_scheduled_tasks()
+
                     try:
                         for event in tcod.event.wait():
                             context.convert_event(event)
@@ -59,8 +63,9 @@ def main() -> None:
                 break  # Salida sin guardar: termina el juego completamente
 
             except exceptions.PlayerDied:  # Manejar la muerte del jugador.
-                handler = input_handlers.GameOverEventHandler(handler.engine)
-                continue
+                if handler.engine.player.is_alive:  # Verifica si el jugador realmente está muerto
+                    handler = input_handlers.GameOverEventHandler(handler.engine)
+                    continue
             except SystemExit:
                 raise  # Asegura que el programa se cierre completamente
 

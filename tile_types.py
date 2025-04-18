@@ -59,7 +59,7 @@ down_stairs = new_tile(
     light=(ord(">"), (200, 200, 200), (0, 0, 0)),  # Representación con luz (dentro del FOV).
 )
 
-hidden_wall_tile = new_tile(
+door = new_tile(
     walkable=True,
     transparent=False,
     dark=(ord("&"), (100, 100, 100), (0, 0, 0)),

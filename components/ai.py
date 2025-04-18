@@ -30,33 +30,25 @@ class BaseAI(Action):
         raise NotImplementedError()
 
     def get_path_to(self, dest_x: int, dest_y: int) -> List[Tuple[int, int]]:
-        """Calcula y retorna un camino hasta la posición destino.
-        
-        Utiliza un algoritmo de búsqueda de caminos para encontrar la mejor ruta hasta el destino.
-        
-        Si no hay un camino válido, retorna una lista vacía.
-        """
-        # Copia el array de walkable (camino transitable) del mapa de juego.
-        cost = np.array(self.entity.gamemap.tiles["walkable"], dtype=np.int8)
+        """Calcula un camino hacia las coordenadas dadas."""
+        cost = np.array(self.engine.game_map.tiles["walkable"], dtype=np.int8)
 
-        # Recorre todas las entidades en el mapa para verificar si bloquean el movimiento.
-        for entity in self.entity.gamemap.entities:
+        for entity in self.engine.game_map.entities:
             if entity.blocks_movement and cost[entity.x, entity.y]:
-                # Incrementa el costo de las posiciones bloqueadas para evitar que los enemigos se muevan allí.
-                # Un número más bajo hace que los enemigos se agrupen más en pasillos. Un número más alto les hará tomar rutas más largas.
                 cost[entity.x, entity.y] += 10
 
-        # Crea un gráfico basado en el array de costos y lo pasa al buscador de caminos.
         graph = tcod.path.SimpleGraph(cost=cost, cardinal=2, diagonal=3)
         pathfinder = tcod.path.Pathfinder(graph)
 
-        pathfinder.add_root((self.entity.x, self.entity.y))  # Añade la posición inicial como raíz.
+        pathfinder.add_root((self.entity.x, self.entity.y))
 
-        # Calcula el camino hasta el destino y elimina la posición inicial del camino.
-        path: List[List[int]] = pathfinder.path_to((dest_x, dest_y))[1:].tolist()
+        path: List[Tuple[int, int]] = pathfinder.path_to((dest_x, dest_y))[1:].tolist()
 
-        # Convierte el resultado de la ruta de List[List[int]] a List[Tuple[int, int]].
-        return [(index[0], index[1]) for index in path]
+        # Verifica que todas las posiciones en el camino sean válidas
+        valid_path = [
+            (x, y) for x, y in path if self.engine.game_map.in_bounds(x, y) and self.engine.game_map.tiles["walkable"][x, y]
+        ]
+        return valid_path
 
 
 class HostileEnemy(BaseAI):
@@ -67,37 +59,33 @@ class HostileEnemy(BaseAI):
     """
 
     def __init__(self, entity: Actor):
-        """Inicializa la IA de un enemigo hostil, asignándole la entidad a la que está asociada.
-        
-        `entity`: La entidad que esta IA controla (un enemigo).
-        """
-        super().__init__(entity)  # Llama al constructor de la clase base.
-        self.path: List[Tuple[int, int]] = []  # Inicializa la lista que contiene el camino hacia el jugador.
+        super().__init__(entity)
+        self.path: List[Tuple[int, int]] = []  # Inicializa el atributo path como una lista vacía
 
     def perform(self) -> None:
-        """Realiza la acción que el enemigo debe realizar en su turno.
-        
-        El enemigo hostil se moverá hacia el jugador si está lejos o atacará si está cerca.
-        """
-        target = self.engine.player  # El objetivo es el jugador.
-        dx = target.x - self.entity.x  # Calcula la diferencia en la posición horizontal entre el enemigo y el jugador.
-        dy = target.y - self.entity.y  # Calcula la diferencia en la posición vertical entre el enemigo y el jugador.
-        distance = max(abs(dx), abs(dy))  # Calcula la distancia usando la distancia de Chebyshev.
+        if self.engine.player.invisible:
+            return  # Los enemigos no hacen nada si el jugador es invisible
 
-        if self.engine.game_map.visible[self.entity.x, self.entity.y]:  # Verifica si el enemigo puede ver su posición actual.
+        target = self.engine.player
+        dx = target.x - self.entity.x
+        dy = target.y - self.entity.y
+        distance = max(abs(dx), abs(dy))
+
+        if self.engine.game_map.visible[self.entity.x, self.entity.y]:
             if distance <= 1:
-                # Si el jugador está a distancia de ataque, realiza un ataque cuerpo a cuerpo.
                 return MeleeAction(self.entity, dx, dy).perform()
 
-            # Si el jugador está lejos, calcula el camino hacia el jugador.
-            self.path = self.get_path_to(target.x, target.y)
+            # Calcula un nuevo camino si no hay uno existente
+            if not self.path:
+                self.path = self.get_path_to(target.x, target.y)
 
         if self.path:
-            # Si hay un camino, mueve al enemigo hacia el siguiente punto del camino.
             dest_x, dest_y = self.path.pop(0)
-            return MovementAction(self.entity, dest_x - self.entity.x, dest_y - self.entity.y).perform()
 
-        # Si no hay camino, espera.
+            # Verifica si el destino es caminable antes de intentar moverse
+            if self.engine.game_map.in_bounds(dest_x, dest_y) and self.engine.game_map.tiles["walkable"][dest_x, dest_y]:
+                return MovementAction(self.entity, dest_x - self.entity.x, dest_y - self.entity.y).perform()
+
         return WaitAction(self.entity).perform()
 
 
@@ -129,11 +117,11 @@ class ConfusedEnemy(BaseAI):
         if self.turns_remaining <= 0:
             # Si ya no quedan turnos de confusión, restaura la IA original del enemigo.
             self.engine.message_log.add_message(
-                f"{self.entity.name} ya no está confundido.",
+                f"{self.entity.name} ya no esta confundido.",
             )
             self.entity.ai = self.previous_ai
         else:
-            # Si aún queda confusión, el enemigo se mueve aleatoriamente en una dirección.
+            # Si aún queda confusión, el enemigo se mueve de manera aleatoria en una dirección.
             direction_x, direction_y = random.choice(
                 [
                     (-1, -1),  # Noroeste

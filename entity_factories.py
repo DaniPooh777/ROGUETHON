@@ -89,6 +89,13 @@ defensive_scroll = Item(
     consumable=consumable.DefensiveScrollConsumable(defense_bonus=5, number_of_turns=10),  # Aumenta 5 puntos de defensa durante 10 turnos.
 )
 
+invisibility_scroll = Item(
+    char="~",  # Carácter que representa al pergamino de invisibilidad.
+    color=(128, 128, 255),  # Color azul claro.
+    name="Pergamino invisible",  # Nombre del objeto.
+    consumable=consumable.InvisibilityScrollConsumable(number_of_turns=30),  # Hace al jugador invisible durante 30 turnos.
+)
+
 # Se crean objetos equipables, como dagas y armaduras.
 dagger = Item(
     char="/",  # Carácter que representa la daga.

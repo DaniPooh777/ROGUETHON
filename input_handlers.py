@@ -125,24 +125,13 @@ class EventHandler(BaseEventHandler):
             return MainGameEventHandler(self.engine)  # Retorna al manejador principal.
         return self
 
-    def handle_action(self, action: Optional[Action]) -> bool:
-        """Gestiona las acciones devueltas por los métodos de eventos.
-
-        Retorna True si la acción avanza un turno.
-        """
-        if action is None:
-            return False  # Si no hay acción, no avanza el turno.
-
-        try:
-            action.perform()  # Realiza la acción.
-        except exceptions.Impossible as exc:
-            self.engine.message_log.add_message(exc.args[0], color.impossible)
-            return False  # Si ocurre una excepción (acción imposible), no avanza el turno.
-
-        self.engine.handle_enemy_turns()  # Permite que los enemigos actúen.
-
-        self.engine.update_fov()  # Actualiza el campo de visión del jugador.
-        return True  # La acción fue válida y el turno avanzó.
+    def handle_action(self, action: Action) -> bool:
+        """Maneja una acción del jugador."""
+        if action is not None:
+            action.perform()  # Realiza la acción
+            self.engine.turn_count += 1  # Incrementa el contador de turnos
+            return True
+        return False
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
         """Actualiza la ubicación del ratón si está dentro de los límites del mapa."""

@@ -6,6 +6,7 @@ import math
 from typing import Optional, Tuple, Type, TypeVar, Union, TYPE_CHECKING
 
 # Se importa RenderOrder desde un módulo externo, probablemente usado para determinar el orden de dibujo de los objetos.
+import color
 from render_order import RenderOrder
 
 # Esto es para evitar errores de referencia circular, ya que estos módulos se importan más abajo en el código.
@@ -130,7 +131,14 @@ class Actor(Entity):
 
         self.level = level  # Asigna el nivel
         self.level.parent = self  # Asigna el actor como "padre" del nivel
-        
+
+        self.invisibility_turns = 0  # Contador de turnos de invisibilidad
+
+    @property
+    def invisible(self) -> bool:
+        """Devuelve True si el jugador está invisible."""
+        return self.invisibility_turns > 0
+
     @property
     def is_alive(self) -> bool:
         """Devuelve True si este actor está vivo y puede realizar acciones."""
@@ -168,3 +176,18 @@ class Item(Entity):
 
         if self.equippable:
             self.equippable.parent = self  # Asigna el ítem como "padre" del equipable
+
+
+def handle_enemy_turns(self) -> None:
+    """Maneja los turnos de los enemigos y reduce el contador de invisibilidad del jugador."""
+    if self.player.invisibility_turns > 0:
+        self.player.invisibility_turns -= 1
+        if self.player.invisibility_turns == 0:
+            self.message_log.add_message(
+                f"{self.player.name} vuelve a ser visible.",
+                color.status_effect_applied,
+            )
+
+    for entity in set(self.game_map.actors) - {self.player}:
+        if entity.ai:
+            entity.ai.perform()

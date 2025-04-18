@@ -11,6 +11,7 @@ enemy_atk = (0xFF, 0xC0, 0xC0)   # Ataque del enemigo (rojo claro)
 needs_target = (0x3F, 0xFF, 0xFF)  # Necesita un objetivo (azul claro)
 status_effect_applied = (0x3F, 0xFF, 0x3F)  # Efecto de estado aplicado (verde claro)
 descend = (0x9F, 0x3F, 0xFF)  # Descender a un nuevo nivel (azul oscuro)
+invisibility_applied = (128, 128, 255)  # Color azul claro para el efecto de invisibilidad.
 
 # Colores relacionados con las muertes
 player_die = (0xFF, 0x30, 0x30)  # Muerte del jugador (rojo brillante)

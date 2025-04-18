@@ -33,7 +33,7 @@ def new_game(context: tcod.context.Context, console: tcod.Console) -> Engine:
     # Parámetros para la generación de salas.
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 30
+    max_rooms = 20
 
     player = copy.deepcopy(entity_factories.player)  # Crea una copia del jugador.
 

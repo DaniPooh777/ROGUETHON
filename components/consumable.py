@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Callable
 
 import actions
 import color
@@ -204,3 +204,25 @@ class DefensiveScrollConsumable(Consumable):
             f"{consumer.name} siente su piel endurecerse, ganando {self.defense_bonus} puntos de defensa durante {self.number_of_turns} turnos.",
             color.status_effect_applied,
         )
+
+class InvisibilityScrollConsumable(Consumable):
+    """Consumible que hace al jugador invisible durante un número de turnos."""
+
+    def __init__(self, number_of_turns: int):
+        """Inicializa el consumible con el número de turnos de invisibilidad."""
+        self.number_of_turns = number_of_turns
+
+    def activate(self, action: actions.ItemAction) -> None:
+        """Activa el consumible y hace al jugador invisible."""
+        consumer = action.entity
+
+        if not isinstance(consumer, Actor):
+            raise exceptions.Impossible("Solo el jugador puede usar este pergamino.")
+
+        consumer.invisibility_turns = self.number_of_turns  # Establece los turnos de invisibilidad
+        self.engine.message_log.add_message(
+            f"{consumer.name} se desvanece en el aire, volviendose invisible durante {self.number_of_turns} turnos.",
+            color.status_effect_applied,
+        )
+
+        self.consume()
