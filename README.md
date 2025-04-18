@@ -65,8 +65,8 @@ Usa estos objetos estratégicamente para superar los desafíos de las mazmorras.
 
 A continuación, se incluirán capturas de pantalla del juego para mostrar su estilo visual y mecánicas:
 
-![Captura de pantalla 1](c:/Users/Danie/OneDrive/Escritorio/Proyecto Python (ROGUETHON)/Imagen juego 2.png)
-![Captura de pantalla 2](c:/Users/Danie/OneDrive/Escritorio/Proyecto Python (ROGUETHON)/Imagen juego.png)
+![Captura de pantalla 1](Proyecto Python (ROGUETHON)/Imagen juego 2.png)
+![Captura de pantalla 2](Proyecto Python (ROGUETHON)/Imagen juego.png)
 
 ## Cómo ejecutar el juego
 
