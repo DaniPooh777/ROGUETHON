@@ -63,10 +63,11 @@ Usa estos objetos estratégicamente para superar los desafíos de las mazmorras.
 
 ## Imágenes del juego
 
-A continuación, se incluirán capturas de pantalla del juego para mostrar su estilo visual y mecánicas:
+A continuación, se incluyen capturas de pantalla del juego para mostrar su estilo visual y mecánicas:
 
-![Captura de pantalla 1](Proyecto Python (ROGUETHON)/Imagen juego 2.png)
-![Captura de pantalla 2](Proyecto Python (ROGUETHON)/Imagen juego.png)
+![Captura de pantalla 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%202.png?raw=true)
+<br/><br/>
+![Captura de pantalla 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego.png?raw=true)
 
 ## Cómo ejecutar el juego
 
