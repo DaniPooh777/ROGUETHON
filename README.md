@@ -45,7 +45,6 @@ En **ROGUETHON**, te enfrentarás a una variedad de enemigos, cada uno con habil
 - **Orcos**: Enemigos básicos con ataques cuerpo a cuerpo.
 - **Trolls**: Criaturas más fuertes con alta salud y poder de ataque.
 - **Goblins**: Enemigos rápidos que atacan a distancia.
-- **Magos oscuros**: Lanzan hechizos que infligen daño mágico.
 
 Cada enemigo tiene fortalezas y debilidades que deberás aprender para enfrentarlos de manera efectiva.
 
