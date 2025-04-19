@@ -34,6 +34,7 @@ A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
 ### Otros controles
 - **Tecla `Esc`**: Salir del juego.
 - **Tecla `Enter`**: Confirmar selecciones en menús.
+- **Tecla `Espace`**: Pasar el turno.
 - **Tecla `h`**: Mostrar el historial de acciones del jugador.
 - **Tecla `c`**: Mostrar las estadísticas del personaje.
 - **Tecla `(↑,  ↓)`**: En el historial de acciones del jugador para moverse arriba y abajo a lo largo de todos los mensajes.
