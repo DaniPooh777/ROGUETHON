@@ -11,6 +11,7 @@ import tcod  # Importa la biblioteca tcod para gráficos y operaciones relaciona
 import tcod.event  # Asegúrate de que tcod.event esté importado
 
 import color
+from components.base_component import BaseComponent
 import exceptions  # Importa las excepciones personalizadas.
 from message_log import MessageLog  # Importa el sistema de registro de mensajes.
 import render_functions  # Importa funciones de renderizado personalizadas.
@@ -33,6 +34,7 @@ class Engine:
         self.console = console  # Asigna la consola de tcod.
         self.turn_count = 0  # Inicializa el contador de turnos en 0
         self.scheduled_tasks = []  # Lista para almacenar tareas programadas
+        self.last_player_name = player.name  # Guarda el nombre del jugador inicial
 
     def schedule_task(self, turns: int, callback: Callable) -> None:
         """Programa una tarea para ejecutarse después de un número de turnos."""
@@ -132,3 +134,10 @@ class Actor:
     def is_alive(self) -> bool:
         """El jugador está vivo si tiene puntos de vida positivos."""
         return self.hp > 0  # Asegúrate de que esto no dependa de la IA o el estado de invisibilidad.
+
+class Fighter(BaseComponent):
+    def die(self) -> None:
+        if self.engine.player is self.parent:
+            original_name = self.parent.name  # Guarda el nombre original del jugador
+            self.engine.last_player_name = original_name  # Asigna el nombre original al atributo
+        # ...existing code...

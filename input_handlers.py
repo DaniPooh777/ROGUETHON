@@ -638,6 +638,7 @@ class GameOverEventHandler(EventHandler):
         if event.sym == tcod.event.KeySym.n:  # Iniciar nueva partida
             from setup_game import new_game
             engine = new_game(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
+            engine.player.name = self.engine.player.name  # Mantiene el nombre del jugador anterior.
             return MainGameEventHandler(engine)
         elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
             from setup_game import MainMenu

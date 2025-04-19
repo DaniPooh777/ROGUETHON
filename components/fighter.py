@@ -68,9 +68,9 @@ class Fighter(BaseComponent):
         """Se ejecuta cuando el actor muere. Cambia su estado y muestra un mensaje de muerte."""
         # Si el actor es el jugador, se muestra un mensaje de muerte personalizado
         if self.engine.player is self.parent:
+            self.engine.last_player_name = self.parent.name  # Guarda el nombre del jugador antes de cambiarlo
             death_message = "Has muerto"
             death_message_color = color.player_die
-            self.engine.last_player_name = self.parent.name  # Guarda el nombre del jugador antes de cambiarlo
         else:
             death_message = f"{self.parent.name} esta muerto"
             death_message_color = color.enemy_die
@@ -80,7 +80,6 @@ class Fighter(BaseComponent):
         self.parent.color = (191, 0, 0)  # Rojo para indicar que está muerto
         self.parent.blocks_movement = False  # Deja que los demás actores pasen por él
         self.parent.ai = None  # El actor deja de tener IA
-        self.parent.name = f"Restos de {self.parent.name}"  # Cambia su nombre a "Restos de..."
         self.parent.render_order = RenderOrder.CORPSE  # Lo marca como cadáver para la renderización
 
         # Muestra el mensaje de muerte en el log
