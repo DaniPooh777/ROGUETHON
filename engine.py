@@ -122,10 +122,12 @@ class Engine:
             self.console = console  # Restaura la consola.
 
     def handle_events(self, events: list[tcod.event.Event]) -> None:
+        """Maneja los eventos del juego, incluyendo el guardado al salir."""
         for event in events:
             if isinstance(event, tcod.event.Quit):
                 if self.player.is_alive:
-                    self.save_as("savegame.sav")
+                    self.save_as("savegame.sav")  # Guarda la partida automáticamente.
+                    self.message_log.add_message("Partida guardada automáticamente al salir.", color.welcome_text)
                 raise SystemExit()
             # ...existing event handling code...
 

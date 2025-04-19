@@ -19,10 +19,11 @@ tileset_path = os.path.join(base_path, "dejavu10x10_gs_tc.png")
 
 # Función para guardar la partida actual.
 def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
-    """Si el handler actual tiene un Engine activo, guarda la partida."""
+    """Guarda el estado del juego en un archivo si el handler tiene un Engine activo."""
     if isinstance(handler, input_handlers.EventHandler):
-        handler.engine.save_as(filename)  # Guarda el estado del juego en un archivo.
-        print("Partida guardada.")  # Mensaje en consola (útil para debug).
+        handler.engine.save_as(filename)
+        handler.engine.message_log.add_message("Partida guardada automáticamente.", color.welcome_text)
+        print("Partida guardada correctamente.")
 
 # Función principal del juego.
 def main() -> None:
@@ -61,7 +62,13 @@ def main() -> None:
                                     if handler.engine.player.is_alive:
                                         save_game(handler, "savegame.sav")
                                 raise SystemExit()
-                            handler = handler.handle_events(event)
+                            if isinstance(event, tcod.event.KeyDown):
+                                if event.sym == tcod.event.KeySym.ESCAPE:
+                                    if isinstance(handler, input_handlers.EventHandler):
+                                        if handler.engine.player.is_alive:
+                                            save_game(handler, "savegame.sav")
+                                    raise SystemExit()
+                                handler = handler.handle_events(event)
                     except Exception:
                         traceback.print_exc()
                         if isinstance(handler, input_handlers.EventHandler):

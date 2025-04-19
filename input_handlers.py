@@ -72,9 +72,10 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
         raise NotImplementedError()
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
-        """Manejador de eventos cuando el juego solicita salir."""
+        """Manejador de eventos para salir del juego."""
         if hasattr(self, 'engine') and self.engine.player.is_alive:
-            self.engine.save_as("savegame.sav")
+            self.engine.save_as("savegame.sav")  # Guarda la partida automáticamente.
+        self.engine.message_log.add_message("Partida guardada antes de salir.", color.welcome_text)
         raise SystemExit()
 
 
