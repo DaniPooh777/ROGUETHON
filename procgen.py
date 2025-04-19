@@ -327,7 +327,7 @@ def generate_dungeon(
         center_of_last_room = new_room.center
 
     # Genera habitaciones secretas después de las salas normales.
-    generate_secret_rooms(dungeon, rooms, num_secrets=2, width=6, height=6)
+    generate_secret_rooms(dungeon, rooms, num_secrets=1, width=6, height=6)
 
     dungeon.tiles[center_of_last_room] = tile_types.down_stairs
     dungeon.downstairs_location = center_of_last_room
