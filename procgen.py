@@ -57,16 +57,14 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
 def get_max_value_for_floor(
     weighted_chances_by_floor: List[Tuple[int, int]], floor: int
 ) -> int:
-    current_value = 0  # Valor por defecto, si no se encuentra otro.
+    """Obtiene el valor máximo permitido para un piso dado."""
+    current_value = 0
 
-    # Recorre las probabilidades de aparición por piso.
     for floor_minimum, value in weighted_chances_by_floor:
-        if floor_minimum > floor:
-            break  # Si el nivel mínimo es mayor que el piso actual, se detiene la búsqueda.
-        else:
-            current_value = value  # Si no, actualiza el valor con el valor de ese piso.
+        if floor >= floor_minimum:
+            current_value = value  # Actualiza el valor si el piso cumple con el mínimo.
 
-    return current_value  # Devuelve el valor máximo para ese piso.
+    return current_value
 
 
 # Función para obtener una lista de entidades aleatorias con una probabilidad ponderada.
@@ -75,28 +73,23 @@ def get_entities_at_random(
     number_of_entities: int,
     floor: int,
 ) -> List[Entity]:
-    entity_weighted_chances = {}  # Diccionario para almacenar entidades y sus probabilidades.
+    """Obtiene una lista de entidades aleatorias basadas en probabilidades ponderadas."""
+    entity_weighted_chances = {}
 
     # Recorre las probabilidades de aparición por piso.
     for key, values in weighted_chances_by_floor.items():
-        if key > floor:
-            break  # Si el piso es mayor que el actual, se detiene.
-        else:
-            for value in values:
-                entity = value[0]  # La entidad.
-                weighted_chance = value[1]  # La probabilidad de que aparezca.
+        if key <= floor:  # Solo considera entidades para el piso actual o inferior.
+            for entity, weight in values:
+                entity_weighted_chances[entity] = entity_weighted_chances.get(entity, 0) + weight
 
-                entity_weighted_chances[entity] = weighted_chance  # Almacena la entidad y su probabilidad.
+    if not entity_weighted_chances:  # Si no hay entidades disponibles, retorna una lista vacía.
+        return []
 
-    entities = list(entity_weighted_chances.keys())  # Lista de entidades disponibles.
-    entity_weighted_chance_values = list(entity_weighted_chances.values())  # Probabilidades asociadas.
+    entities = list(entity_weighted_chances.keys())
+    entity_weights = list(entity_weighted_chances.values())
 
-    # Elige las entidades aleatoriamente según las probabilidades.
-    chosen_entities = random.choices(
-        entities, weights=entity_weighted_chance_values, k=number_of_entities
-    )
-
-    return chosen_entities  # Devuelve las entidades elegidas.
+    # Selecciona entidades aleatoriamente según las probabilidades.
+    return random.choices(entities, weights=entity_weights, k=number_of_entities)
 
 
 # Clase que representa una sala rectangular en el mapa del juego.
@@ -131,16 +124,15 @@ class RectangularRoom:
 
 
 # Función que coloca entidades (monstruos y objetos) en una sala.
-def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int,) -> None:
-    # Calcula el número de monstruos y objetos en función del nivel del piso.
+def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -> None:
+    """Coloca enemigos y objetos en una habitación."""
     number_of_monsters = random.randint(
         0, get_max_value_for_floor(max_monsters_by_floor, floor_number)
     )
     number_of_items = random.randint(
         0, get_max_value_for_floor(max_items_by_floor, floor_number)
     )
-    
-    # Obtiene una lista de monstruos y objetos según las probabilidades de aparición.
+
     monsters: List[Entity] = get_entities_at_random(
         enemy_chances, number_of_monsters, floor_number
     )
@@ -148,14 +140,14 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int,) 
         item_chances, number_of_items, floor_number
     )
 
-    # Coloca las entidades en posiciones aleatorias dentro de la sala.
     for entity in monsters + items:
-        x = random.randint(room.x1 + 1, room.x2 - 1)
-        y = random.randint(room.y1 + 1, room.y2 - 1)
+        for _ in range(10):  # Intenta encontrar una posición válida hasta 10 veces.
+            x = random.randint(room.x1 + 1, room.x2 - 1)
+            y = random.randint(room.y1 + 1, room.y2 - 1)
 
-        # Verifica si el espacio está libre de otras entidades.
-        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
-            entity.spawn(dungeon, x, y)  # Si está libre, coloca la entidad.
+            if dungeon.in_bounds(x, y) and not any(e.x == x and e.y == y for e in dungeon.entities):
+                entity.spawn(dungeon, x, y)
+                break
 
 
 # Función para generar un túnel en forma de L entre dos puntos dados.
@@ -238,17 +230,31 @@ def generate_secret_rooms(
                 attempts += 1
                 continue
 
-            # Marca todos los tiles de la habitación secreta como suelo.
-            dungeon.tiles[secret_room.inner] = tile_types.floor
-            rooms.append(secret_room)
+            # Verifica si la habitación secreta se superpone con pasillos existentes.
+            for x in range(secret_room.x1 + 1, secret_room.x2):
+                for y in range(secret_room.y1 + 1, secret_room.y2):
+                    if dungeon.tiles[x, y] == tile_types.floor:
+                        attempts += 1
+                        break
+                else:
+                    continue
+                break
+            else:
+                # Marca todos los tiles de la habitación secreta como suelo.
+                dungeon.tiles[secret_room.inner] = tile_types.floor
+                rooms.append(secret_room)
 
-            # Conecta la habitación secreta con la habitación principal.
-            connect_secret_room(dungeon, parent_room, secret_room, direction)
+                # Coloca un objeto específico en el centro de la habitación secreta.
+                secret_item = entity_factories.invisibility_scroll  # Cambia este objeto según lo que desees generar.
+                secret_item.spawn(dungeon, *secret_room.center)
 
-            # Imprime un mensaje en la terminal indicando que se generó una habitación secreta.
-            print(f"Se generó una habitación secreta en {secret_room.center} conectada a {parent_room.center}.")
+                # Conecta la habitación secreta con la habitación principal.
+                connect_secret_room(dungeon, parent_room, secret_room, direction)
 
-            break  # Si se genera una habitación secreta válida, rompe el bucle.
+                # Imprime un mensaje en la terminal indicando que se generó una habitación secreta.
+                print(f"Se generó una habitación secreta en {secret_room.center} conectada a {parent_room.center}.")
+
+                break  # Si se genera una habitación secreta válida, rompe el bucle.
 
 
 def connect_secret_room(
@@ -290,46 +296,40 @@ def generate_dungeon(
     engine: Engine,
 ) -> GameMap:
     """Genera un nuevo mapa de mazmorras."""
-    player = engine.player  # Obtiene al jugador.
-    dungeon = GameMap(engine, map_width, map_height, entities=[player])  # Crea el mapa de mazmorras.
+    player = engine.player
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
-    rooms: List[RectangularRoom] = []  # Lista de salas generadas.
-    center_of_last_room = (0, 0)  # Centro de la última sala generada.
+    rooms: List[RectangularRoom] = []
+    center_of_last_room = (0, 0)
 
-    # Intenta generar hasta 'max_rooms' salas.
-    for r in range(max_rooms):
+    for _ in range(max_rooms):
         room_width = random.randint(room_min_size, room_max_size)
         room_height = random.randint(room_min_size, room_max_size)
 
         x = random.randint(0, dungeon.width - room_width - 1)
         y = random.randint(0, dungeon.height - room_height - 1)
 
-        # Crea una nueva sala rectangular.
         new_room = RectangularRoom(x, y, room_width, room_height)
 
-        # Verifica si la nueva sala se superpone con alguna existente.
         if any(new_room.intersects(other_room) for other_room in rooms):
-            continue  # Si se superpone, intenta con una nueva sala.
+            continue
 
-        # Si no hay superposición, se graba el espacio de la sala.
         dungeon.tiles[new_room.inner] = tile_types.floor
 
         if len(rooms) == 0:
-            # La primera sala donde empieza el jugador.
             player.place(*new_room.center, dungeon)
-        else:  # Para las salas siguientes.
-            # Dibuja un túnel entre la última sala y la nueva.
+        else:
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
                 dungeon.tiles[x, y] = tile_types.floor
 
+        place_entities(new_room, dungeon, engine.game_world.current_floor)  # Coloca entidades.
         rooms.append(new_room)
         center_of_last_room = new_room.center
 
-    # Genera habitaciones secretas con dimensiones fijas.
+    # Genera habitaciones secretas después de las salas normales.
     generate_secret_rooms(dungeon, rooms, num_secrets=2, width=6, height=6)
 
-    # Coloca las escaleras en el centro de la última sala.
     dungeon.tiles[center_of_last_room] = tile_types.down_stairs
     dungeon.downstairs_location = center_of_last_room
 
-    return dungeon  # Devuelve el mapa de mazmorras generado.
+    return dungeon

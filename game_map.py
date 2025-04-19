@@ -104,10 +104,11 @@ class GameMap:
 
         # Dibuja cada entidad que sea visible.
         for entity in entities_sorted_for_rendering:
-            if self.visible[entity.x, entity.y]:
+            if self.in_bounds(entity.x, entity.y) and self.visible[entity.x, entity.y]:
                 console.print(
                     x=entity.x, y=entity.y, string=entity.char, fg=entity.color
                 )
+
 
 # Clase que gestiona el mundo del juego, incluyendo la generación de mapas y el manejo de pisos.
 class GameWorld:

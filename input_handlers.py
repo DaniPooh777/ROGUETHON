@@ -273,7 +273,7 @@ class LevelUpEventHandler(AskUserEventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         player = self.engine.player  # Obtiene al jugador.
         key = event.sym  # Obtiene la tecla presionada.
-        index = key - tcod.event.K_a  # Calcula el índice (a, b, c).
+        index = key - tcod.event.KeySym.a  # Calcula el índice (a, b, c).
 
         if 0 <= index <= 2:  # Verifica si la tecla es válida (a, b o c).
             if index == 0:
