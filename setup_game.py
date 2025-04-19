@@ -20,9 +20,18 @@ import entity_factories  # Factores para crear entidades (jugador, objetos, etc.
 import input_handlers  # Gestiona las entradas del usuario.
 from game_map import GameWorld  # La clase que define el mundo del juego.
 import exceptions
+import sys
+import os
 
-# Carga una imagen de fondo y elimina el canal alfa.
-background_image = tcod.image.load("menu_background.png")[:, :, :3]
+# Cambiar la ruta de la imagen de fondo para que sea relativa al directorio del ejecutable o del script
+if getattr(sys, 'frozen', False):
+    # Si el programa está empaquetado como un ejecutable
+    base_path = sys._MEIPASS
+else:
+    # Si se ejecuta como un script de Python
+    base_path = os.path.dirname(__file__)
+
+background_image = tcod.image.load(os.path.join(base_path, "menu_background.png"))[:, :, :3]
 
 # Función para iniciar una nueva partida.
 def new_game(context: tcod.context.Context, console: tcod.Console) -> Engine:

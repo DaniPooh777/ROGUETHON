@@ -4,6 +4,18 @@ import color  # Módulo personalizado con colores para mensajes.
 import exceptions  # Excepciones personalizadas del juego.
 import setup_game  # Configuración inicial del juego.
 import input_handlers  # Gestión de entrada y eventos del usuario.
+import sys
+import os
+
+# Cambiar la ruta del tileset para que sea relativa al directorio del ejecutable o del script
+if getattr(sys, 'frozen', False):
+    # Si el programa está empaquetado como un ejecutable
+    base_path = sys._MEIPASS
+else:
+    # Si se ejecuta como un script de Python
+    base_path = os.path.dirname(__file__)
+
+tileset_path = os.path.join(base_path, "dejavu10x10_gs_tc.png")
 
 # Función para guardar la partida actual.
 def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
@@ -17,9 +29,7 @@ def main() -> None:
     screen_width = 80
     screen_height = 50
 
-    tileset = tcod.tileset.load_tilesheet(
-        "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
-    )
+    tileset = tcod.tileset.load_tilesheet(tileset_path, 32, 8, tcod.tileset.CHARMAP_TCOD)
 
     with tcod.context.new(
         columns=screen_width,
@@ -73,4 +83,8 @@ def main() -> None:
                 raise
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        traceback.print_exc()
+        input("Se produjo un error. Presiona Enter para salir...")
