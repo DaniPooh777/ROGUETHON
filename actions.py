@@ -80,7 +80,11 @@ class ItemAction(Action):
     def perform(self) -> None:
         """Ejecuta la habilidad del objeto. Este método invoca la acción adecuada para el objeto."""
         if self.item.consumable:
-            self.item.consumable.activate(self)  # Si el objeto es consumible, se activa
+            try:
+                self.item.consumable.activate(self)  # Si el objeto es consumible, se activa
+            except exceptions.Impossible as exc:
+                self.engine.message_log.add_message(str(exc), color.impossible)  # Maneja la excepción Impossible
+                return
 
 
 class DropItem(ItemAction):

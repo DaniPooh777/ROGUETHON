@@ -92,6 +92,9 @@ def main() -> None:
 if __name__ == "__main__":
     try:
         main()
+    except exceptions.Impossible as exc:
+        print(f"Error capturado: {exc}")
+        input("Presiona Enter para salir...")
     except Exception:
         traceback.print_exc()
         input("Se produjo un error. Presiona Enter para salir...")

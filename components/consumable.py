@@ -134,18 +134,23 @@ class HealingConsumable(Consumable):
 
     def activate(self, action: actions.ItemAction) -> None:
         """Activa el consumible y cura al consumidor."""
-        consumer = action.entity  # El consumidor del ítem
-        amount_recovered = consumer.fighter.heal(self.amount)  # Recupera la salud
+        consumer = action.entity
 
-        # Si se ha recuperado salud, muestra un mensaje y consume el ítem
+        if consumer.fighter.hp == consumer.fighter.max_hp:
+            raise exceptions.Impossible("Tienes la vida al maximo.")
+
+        amount_recovered = consumer.fighter.heal(self.amount)
+
         if amount_recovered > 0:
             self.engine.message_log.add_message(
-                f"Bebes {self.parent.name}. Has recuperado {amount_recovered} HP.",
-                color.health_recovered,
+                f"Recuperaste {amount_recovered} puntos de vida.", color.health_recovered
             )
-            self.consume()
         else:
-            raise Impossible(f"Tienes la vida al maximo.")  # No se puede curar si la salud ya está al máximo
+            self.engine.message_log.add_message(
+                "No puedes recuperar más salud.", color.impossible
+            )
+
+        self.consume()
 
 class LightningDamageConsumable(Consumable):
     """Consumible que lanza un rayo causando daño al enemigo más cercano."""
