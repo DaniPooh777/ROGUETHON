@@ -1,4 +1,7 @@
-# Definición de colores en formato RGB (Rojo, Verde, Azul)
+"""
+Este módulo define una paleta de colores en formato RGB (Rojo, Verde, Azul) para ser utilizados en diferentes aspectos del juego.
+Incluye colores básicos, colores relacionados con acciones, muertes, errores, texto, barras y menús.
+"""
 
 # Colores básicos
 white = (0xFF, 0xFF, 0xFF)  # Blanco

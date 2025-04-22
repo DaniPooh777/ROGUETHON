@@ -1,3 +1,9 @@
+"""
+Este módulo define las clases GameMap y GameWorld, que gestionan el mapa del juego y el mundo del juego respectivamente.
+GameMap maneja las entidades, tiles y renderizado del mapa.
+GameWorld se encarga de generar nuevos pisos y gestionar las configuraciones del mapa.
+"""
+
 # Importa futuras características de Python y herramientas de tipado.
 from __future__ import annotations
 
@@ -18,15 +24,14 @@ if TYPE_CHECKING:
     from engine import Engine  # Importa la clase Engine.
     from entity import Entity  # Importa la clase Entity.
 
-
 # Clase que representa el mapa del juego.
 class GameMap:
     def __init__(
         self, engine: Engine, width: int, height: int, entities: Iterable[Entity] = ()
     ):
         # Inicializa el mapa con sus dimensiones, entidades y tiles.
-        self.engine = engine
-        self.width, self.height = width, height
+        self.engine = engine  # Referencia al motor del juego.
+        self.width, self.height = width, height  # Dimensiones del mapa.
         self.entities = set(entities)  # Conjunto de entidades en el mapa.
         self.tiles = np.full((width, height), fill_value=tile_types.wall, order="F")  # Mapa de tiles, por defecto todo es una pared.
 
@@ -109,7 +114,6 @@ class GameMap:
                     x=entity.x, y=entity.y, string=entity.char, fg=entity.color
                 )
 
-
 # Clase que gestiona el mundo del juego, incluyendo la generación de mapas y el manejo de pisos.
 class GameWorld:
     """
@@ -128,13 +132,13 @@ class GameWorld:
         current_floor: int = 0
     ):
         # Inicializa el mundo del juego con sus parámetros.
-        self.engine = engine
-        self.map_width = map_width
-        self.map_height = map_height
-        self.max_rooms = max_rooms
-        self.room_min_size = room_min_size
-        self.room_max_size = room_max_size
-        self.current_floor = current_floor
+        self.engine = engine  # Referencia al motor del juego.
+        self.map_width = map_width  # Ancho del mapa.
+        self.map_height = map_height  # Altura del mapa.
+        self.max_rooms = max_rooms  # Número máximo de habitaciones.
+        self.room_min_size = room_min_size  # Tamaño mínimo de las habitaciones.
+        self.room_max_size = room_max_size  # Tamaño máximo de las habitaciones.
+        self.current_floor = current_floor  # Piso actual del juego.
 
     def generate_floor(self) -> None:
         from procgen import generate_dungeon  # Importa la función para generar el dungeon.

@@ -1,17 +1,20 @@
+"""
+Este módulo define las clases Entity, Actor e Item, que representan objetos genéricos, personajes y objetos en el juego.
+Proporciona métodos para manejar la posición, movimiento, y relaciones jerárquicas entre entidades y sus componentes.
+"""
+
 from __future__ import annotations  # Permite las anotaciones de tipo dentro de la misma clase.
+from typing import Optional, Tuple, Type, TypeVar, Union, TYPE_CHECKING # Importa herramientas para la comprobación de tipos.
+from render_order import RenderOrder # Importa el orden de renderizado para las entidades.
 
-# Importación de bibliotecas y módulos necesarios.
-import copy
-import math
-from typing import Optional, Tuple, Type, TypeVar, Union, TYPE_CHECKING
+import copy # Importa el módulo copy para crear copias profundas de objetos.
+import math # Importa el módulo math para operaciones matemáticas.
+import color # Importa el módulo de colores personalizados.
 
-# Se importa RenderOrder desde un módulo externo, probablemente usado para determinar el orden de dibujo de los objetos.
-import color
-from render_order import RenderOrder
 
 # Esto es para evitar errores de referencia circular, ya que estos módulos se importan más abajo en el código.
-if TYPE_CHECKING:
-    from components.ai import BaseAI
+if TYPE_CHECKING: 
+    from components.ai import BaseAI 
     from components.consumable import Consumable
     from components.fighter import Fighter
     from components.inventory import Inventory
@@ -26,7 +29,7 @@ T = TypeVar("T", bound="Entity")
 # La clase Entity representa cualquier objeto en el juego (jugador, enemigo, ítem, etc.).
 class Entity:
     """
-    A generic object to represent players, enemies, items, etc.
+    Un objeto genérico para representar jugadores, enemigos, ítems, etc.
     """
 
     parent: Union[GameMap, Inventory]  # El objeto al que pertenece (puede ser un mapa o inventario).
@@ -43,17 +46,17 @@ class Entity:
         render_order: RenderOrder = RenderOrder.CORPSE,  # Orden de renderizado (cómo se dibuja)
     ):
         # Inicialización de las propiedades del objeto
-        self.x = x
-        self.y = y
-        self.char = char
-        self.color = color
-        self.name = name
-        self.blocks_movement = blocks_movement
-        self.render_order = render_order
+        self.x = x  # Coordenada X del objeto
+        self.y = y  # Coordenada Y del objeto
+        self.char = char  # Carácter que representa al objeto
+        self.color = color  # Color del objeto
+        self.name = name  # Nombre del objeto
+        self.blocks_movement = blocks_movement  # Si bloquea el movimiento
+        self.render_order = render_order  # Orden de renderizado
         
         # Si el objeto tiene un padre (por ejemplo, un mapa), se lo asigna
         if parent:
-            self.parent = parent
+            self.parent = parent  # Asigna el padre
             parent.entities.add(self)  # Añade este objeto a la lista de entidades del padre
 
     @property
@@ -71,8 +74,8 @@ class Entity:
 
     def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
         """Coloca este objeto en una nueva ubicación dentro del mapa."""
-        self.x = x
-        self.y = y
+        self.x = x  # Actualiza la posición X
+        self.y = y  # Actualiza la posición Y
         if gamemap:
             if hasattr(self, "parent"):  # Verifica si el objeto tiene un padre
                 if self.parent is self.gamemap:  # Si el padre es el mapa actual
@@ -88,8 +91,8 @@ class Entity:
 
     def move(self, dx: int, dy: int) -> None:
         # Mueve el objeto por una cantidad dada de píxeles (dx, dy)
-        self.x += dx
-        self.y += dy
+        self.x += dx  # Actualiza la posición X
+        self.y += dy  # Actualiza la posición Y
 
 
 # La clase Actor hereda de Entity y representa personajes jugables o enemigos.

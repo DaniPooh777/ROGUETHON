@@ -1,5 +1,4 @@
-# Importación de módulos para trabajar con enumeraciones.
-from enum import auto, Enum
+from enum import auto, Enum # Importación de módulos para trabajar con enumeraciones.
 
 # Definición de un tipo de enumeración llamado EquipmentType, que representa los tipos de equipo que un personaje puede usar.
 class EquipmentType(Enum):

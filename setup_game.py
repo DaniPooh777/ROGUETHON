@@ -1,27 +1,29 @@
-from __future__ import annotations  # Asegura compatibilidad con anotaciones de tipo futuras.
+"""
+Este módulo configura el juego, incluyendo la creación de nuevas partidas, carga de partidas guardadas y manejo del menú principal.
+Proporciona funciones para inicializar el motor del juego, gestionar el nombre del jugador y realizar transiciones visuales.
+"""
 
-# Importa módulos necesarios para el funcionamiento del juego.
+from __future__ import annotations  # Asegura compatibilidad con anotaciones de tipo futuras.
+from typing import Optional  # Para anotaciones de tipos.
+from tcod import console  # Importa la biblioteca tcod para consola y gráficos.
+from tcod import libtcodpy  # Importa libtcodpy (funciones de bajo nivel).
+from tcod import context  # Maneja el contexto de la consola.
+from tcod import console  # Importa la clase Console para manejar la consola de salida.
+from engine import Engine  # La clase principal para el motor del juego.
+from game_map import GameWorld  # La clase que define el mundo del juego.
+
 import copy  # Para hacer copias profundas de objetos.
 import lzma  # Para comprimir y descomprimir datos con el algoritmo LZMA.
 import pickle  # Para serializar y deserializar objetos Python.
 import traceback  # Para capturar y mostrar rastros de errores.
-from typing import Optional  # Para anotaciones de tipos.
-from tcod import console  # Importa la biblioteca tcod para consola y gráficos.
-
 import time  # Para manejar pausas y temporizadores.
 import tcod  # Librería principal para crear roguelikes.
-from tcod import libtcodpy  # Importa libtcodpy (funciones de bajo nivel).
-from tcod import context  # Maneja el contexto de la consola.
-from tcod import console  # Importa la clase Console para manejar la consola de salida.
-
 import color  # Módulo personalizado con colores para mensajes.
-from engine import Engine  # La clase principal para el motor del juego.
 import entity_factories  # Factores para crear entidades (jugador, objetos, etc.).
 import input_handlers  # Gestiona las entradas del usuario.
-from game_map import GameWorld  # La clase que define el mundo del juego.
-import exceptions
-import sys
-import os
+import exceptions # Maneja excepciones personalizadas.
+import sys # Para manejar la ruta del script y el ejecutable.
+import os # Para manejar rutas de archivos y directorios.
 
 # Cambiar la ruta de la imagen de fondo para que sea relativa al directorio del ejecutable o del script
 if getattr(sys, 'frozen', False):

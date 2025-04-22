@@ -1,12 +1,16 @@
-from __future__ import annotations
+"""
+Este módulo define las diferentes acciones que los actores pueden realizar en el juego, como moverse, atacar, recoger objetos, etc.
+Cada acción está representada por una clase que hereda de la clase base Action.
+"""
 
-from typing import Optional, Tuple, TYPE_CHECKING
+from __future__ import annotations  # Permite usar anotaciones de tipo en clases antes de su definición completa.
+from typing import Optional, Tuple, TYPE_CHECKING  # Importa herramientas para la comprobación de tipos y anotaciones.
 
-import color
-import exceptions
-import tile_types
+import color  # Módulo para manejar colores en los mensajes
+import exceptions  # Excepciones personalizadas para manejar errores en el juego
+import tile_types  # Tipos de tiles usados en el mapa del juego
 
-# Importación condicional para las clases de la Engine y los actores solo en tiempo de comprobación de tipos
+# Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
 if TYPE_CHECKING:
     from engine import Engine  # La clase Engine, que maneja la lógica del juego
     from entity import Actor, Entity, Item  # Clases Actor, Entity y Item para las entidades del juego
@@ -16,29 +20,29 @@ class Action:
     """Acción base que se realiza en el juego. Las acciones específicas como mover o atacar heredan de esta clase."""
 
     def __init__(self, entity: Actor) -> None:
-        super().__init__()
+        super().__init__()  # Llama al constructor de la clase base
         self.entity = entity  # La entidad que realiza la acción (por ejemplo, el jugador o un enemigo)
 
-    @property
+    @property # Define un método como una propiedad, permitiendo acceder a él como si fuera un atributo.
     def engine(self) -> Engine:
         """Devuelve el motor (Engine) al que pertenece esta acción."""
         return self.entity.gamemap.engine  # Obtiene el motor desde el mapa de la entidad
 
     def perform(self) -> None:
         """Realiza la acción. Este método debe ser sobrescrito por subclases de Action."""
-        raise NotImplementedError()
+        raise NotImplementedError()  # Lanza un error si no se implementa en una subclase
 
 
 class PickupAction(Action):
     """Acción de recoger un objeto y añadirlo al inventario si hay espacio."""
 
     def __init__(self, entity: Actor):
-        super().__init__(entity)
+        super().__init__(entity)  # Llama al constructor de la clase base
 
     def perform(self) -> None:
-        actor_location_x = self.entity.x
-        actor_location_y = self.entity.y
-        inventory = self.entity.inventory
+        actor_location_x = self.entity.x  # Obtiene la posición X del actor
+        actor_location_y = self.entity.y  # Obtiene la posición Y del actor
+        inventory = self.entity.inventory  # Obtiene el inventario del actor
 
         # Itera sobre los objetos en el mapa buscando uno en la misma ubicación
         for item in self.engine.game_map.items:
@@ -48,13 +52,13 @@ class PickupAction(Action):
                     raise exceptions.Impossible("Tu inventario está lleno.")
 
                 # Elimina el objeto del mapa y lo agrega al inventario
-                self.engine.game_map.entities.remove(item)
-                item.parent = self.entity.inventory
-                inventory.items.append(item)
+                self.engine.game_map.entities.remove(item)  # Elimina el objeto del mapa
+                item.parent = self.entity.inventory  # Asigna el inventario como padre del objeto
+                inventory.items.append(item)  # Añade el objeto al inventario
 
                 # Añade un mensaje en el registro de mensajes
                 self.engine.message_log.add_message(f"Has recogido {item.name}.")
-                return
+                return  # Termina la acción después de recoger el objeto
 
         # Si no hay objeto para recoger, lanza una excepción
         raise exceptions.Impossible("No hay nada para recoger.")
@@ -66,16 +70,16 @@ class ItemAction(Action):
     def __init__(
         self, entity: Actor, item: Item, target_xy: Optional[Tuple[int, int]] = None
     ):
-        super().__init__(entity)
+        super().__init__(entity)  # Llama al constructor de la clase base
         self.item = item  # El objeto con el que se interactúa
         if not target_xy:
             target_xy = entity.x, entity.y  # Si no se proporciona una ubicación, se usa la ubicación de la entidad
-        self.target_xy = target_xy
+        self.target_xy = target_xy  # Asigna la ubicación objetivo
 
     @property
     def target_actor(self) -> Optional[Actor]:
         """Devuelve el actor en la ubicación de destino de esta acción."""
-        return self.engine.game_map.get_actor_at_location(*self.target_xy)
+        return self.engine.game_map.get_actor_at_location(*self.target_xy)  # Obtiene el actor en la ubicación objetivo
 
     def perform(self) -> None:
         """Ejecuta la habilidad del objeto. Este método invoca la acción adecuada para el objeto."""
@@ -103,7 +107,7 @@ class EquipAction(Action):
     """Acción de equipar un objeto, como una armadura o arma."""
 
     def __init__(self, entity: Actor, item: Item):
-        super().__init__(entity)
+        super().__init__(entity)  # Llama al constructor de la clase base
         self.item = item  # El objeto que se va a equipar
 
     def perform(self) -> None:
@@ -137,27 +141,27 @@ class ActionWithDirection(Action):
     """Acción que tiene una dirección (movimiento o ataque)."""
 
     def __init__(self, entity: Actor, dx: int, dy: int):
-        super().__init__(entity)
+        super().__init__(entity)  # Llama al constructor de la clase base
         self.dx = dx  # Desplazamiento en X
         self.dy = dy  # Desplazamiento en Y
 
     @property
     def dest_xy(self) -> Tuple[int, int]:
         """Devuelve la ubicación de destino de esta acción (desplazamiento calculado)."""
-        return self.entity.x + self.dx, self.entity.y + self.dy
+        return self.entity.x + self.dx, self.entity.y + self.dy  # Calcula la ubicación de destino
 
     @property
     def blocking_entity(self) -> Optional[Entity]:
         """Devuelve la entidad que bloquea la ubicación de destino."""
-        return self.engine.game_map.get_blocking_entity_at_location(*self.dest_xy)
+        return self.engine.game_map.get_blocking_entity_at_location(*self.dest_xy)  # Obtiene la entidad bloqueante
 
     @property
     def target_actor(self) -> Optional[Actor]:
         """Devuelve el actor en la ubicación de destino."""
-        return self.engine.game_map.get_actor_at_location(*self.dest_xy)
+        return self.engine.game_map.get_actor_at_location(*self.dest_xy)  # Obtiene el actor en la ubicación de destino
 
     def perform(self) -> None:
-        raise NotImplementedError()
+        raise NotImplementedError()  # Lanza un error si no se implementa en una subclase
 
 
 class MeleeAction(ActionWithDirection):
@@ -195,7 +199,7 @@ class MovementAction(ActionWithDirection):
     """Acción de movimiento (caminar o desplazarse)."""
 
     def perform(self) -> None:
-        dest_x, dest_y = self.dest_xy
+        dest_x, dest_y = self.dest_xy  # Obtiene la ubicación de destino
 
         # Comprueba si el destino está fuera de los límites del mapa
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
@@ -225,12 +229,12 @@ class RevealHiddenWallAction(Action):
     """Acción para revelar una pared falsa cuando el jugador interactúa con ella."""
 
     def __init__(self, entity: Actor, target_x: int, target_y: int):
-        super().__init__(entity)
-        self.target_x = target_x
-        self.target_y = target_y
+        super().__init__(entity)  # Llama al constructor de la clase base
+        self.target_x = target_x  # Coordenada X del objetivo
+        self.target_y = target_y  # Coordenada Y del objetivo
 
     def perform(self) -> None:
-        tile = self.engine.game_map.tiles[self.target_x, self.target_y]
+        tile = self.engine.game_map.tiles[self.target_x, self.target_y]  # Obtiene el tile en la ubicación objetivo
 
         # Verifica si el tile es una pared falsa.
         if tile == tile_types.hidden_wall_tile:

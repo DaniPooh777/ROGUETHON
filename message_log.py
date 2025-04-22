@@ -1,10 +1,14 @@
-from typing import Iterable, List, Reversible, Tuple
+"""
+Este módulo gestiona el registro y renderizado de mensajes en el juego.
+Proporciona clases para manejar mensajes individuales y un log completo de mensajes.
+Los mensajes pueden apilarse si son repetitivos y se renderizan en una región específica de la consola.
+"""
+
+from typing import Iterable, List, Reversible, Tuple  # Importaciones necesarias para anotaciones de tipo.
+
 import textwrap  # Se importa para poder ajustar el texto a un ancho determinado.
-
 import tcod  # Importa la biblioteca tcod, que se utiliza para la consola y gráficos del juego.
-
 import color  # Importa un módulo de colores que se utilizará en la visualización de los mensajes.
-
 
 # Clase que representa un mensaje individual en el log.
 class Message:
@@ -20,7 +24,6 @@ class Message:
             return f"{self.plain_text} (x{self.count})"  # Si se repite, muestra el contador entre paréntesis.
         return self.plain_text  # Si solo se muestra una vez, solo el texto.
 
-
 # Clase que maneja el registro y renderizado de los mensajes.
 class MessageLog:
     def __init__(self) -> None:
@@ -29,7 +32,8 @@ class MessageLog:
     def add_message(
         self, text: str, fg: Tuple[int, int, int] = color.white, *, stack: bool = True,
     ) -> None:
-        """Agrega un mensaje al registro de mensajes.
+        """
+        Agrega un mensaje al registro de mensajes.
 
         `text` es el texto del mensaje y `fg` es el color del texto.
 
@@ -45,7 +49,8 @@ class MessageLog:
     def render(
         self, console: tcod.console.Console, x: int, y: int, width: int, height: int,
     ) -> None:
-        """Renderiza el log de mensajes sobre la consola.
+        """
+        Renderiza el log de mensajes sobre la consola.
 
         `x`, `y`, `width`, `height` es la región rectangular donde se dibujará el log.
         """
@@ -53,7 +58,8 @@ class MessageLog:
 
     @staticmethod
     def wrap(string: str, width: int) -> Iterable[str]:
-        """Devuelve el mensaje de texto envuelto para ajustarse al ancho especificado.
+        """
+        Devuelve el mensaje de texto envuelto para ajustarse al ancho especificado.
 
         El ajuste de texto se realiza en líneas según el valor de `width`.
         """
@@ -72,7 +78,8 @@ class MessageLog:
         height: int,
         messages: Reversible[Message],
     ) -> None:
-        """Renderiza los mensajes proporcionados, comenzando desde el más reciente.
+        """
+        Renderiza los mensajes proporcionados, comenzando desde el más reciente.
 
         Los mensajes se dibujan de atrás hacia adelante, por lo que el mensaje más reciente
         aparecerá en la parte inferior de la consola.

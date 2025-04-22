@@ -1,4 +1,8 @@
-# Importación de las clases necesarias desde otros módulos.
+"""
+Este módulo define las fábricas de entidades, incluyendo actores (jugadores y enemigos) y objetos (consumibles y equipables).
+Cada entidad tiene atributos específicos como IA, equipo, inventario y nivel.
+"""
+
 from components.ai import HostileEnemy, RangedEnemy  # AI para enemigos hostiles.
 from components import consumable, equippable  # Importa componentes de consumibles y equipables.
 from components.fighter import Fighter  # Importa la clase Fighter (luchador).

@@ -1,10 +1,14 @@
-from __future__ import annotations  # Permite la postergación de las anotaciones de tipo, útil para evitar referencias circulares.
+"""
+Este módulo gestiona el renderizado de elementos en la consola del juego, como barras de salud, nombres de entidades y niveles de mazmorras.
+Proporciona funciones para mostrar información relevante al jugador de manera visual y clara.
+"""
 
+from __future__ import annotations  # Permite la postergación de las anotaciones de tipo, útil para evitar referencias circulares.
 from typing import TYPE_CHECKING, Tuple  # IMPORTA: TYPE_CHECKING ayuda con las verificaciones de tipos en tiempo de análisis, y Tuple es para tuplas con tipos definidos.
 
 import color  # Importa el módulo de colores personalizados.
 
-# Solo importa estos tipos si estamos verificando el tipo en tiempo de análisis (no afecta el código de ejecución).
+# Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
 if TYPE_CHECKING:
     from tcod import Console  # Trae el tipo Console de tcod solo en tiempo de verificación.
     from engine import Engine  # Trae el tipo Engine de engine solo en tiempo de verificación.

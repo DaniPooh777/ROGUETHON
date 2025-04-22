@@ -1,3 +1,8 @@
+"""
+Este módulo define los tipos de tiles utilizados en el juego, incluyendo sus propiedades y gráficos.
+Proporciona una función auxiliar para crear nuevos tipos de tiles y define varios tiles preconfigurados como suelo, pared y escaleras.
+"""
+
 from typing import Tuple  # Importa el tipo Tuple de typing para anotaciones de tipos.
 
 import numpy as np  # type: ignore  # Importa la librería numpy, ignorando el chequeo de tipos.
@@ -59,9 +64,10 @@ down_stairs = new_tile(
     light=(ord(">"), (200, 200, 200), (0, 0, 0)),  # Representación con luz (dentro del FOV).
 )
 
+# Definición del tile de puerta (door)
 door = new_tile(
-    walkable=True,
-    transparent=False,
-    dark=(ord("&"), (100, 100, 100), (0, 0, 0)),
-    light=(ord("&"), (200, 200, 200), (0, 0, 0)),
+    walkable=True,  # Las puertas son caminables.
+    transparent=False,  # Las puertas no son transparentes para el FOV.
+    dark=(ord("&"), (100, 100, 100), (0, 0, 0)),  # Representación en oscuridad (fuera del FOV).
+    light=(ord("&"), (200, 200, 200), (0, 0, 0)),  # Representación con luz (dentro del FOV).
 )

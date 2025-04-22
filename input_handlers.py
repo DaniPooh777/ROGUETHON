@@ -1,27 +1,24 @@
-from __future__ import annotations
+"""
+Este módulo gestiona los manejadores de eventos del juego, incluyendo la interacción del jugador, el inventario, y los eventos de combate.
+Proporciona clases para manejar entradas del teclado, clics del ratón y renderizado de mensajes emergentes.
+"""
 
-import os
+from __future__ import annotations  # Permite el uso de anotaciones de tipo que se refieren a clases que aún no se han definido.
+from actions import (Action, BumpAction, PickupAction, RevealHiddenWallAction, WaitAction,) # Importa clases específicas del módulo de acciones.
+from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union  # Importa tipos para anotaciones.
 
-from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
+import tcod  # Librería para desarrollo de juegos roguelike.
+import libtcodpy  # Versión alternativa de la librería libtcod.
+import actions  # Importa el módulo de acciones del juego.
+import color  # Módulo para manejar colores en el juego.
+import exceptions  # Módulo que define excepciones personalizadas.
+import tile_types  # Módulo que define tipos de tiles (casillas) del mapa.
+import os  # Módulo para interactuar con el sistema operativo.
 
-import tcod
-import libtcodpy
-
-import actions
-from actions import (
-    Action,
-    BumpAction,
-    PickupAction,
-    RevealHiddenWallAction,
-    WaitAction,
-)
-import color
-import exceptions
-import tile_types
-
+# Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
 if TYPE_CHECKING:
-    from engine import Engine
-    from entity import Item
+    from engine import Engine 
+    from entity import Item  
 
 
 # Diccionario que asocia las teclas de dirección a los movimientos en el mapa.
@@ -39,13 +36,13 @@ MOVE_KEYS = {
 
 # Tecla para esperar la acción. En este caso, solo la tecla ESPACIO.
 WAIT_KEYS = {
-    tcod.event.KeySym.SPACE,
+    tcod.event.KeySym.SPACE,  # Esperar un turno
 }
 
 # Teclas para confirmar una acción (Enter o teclado numérico).
 CONFIRM_KEYS = {
-    tcod.event.KeySym.RETURN,
-    tcod.event.KeySym.KP_ENTER,
+    tcod.event.KeySym.RETURN,  # Enter
+    tcod.event.KeySym.KP_ENTER,  # Enter del teclado numérico
 }
 
 # Tipo de retorno que puede ser una acción o un manejador de eventos.
@@ -711,12 +708,14 @@ class HistoryViewer(EventHandler):
 
 class GameEventHandler(EventHandler):
     def handle_action(self, action: Optional[Action]) -> None:
+        # Verifica si la acción es un BumpAction (intento de moverse a una casilla).
         if isinstance(action, BumpAction):
-            target_x, target_y = action.target_x, action.target_y
-            tile = self.engine.game_map.tiles[target_x, target_y]
+            target_x, target_y = action.target_x, action.target_y  # Obtiene las coordenadas objetivo.
+            tile = self.engine.game_map.tiles[target_x, target_y]  # Obtiene el tipo de tile en las coordenadas objetivo.
 
-            # Si el jugador intenta moverse hacia una pared falsa, intenta revelarla.
+            # Si el jugador intenta moverse hacia una pared falsa, cambia la acción para revelarla.
             if tile == tile_types.hidden_wall_tile:
                 action = RevealHiddenWallAction(self.engine.player, target_x, target_y)
 
+        # Llama al método handle_action de la clase base para procesar la acción.
         super().handle_action(action)

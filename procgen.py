@@ -1,56 +1,66 @@
+"""
+Este módulo genera mapas de mazmorras y coloca entidades como monstruos y objetos en el juego.
+Proporciona funciones para crear salas, túneles, habitaciones secretas y gestionar probabilidades de aparición de entidades.
+"""
+
 from __future__ import annotations  # Permite la postergación de las anotaciones de tipo para evitar problemas con clases definidas más tarde.
-
-import random  # Se importa para generar números aleatorios.
-
+from components.equippable import ChainMail # Importa la clase ChainMail para el equipo.
+from game_map import GameMap  # Importa la clase GameMap, que maneja el mapa del juego.
 from typing import Iterator, List, Tuple, TYPE_CHECKING, Dict  # Importación de tipos para la comprobación de tipos.
 
 import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
-
-from components.equippable import ChainMail
+import random  # Se importa para generar números aleatorios.
 import entity_factories  # Importa las fábricas de entidades, donde se definen las entidades como pociones, monstruos, etc.
-from game_map import GameMap  # Importa la clase GameMap, que maneja el mapa del juego.
 import tile_types  # Importa los tipos de tiles del juego, como el suelo, las paredes, etc.
 
-
-if TYPE_CHECKING:  # Esto solo es útil en tiempo de comprobación de tipos, no afecta al código en ejecución.
-    from engine import Engine  # Importa la clase Engine para interactuar con la lógica del juego.
-    from entity import Entity  # Importa la clase Entity para manejar a los personajes y objetos del juego.
-
+# Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
+if TYPE_CHECKING:  
+    from engine import Engine  
+    from entity import Entity  
 
 # Definición de los máximos posibles de ítems por nivel de piso.
 max_items_by_floor = [
-    (1, 1),
-    (3, 2),
-    (5, 3),
+    (1, 1),  # A partir del nivel 1, máximo 1 ítem.
+    (3, 2),  # A partir del nivel 3, máximo 2 ítems.
+    (5, 3),  # A partir del nivel 5, máximo 3 ítems.
 ]
 
 # Definición de los máximos posibles de monstruos por nivel de piso.
 max_monsters_by_floor = [
-    (1, 1),
-    (2, 2),
-    (4, 3),
-    (6, 5),
+    (1, 1),  # A partir del nivel 1, máximo 1 monstruo.
+    (2, 2),  # A partir del nivel 2, máximo 2 monstruos.
+    (4, 3),  # A partir del nivel 4, máximo 3 monstruos.
+    (6, 5),  # A partir del nivel 6, máximo 5 monstruos.
 ]
 
 # Probabilidades de que ciertos ítems aparezcan en niveles específicos.
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.health_potion, 35), ],  # 35% de probabilidad de que aparezca una poción de salud en el nivel 0.
-    2: [(entity_factories.confusion_scroll, 10)],  # 10% de probabilidad de que aparezca un pergamino de confusión en el nivel 2.
+    0: [(entity_factories.health_potion, 35)],  # 35% de probabilidad de poción de salud en el nivel 0.
+    2: [(entity_factories.confusion_scroll, 10)],  # 10% de probabilidad de pergamino de confusión en el nivel 2.
     4: [
-        (entity_factories.lightning_scroll, 25),
-        (entity_factories.sword, 10),
-        (entity_factories.defensive_scroll, 20),
+        (entity_factories.lightning_scroll, 25),  # 25% de probabilidad de pergamino de relámpago.
+        (entity_factories.sword, 10),  # 10% de probabilidad de espada.
+        (entity_factories.defensive_scroll, 20),  # 20% de probabilidad de pergamino defensivo.
     ],
-    6: [(entity_factories.fireball_scroll, 25), (entity_factories.chain_mail, 15)],  # 25% de probabilidad para un pergamino de bola de fuego y 15% para una cota de malla en el nivel 6.
+    6: [
+        (entity_factories.fireball_scroll, 25),  # 25% de probabilidad de pergamino de bola de fuego.
+        (entity_factories.chain_mail, 15),  # 15% de probabilidad de cota de malla.
+    ],
 }
 
 # Probabilidades de que ciertos monstruos aparezcan en niveles específicos.
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],  # Orco.
-    2: [(entity_factories.goblin, 30)],  # Goblin aparece a partir del nivel 2.
-    3: [(entity_factories.troll, 15)],
-    5: [(entity_factories.troll, 30), (entity_factories.goblin, 50)],  # Más goblins en niveles superiores.
-    7: [(entity_factories.troll, 60), (entity_factories.invisibility_scroll, 100)],
+    0: [(entity_factories.orc, 80)],  # 80% de probabilidad de orco en el nivel 0.
+    2: [(entity_factories.goblin, 30)],  # 30% de probabilidad de goblin a partir del nivel 2.
+    3: [(entity_factories.troll, 15)],  # 15% de probabilidad de troll a partir del nivel 3.
+    5: [
+        (entity_factories.troll, 30),  # 30% de probabilidad de troll.
+        (entity_factories.goblin, 50),  # 50% de probabilidad de goblin.
+    ],
+    7: [
+        (entity_factories.troll, 60),  # 60% de probabilidad de troll.
+        (entity_factories.invisibility_scroll, 100),  # 100% de probabilidad de pergamino de invisibilidad.
+    ],
 }
 
 # Función para obtener el valor máximo de ítems o monstruos por nivel de piso.
@@ -65,7 +75,6 @@ def get_max_value_for_floor(
             current_value = value  # Actualiza el valor si el piso cumple con el mínimo.
 
     return current_value
-
 
 # Función para obtener una lista de entidades aleatorias con una probabilidad ponderada.
 def get_entities_at_random(
@@ -91,14 +100,13 @@ def get_entities_at_random(
     # Selecciona entidades aleatoriamente según las probabilidades.
     return random.choices(entities, weights=entity_weights, k=number_of_entities)
 
-
 # Clase que representa una sala rectangular en el mapa del juego.
 class RectangularRoom:
     def __init__(self, x: int, y: int, width: int, height: int):
-        self.x1 = x
-        self.y1 = y
-        self.x2 = x + width
-        self.y2 = y + height
+        self.x1 = x  # Coordenada X inicial de la sala.
+        self.y1 = y  # Coordenada Y inicial de la sala.
+        self.x2 = x + width  # Coordenada X final de la sala.
+        self.y2 = y + height  # Coordenada Y final de la sala.
 
     @property
     def center(self) -> Tuple[int, int]:
@@ -121,7 +129,6 @@ class RectangularRoom:
             and self.y1 <= other.y2
             and self.y2 >= other.y1
         )
-
 
 # Función que coloca entidades (monstruos y objetos) en una sala.
 def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -> None:
@@ -149,7 +156,6 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -
                 entity.spawn(dungeon, x, y)
                 break
 
-
 # Función para generar un túnel en forma de L entre dos puntos dados.
 def tunnel_between(
     start: Tuple[int, int], end: Tuple[int, int]
@@ -170,7 +176,7 @@ def tunnel_between(
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
         yield x, y
 
-
+# Función para generar habitaciones secretas conectadas a las habitaciones existentes.
 def generate_secret_rooms(
     dungeon: GameMap, rooms: List[RectangularRoom], num_secrets: int, width: int = 6, height: int = 6
 ) -> None:
@@ -256,7 +262,7 @@ def generate_secret_rooms(
 
                 break  # Si se genera una habitación secreta válida, rompe el bucle.
 
-
+# Función que conecta una habitación secreta a una habitación principal mediante un túnel.
 def connect_secret_room(
     dungeon: GameMap, parent_room: RectangularRoom, secret_room: RectangularRoom, direction: str
 ) -> None:
@@ -285,7 +291,6 @@ def connect_secret_room(
     # Marca la puerta como un tile especial
     dungeon.tiles[door_x, door_y] = tile_types.door
 
-
 # Función que genera un mapa de mazmorras.
 def generate_dungeon(
     max_rooms: int,
@@ -296,40 +301,40 @@ def generate_dungeon(
     engine: Engine,
 ) -> GameMap:
     """Genera un nuevo mapa de mazmorras."""
-    player = engine.player
+    player = engine.player  # Obtiene al jugador.
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
-    rooms: List[RectangularRoom] = []
-    center_of_last_room = (0, 0)
+    rooms: List[RectangularRoom] = []  # Lista para almacenar las salas generadas.
+    center_of_last_room = (0, 0)  # Centro de la última sala generada.
 
     for _ in range(max_rooms):
-        room_width = random.randint(room_min_size, room_max_size)
-        room_height = random.randint(room_min_size, room_max_size)
+        room_width = random.randint(room_min_size, room_max_size)  # Ancho aleatorio de la sala.
+        room_height = random.randint(room_min_size, room_max_size)  # Altura aleatoria de la sala.
 
-        x = random.randint(0, dungeon.width - room_width - 1)
-        y = random.randint(0, dungeon.height - room_height - 1)
+        x = random.randint(0, dungeon.width - room_width - 1)  # Coordenada X inicial.
+        y = random.randint(0, dungeon.height - room_height - 1)  # Coordenada Y inicial.
 
-        new_room = RectangularRoom(x, y, room_width, room_height)
+        new_room = RectangularRoom(x, y, room_width, room_height)  # Crea una nueva sala.
 
         if any(new_room.intersects(other_room) for other_room in rooms):
-            continue
+            continue  # Si la sala se superpone con otra, se descarta.
 
-        dungeon.tiles[new_room.inner] = tile_types.floor
+        dungeon.tiles[new_room.inner] = tile_types.floor  # Marca el área de la sala como suelo.
 
         if len(rooms) == 0:
-            player.place(*new_room.center, dungeon)
+            player.place(*new_room.center, dungeon)  # Coloca al jugador en el centro de la primera sala.
         else:
             for x, y in tunnel_between(rooms[-1].center, new_room.center):
-                dungeon.tiles[x, y] = tile_types.floor
+                dungeon.tiles[x, y] = tile_types.floor  # Crea un túnel entre salas.
 
         place_entities(new_room, dungeon, engine.game_world.current_floor)  # Coloca entidades.
-        rooms.append(new_room)
-        center_of_last_room = new_room.center
+        rooms.append(new_room)  # Añade la sala a la lista de salas.
+        center_of_last_room = new_room.center  # Actualiza el centro de la última sala.
 
     # Genera habitaciones secretas después de las salas normales.
     generate_secret_rooms(dungeon, rooms, num_secrets=1, width=6, height=6)
 
-    dungeon.tiles[center_of_last_room] = tile_types.down_stairs
-    dungeon.downstairs_location = center_of_last_room
+    dungeon.tiles[center_of_last_room] = tile_types.down_stairs  # Coloca las escaleras hacia abajo.
+    dungeon.downstairs_location = center_of_last_room  # Actualiza la ubicación de las escaleras.
 
-    return dungeon
+    return dungeon  # Retorna el mapa generado.
