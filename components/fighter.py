@@ -1,15 +1,19 @@
-from __future__ import annotations
+"""
+Este código define la clase `Fighter`, que es un componente del actor en un juego tipo roguelike. 
+La clase se encarga de manejar las estadísticas de combate de un actor, incluyendo su salud, defensa, y poder de ataque.
+También implementa funcionalidades como curar al actor, recibir daño, activar efectos defensivos, y gestionar su muerte.
+"""
 
-from typing import TYPE_CHECKING
+from __future__ import annotations  # Permite usar anotaciones de tipo con cadenas para clases no definidas aún.
+from typing import TYPE_CHECKING  # Importa TYPE_CHECKING para importaciones que solo se usan en la verificación de tipos.
+from components.base_component import BaseComponent  # Importa la clase BaseComponent, de la que hereda Fighter.
+from render_order import RenderOrder  # Importa el enum RenderOrder para controlar el orden de renderización de los actores.
 
-import color
-from components.base_component import BaseComponent
-from render_order import RenderOrder
+import color  # Importa el módulo 'color' que gestiona los colores para los mensajes de log.
 
-# Importación condicional para la clase Actor solo en tiempo de comprobación de tipos
+# Importación condicional para la clase 'Item', que solo ocurre en la fase de comprobación de tipos, mejorando la eficiencia en tiempo de ejecución.
 if TYPE_CHECKING:
     from entity import Actor  # Importa la clase Actor para el tipo de 'parent' de Fighter
-
 
 class Fighter(BaseComponent):
     """Componente que representa las estadísticas de combate de un Actor (salud, defensa, poder de ataque)."""

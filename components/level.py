@@ -1,8 +1,11 @@
-from __future__ import annotations
+"""
+Este módulo define la clase Level, que gestiona el nivel, la experiencia y el aumento de nivel de un Actor en el juego.
+Proporciona métodos para calcular la experiencia necesaria para subir de nivel, añadir experiencia, y mejorar atributos como salud, poder y defensa.
+"""
 
-from typing import TYPE_CHECKING
-
-from components.base_component import BaseComponent
+from __future__ import annotations  # Permite el uso de anotaciones de tipo futuras
+from typing import TYPE_CHECKING  # Importa herramientas para comprobación de tipos
+from components.base_component import BaseComponent  # Importa la clase base para componentes
 
 # Importación condicional para la clase Actor solo en tiempo de comprobación de tipos
 if TYPE_CHECKING:

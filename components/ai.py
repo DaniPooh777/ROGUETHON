@@ -1,3 +1,10 @@
+"""
+Propósito del código:
+Este fragmento de código implementa diferentes tipos de inteligencia artificial (IA) para los enemigos en un juego estilo roguelike.
+Cada clase de IA extiende la clase `BaseAI` y define comportamientos específicos para los enemigos, como moverse hacia el jugador, 
+atacar, o moverse aleatoriamente si están confundidos.
+"""
+
 from __future__ import annotations  # Permite usar anotaciones de tipo en clases antes de su definición completa.
 from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction  # Importa diferentes acciones para el juego.
 from typing import List, Optional, Tuple, TYPE_CHECKING  # Importa tipos para la anotación de tipos, útil para control de tipos en las funciones.
