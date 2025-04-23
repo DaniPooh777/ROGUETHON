@@ -77,3 +77,6 @@ A continuación, se incluyen capturas de pantalla del juego para mostrar su esti
    ```bash
    pip install tcod
    ```
+####Extra
+
+Si lo estás descargando como un archivo ZIP, tras descomprimirlo mueve segunda carpeta llamada "ROGUETHON-main" al escritorio. Después, renombra esa carpeta a "Proyecto Python (ROGUETHON)". Y ya estaría
