@@ -186,7 +186,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         else:
             x = 0
 
-        y = 0  # Posición en el eje Y.
+        y = 1  # Posición en el eje Y.
 
         width = len(self.TITLE) + 4  # Ancho de la ventana, considerando el título.
 
@@ -195,7 +195,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             x=x,
             y=y,
             width=width,
-            height=7,  # Altura del marco de estadísticas.
+            height=9,  # Altura del marco de estadísticas.
             title=self.TITLE,  # Título de la ventana.
             clear=True,
             fg=(255, 255, 255),  # Color del texto.
@@ -210,18 +210,17 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             x=x + 1, y=y + 2, string=f"XP: {self.engine.player.level.current_xp}"
         )
         console.print(
-            x=x + 1,
-            y=y + 3,
-            string=f"XP para el proximo nivel: {self.engine.player.level.experience_to_next_level}",
-        )
-
-        console.print(
-            x=x + 1, y=y + 4, string=f"Ataque: {self.engine.player.fighter.power}"
+            x=x + 1, y=y + 3, string=f"XP para el proximo nivel: {self.engine.player.level.experience_to_next_level}",
         )
         console.print(
-            x=x + 1, y=y + 5, string=f"Defensa: {self.engine.player.fighter.defense}"
+            x=x + 1, y=y + 5, string=f"Salud: {self.engine.player.fighter.hp}/{self.engine.player.fighter.max_hp}"
         )
-
+        console.print(
+            x=x + 1, y=y + 6, string=f"Ataque: {self.engine.player.fighter.power}"
+        )
+        console.print(
+            x=x + 1, y=y + 7, string=f"Defensa: {self.engine.player.fighter.defense}"
+        )
 
 # Manejador de eventos para la subida de nivel del jugador.
 class LevelUpEventHandler(AskUserEventHandler):
@@ -325,7 +324,7 @@ class InventoryEventHandler(AskUserEventHandler):
         else:
             x = 0  # Si el jugador está más a la derecha, el menú se muestra a la izquierda.
 
-        y = 0  # Posición en el eje Y.
+        y = 1  # Posición en el eje Y.
 
         # El ancho del menú se basa en el título del menú.
         width = len(self.TITLE) + 4

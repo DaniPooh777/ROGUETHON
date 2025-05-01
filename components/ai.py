@@ -100,7 +100,7 @@ class ConfusedEnemy(BaseAI):
         """Realiza la acción del enemigo confundido durante su turno."""
         if self.turns_remaining <= 0:
             # Si ya no quedan turnos de confusión, restaura la IA original del enemigo.
-            self.engine.message_log.add_message(f"{self.entity.name} ya no está confundido.")
+            self.engine.message_log.add_message(f"{self.entity.name} ya no esta confundido.")
             self.entity.ai = self.previous_ai
         else:
             # Si aún queda confusión, el enemigo se mueve aleatoriamente.

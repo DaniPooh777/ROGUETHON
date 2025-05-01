@@ -49,7 +49,7 @@ class PickupAction(Action):
             if actor_location_x == item.x and actor_location_y == item.y:
                 # Si el inventario está lleno, lanza una excepción
                 if len(inventory.items) >= inventory.capacity:
-                    raise exceptions.Impossible("Tu inventario está lleno.")
+                    raise exceptions.Impossible("Tu inventario esta lleno.")
 
                 # Elimina el objeto del mapa y lo agrega al inventario
                 self.engine.game_map.entities.remove(item)  # Elimina el objeto del mapa

@@ -126,6 +126,6 @@ leather_armor = Item(
 chain_mail = Item(
     char="[",  # Carácter que representa la cota de malla.
     color=(105, 105, 105),  # Color gris oscuro.
-    name="Armadura de cota de malla",  # Nombre del objeto.
+    name="Armadura de hierro",  # Nombre del objeto.
     equippable=equippable.ChainMail()  # La cota de malla es un objeto equipable.
 )
