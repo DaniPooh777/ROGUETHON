@@ -24,6 +24,7 @@ import input_handlers  # Gestiona las entradas del usuario.
 import exceptions # Maneja excepciones personalizadas.
 import sys # Para manejar la ruta del script y el ejecutable.
 import os # Para manejar rutas de archivos y directorios.
+import color # Para manejar colores personalizados.
 
 # Cambiar la ruta de la imagen de fondo para que sea relativa al directorio del ejecutable o del script
 if getattr(sys, 'frozen', False):
@@ -221,7 +222,7 @@ class MainMenu(input_handlers.BaseEventHandler):
         )
 
         # Dibuja las opciones del menú dentro de otro rectángulo.
-        menu_options = [" ", "[N] Nueva partida", "[C] Continuar", "[Q] Salir", " "]
+        menu_options = [" ", "[N] Nueva partida", "[C] Continuar", "[L] Lenyenda" ,"[Q] Salir", " "]
         menu_width = 24
         menu_x = (console.width - menu_width) // 2
         menu_y = console.height // 2 - 2
@@ -294,7 +295,73 @@ class MainMenu(input_handlers.BaseEventHandler):
             time.sleep(1.5)  # Espera un momento para que el jugador vea el mensaje.
 
             return handler  # Retorna el handler del juego.
+        elif event.sym == tcod.event.KeySym.l:
+            # Si se presiona L, muestra la leyenda del juego dentro de un marco.
+            legend_text = [
+                (color.menu_text, "Jugador: @"), 
+                (color.player_atk, ""),
+                (color.menu_text, "Enemigos:"),
+                ((0, 255, 0), " - Goblin: g"),
+                ((63, 127, 63), " - Orco: o"),
+                ((0, 127, 0), " - Troll: T"), 
+                (color.player_atk, ""),
+                (color.menu_text, "Objetos:"),
+                ((127, 0, 255), " - Pocion de salud: !"),
+                ((207, 63, 255), " - Pergamino de confusion: ~"),
+                ((255, 0, 0), " - Pergamino de fuego: ~"),
+                ((255, 255, 0), " - Pergamino relampago: ~"),
+                ((0, 191, 255), " - Pergamino defensivo: ~"),
+                ((128, 128, 255), " - Pergamino invisible: ~"),
+                (color.player_atk, ""),
+                (color.menu_text, "Equipamiento:"),
+                ((0, 191, 255), " - Daga: /"),
+                ((105, 105, 105), " - Espada: /"),
+                ((139, 69, 19), " - Armadura de cuero: ["),
+                ((105, 105, 105), " - Armadura de hierro: ["),
+                (color.player_atk, ""),
+                ((191, 0, 0), "Cadaver: %"),
+                (color.player_atk, ""),
+                (color.menu_text, "Paredes: #"),
+                (color.player_atk, ""),
+                (color.menu_text, "Suelo: ."),
+                (color.player_atk, ""),
+                (color.menu_text, "Puerta secreta: &"),
+                (color.player_atk, ""),
+                (color.menu_text, "Escaleras: >"),
+            ]
 
+            frame_width = 35
+            frame_height = 32
+            frame_x = (self.console.width - frame_width) // 2
+            frame_y = (self.console.height - frame_height) // 2
+
+            while True:
+                # Dibuja el marco en la consola.
+                self.console.clear()
+                self.console.draw_frame(
+                    x=frame_x,
+                    y=frame_y,
+                    width=frame_width,
+                    height=frame_height,
+                    title="Leyenda",
+                    clear=True,
+                    fg=color.menu_text,
+                    bg=color.black,
+                )
+
+                # Renderizar la leyenda con colores
+                for i, (fg, text) in enumerate(legend_text):
+                    self.console.print(x=frame_x + 1, y=frame_y + 1 + i, string=text, fg=fg)
+
+                self.context.present(self.console)  # Muestra el contenido de la consola.
+
+                # Captura eventos del teclado.
+                for event in tcod.event.wait():
+                    if isinstance(event, tcod.event.KeyDown):
+                        if event.sym == tcod.event.KeySym.ESCAPE:  # Salir al presionar ESCAPE.
+                            return
+                        elif event.sym == tcod.event.KeySym.l:  # Salir al presionar ESCAPE.
+                            return
         return None  # No cambia el estado si ninguna tecla es presionada.
 
     def ev_quit(self, event: tcod.event.Quit) -> None:

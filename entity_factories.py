@@ -32,7 +32,7 @@ orc = Actor(
     equipment=Equipment(),  # Equipamiento vacío.
     fighter=Fighter(hp=10, base_defense=0, base_power=4),  # Atributos de lucha (10 HP, defensa 0, poder 3).
     inventory=Inventory(capacity=0),  # Inventario vacío.
-    level=Level(xp_given=35),  # Da 35 XP al ser derrotado.
+    level=Level(xp_given=40),  # Da 35 XP al ser derrotado.
 )
 
 troll = Actor(
