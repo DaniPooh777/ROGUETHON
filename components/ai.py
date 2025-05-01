@@ -133,8 +133,9 @@ class RangedEnemy(BaseAI):
         if distance <= 5:  # Si el jugador está dentro del rango de ataque a distancia.
             if self.turns_to_attack <= 0:
                 # Ataca al jugador si es el turno de atacar.
+                damage = 4  # Define el daño que inflige el ataque a distancia.
                 self.engine.message_log.add_message(
-                    f"{self.entity.name} lanza un ataque a distancia contra {target.name}.", color.enemy_atk
+                    f"{self.entity.name} dispara una flecha a {target.name}. Hace {damage} puntos de dano.", color.enemy_atk
                 )
                 target.fighter.take_damage(4)  # El goblin hace 4 puntos de daño al jugador.
                 self.turns_to_attack = 3  # Reinicia el contador de turnos de ataque.
