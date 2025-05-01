@@ -570,9 +570,10 @@ class MainGameEventHandler(EventHandler):
         elif key in WAIT_KEYS:
             action = WaitAction(player)
 
-        # Si se presiona la tecla Escape, termina el juego.
+        # Si se presiona la tecla Escape, regresa al menú principal.
         elif key == tcod.event.KeySym.ESCAPE:
-            raise SystemExit()
+            from setup_game import MainMenu
+            return MainMenu(self.engine.context, self.engine.console)
         # Si se presiona la tecla H, muestra el historial de mensajes.
         elif key == tcod.event.KeySym.h:
             return HistoryViewer(self.engine)

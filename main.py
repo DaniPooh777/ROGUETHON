@@ -75,10 +75,10 @@ def main() -> None:
                             if isinstance(event, tcod.event.KeyDown):  # Si se presiona una tecla.
                                 if event.sym == tcod.event.KeySym.ESCAPE:  # Si se presiona ESC.
                                     if isinstance(handler, input_handlers.EventHandler):
-                                        if handler.engine.player.is_alive:  # Si el jugador está vivo, guarda el progreso.
-                                            save_game(handler, "savegame.sav")
-                                    raise SystemExit()  # Sale del juego.
-
+                                        from setup_game import MainMenu
+                                        save_game(handler, "savegame.sav")  # Guarda la partida.
+                                        handler = MainMenu(context, root_console)  # Cambia al menú principal.
+                                        break  # Sale del bucle actual para regresar al menú principal.
                                 handler = handler.handle_events(event)  # Procesa el evento (moverse, atacar, etc.).
 
                     except Exception:  # Si ocurre una excepción en el bucle de eventos.

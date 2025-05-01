@@ -47,7 +47,7 @@ class MessageLog:
             self.messages.append(Message(text, fg))  # Si no, agrega el nuevo mensaje al log.
 
         # Debugging: Imprime el texto del mensaje para verificar el contenido
-        print(f"Mensaje añadido: {text}")
+        print(f"Mensaje visible: {text}")
 
     def render(
         self, console: tcod.console.Console, x: int, y: int, width: int, height: int,
