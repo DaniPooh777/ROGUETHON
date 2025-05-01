@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 max_items_by_floor = [
     (1, 1),  # A partir del nivel 1, máximo 1 ítem.
     (3, 2),  # A partir del nivel 3, máximo 2 ítems.
-    (5, 3),  # A partir del nivel 5, máximo 3 ítems.
+    (7, 3),  # A partir del nivel 5, máximo 3 ítems.
 ]
 
 # Definición de los máximos posibles de monstruos por nivel de piso.
@@ -59,7 +59,6 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     ],
     7: [
         (entity_factories.troll, 60),  # 60% de probabilidad de troll.
-        (entity_factories.invisibility_scroll, 100),  # 100% de probabilidad de pergamino de invisibilidad.
     ],
 }
 
