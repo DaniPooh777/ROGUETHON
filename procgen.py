@@ -267,20 +267,20 @@ def connect_secret_room(
 ) -> None:
     """Conecta una habitación secreta a una habitación principal mediante un túnel."""
     if direction == "N":
-        door_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
+        door_x = (parent_room.x1 + parent_room.x2) // 2  # Centro de la pared norte
         door_y = parent_room.y1
         tunnel_x, tunnel_y = door_x, secret_room.y2
     elif direction == "S":
-        door_x = random.randint(parent_room.x1 + 1, parent_room.x2 - 1)
+        door_x = (parent_room.x1 + parent_room.x2) // 2  # Centro de la pared sur
         door_y = parent_room.y2
         tunnel_x, tunnel_y = door_x, secret_room.y1
     elif direction == "E":
         door_x = parent_room.x2
-        door_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
+        door_y = (parent_room.y1 + parent_room.y2) // 2  # Centro de la pared este
         tunnel_x, tunnel_y = secret_room.x1, door_y
     else:  # "W"
         door_x = parent_room.x1
-        door_y = random.randint(parent_room.y1 + 1, parent_room.y2 - 1)
+        door_y = (parent_room.y1 + parent_room.y2) // 2  # Centro de la pared oeste
         tunnel_x, tunnel_y = secret_room.x2, door_y
 
     # Genera un túnel desde la puerta hasta el interior de la sala secreta
