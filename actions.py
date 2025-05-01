@@ -203,8 +203,10 @@ class MovementAction(ActionWithDirection):
 
         # Comprueba si el destino está fuera de los límites del mapa
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
+            self.engine.message_log.add_message("Esto es una pared.", color.impossible)
             return  # No hace nada si está fuera de los límites
         if not self.engine.game_map.tiles["walkable"][dest_x, dest_y]:
+            self.engine.message_log.add_message("Esto es una pared.", color.impossible)
             return  # No hace nada si no es caminable
         if self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
             return  # No hace nada si hay una entidad bloqueando
