@@ -252,7 +252,7 @@ class MainMenu(input_handlers.BaseEventHandler):
         console.print(
             console.width // 2,
             console.height - 2,
-            "Copyright (c) 2023 por DaniPooh",
+            "Copyright (c) 2025 por DaniPooh",
             fg=color.menu_title,
             alignment=libtcodpy.CENTER,
         )

@@ -635,6 +635,10 @@ class GameOverEventHandler(EventHandler):
             from setup_game import new_game
             engine = new_game(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
             engine.player.name = self.engine.player.name  # Mantiene el nombre del jugador anterior.
+            engine.message_log.add_message(
+                f"Bienvenido, {engine.player.name}, a una nueva mazmorra.",
+                color.welcome_text
+            )
             return MainGameEventHandler(engine)
         elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
             from setup_game import MainMenu
