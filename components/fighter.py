@@ -10,6 +10,7 @@ from components.base_component import BaseComponent  # Importa la clase BaseComp
 from render_order import RenderOrder  # Importa el enum RenderOrder para controlar el orden de renderización de los actores.
 
 import color  # Importa el módulo 'color' que gestiona los colores para los mensajes de log.
+import os  # Importa el módulo 'os' para manejar operaciones del sistema de archivos.
 
 # Importación condicional para la clase 'Item', que solo ocurre en la fase de comprobación de tipos, mejorando la eficiencia en tiempo de ejecución.
 if TYPE_CHECKING:
@@ -75,6 +76,11 @@ class Fighter(BaseComponent):
             self.engine.last_player_name = self.parent.name  # Guarda el nombre del jugador antes de cambiarlo
             death_message = "Has muerto"
             death_message_color = color.player_die
+
+            # Eliminar archivo de partida guardada
+            save_file = "savegame.sav"
+            if os.path.exists(save_file):
+                os.remove(save_file)
         else:
             death_message = f"{self.parent.name} esta muerto"
             death_message_color = color.enemy_die
