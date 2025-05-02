@@ -222,7 +222,7 @@ class MainMenu(input_handlers.BaseEventHandler):
         )
 
         # Dibuja las opciones del menú dentro de otro rectángulo.
-        menu_options = [" ", "[N] Nueva partida", "[C] Continuar", "[L] Lenyenda" ,"[Q] Salir", " "]
+        menu_options = [" ", "[N] Nueva partida", "[C] Continuar", "[L] Lenyenda", "[K] Controles", "[Q] Salir", " "]
         menu_width = 24
         menu_x = (console.width - menu_width) // 2
         menu_y = console.height // 2 - 2
@@ -361,6 +361,64 @@ class MainMenu(input_handlers.BaseEventHandler):
                         if event.sym == tcod.event.KeySym.ESCAPE:  # Salir al presionar ESCAPE.
                             return
                         elif event.sym == tcod.event.KeySym.l:  # Salir al presionar ESCAPE.
+                            return
+        elif event.sym == tcod.event.KeySym.k:
+            legend_text = [
+                (color.menu_title, "Movimiento:"),
+                (color.menu_text, " - Arriba: W o ↑"),
+                (color.menu_text, " - Abajo: S o ↓"),
+                (color.menu_text, " - Izquierda: A o ←"),
+                (color.menu_text, " - Derecha: D o →"), 
+                (color.enemy_atk, ""),
+                (color.menu_title, "Interaccion:"),
+                (color.menu_text, " - Recoger objetos: g"),
+                (color.menu_text, " - Soltar objetos: f"),
+                (color.menu_text, " - Abrir inventario: i"),
+                (color.menu_text, " - Bajar escaleras: e"),
+                (color.enemy_atk, ""),
+                (color.menu_title, "Combate:"),
+                (color.menu_text, " - Atacar: Moverse hacia el enemigo"),
+                (color.menu_text, " - Usar objeto: Desde el inventario"),
+                (color.enemy_atk, ""),
+                (color.menu_title, "Otros controles:"),
+                (color.menu_text, " - Salir al menu: Esc"),
+                (color.menu_text, " - Confirmar seleccion de objetivo: Enter"),
+                (color.menu_text, " - Estadisticas personaje: e"),
+                (color.menu_text, " - Mostrar historial: h"),
+                (color.menu_text, " - En el historial: ↑ y ↓"),
+            ]
+
+            frame_width = 45
+            frame_height = 24
+            frame_x = (self.console.width - frame_width) // 2
+            frame_y = (self.console.height - frame_height) // 2
+
+            while True:
+                # Dibuja el marco en la consola.
+                self.console.clear()
+                self.console.draw_frame(
+                    x=frame_x,
+                    y=frame_y,
+                    width=frame_width,
+                    height=frame_height,
+                    title="Controles",
+                    clear=True,
+                    fg=color.menu_text,
+                    bg=color.black,
+                )
+
+                # Renderizar la leyenda con colores
+                for i, (fg, text) in enumerate(legend_text):
+                    self.console.print(x=frame_x + 1, y=frame_y + 1 + i, string=text, fg=fg)
+
+                self.context.present(self.console)  # Muestra el contenido de la consola.
+
+                # Captura eventos del teclado.
+                for event in tcod.event.wait():
+                    if isinstance(event, tcod.event.KeyDown):
+                        if event.sym == tcod.event.KeySym.ESCAPE:  # Salir al presionar ESCAPE.
+                            return
+                        elif event.sym == tcod.event.KeySym.k:  # Salir al presionar k.
                             return
         return None  # No cambia el estado si ninguna tecla es presionada.
 
