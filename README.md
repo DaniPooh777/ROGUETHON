@@ -89,4 +89,4 @@ A continuación, se incluyen capturas de pantalla del juego para mostrar su esti
    ```
    start ROGUETHON.exe.lnk
    ```
-###Y ahora disfruta del juego.
+Y ahora disfruta del juego.
