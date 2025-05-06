@@ -88,5 +88,5 @@ A continuación, se incluyen capturas de pantalla del juego para mostrar su esti
 5. Ejecuta el juego con:
    ```
    start ROGUETHON.exe.lnk
-   ``` 
-6. Y ahora disfruta del juego.
+   ```
+###Y ahora disfruta del juego.
