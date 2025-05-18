@@ -123,6 +123,9 @@ class RangedEnemy(BaseAI):
     def perform(self) -> None:
         """Realiza la acción del goblin en su turno."""
         target = self.engine.player  # El objetivo es el jugador.
+        # Si el jugador es invisible, el goblin no hace nada.
+        if target.invisible:
+            return WaitAction(self.entity).perform()
         dx = target.x - self.entity.x  # Calcula la diferencia en las coordenadas x.
         dy = target.y - self.entity.y  # Calcula la diferencia en las coordenadas y.
         distance = max(abs(dx), abs(dy))  # Calcula la distancia de Chebyshev.

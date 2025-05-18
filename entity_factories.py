@@ -83,7 +83,7 @@ lightning_scroll = Item(
     char="~",  # Carácter que representa al pergamino de relámpago.
     color=(255, 255, 0),  # Color amarillo.
     name="Pergamino relampago",  # Nombre del objeto.
-    consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),  # Causa 20 puntos de daño a un máximo de 5 casillas.
+    consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=7),  # Causa 20 puntos de daño a un máximo de 7 casillas.
 )
 
 defensive_scroll = Item(

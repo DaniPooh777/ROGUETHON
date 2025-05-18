@@ -159,9 +159,10 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -
 def tunnel_between(
     start: Tuple[int, int], end: Tuple[int, int]
 ) -> Iterator[Tuple[int, int]]:
-    """Devuelve un túnel en forma de L entre estos dos puntos."""
+    """Devuelve un túnel en forma de L entre los centros de las salas, dejando una pared de separación con las salas."""
     x1, y1 = start
     x2, y2 = end
+    # Conectar solo al centro de la sala (ya ajustado por quien llama a esta función)
     if random.random() < 0.5:  # 50% de probabilidad.
         # Mueve horizontalmente, luego verticalmente.
         corner_x, corner_y = x2, y1
@@ -169,7 +170,6 @@ def tunnel_between(
         # Mueve verticalmente, luego horizontalmente.
         corner_x, corner_y = x1, y2
 
-    # Genera las coordenadas para este túnel.
     for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
         yield x, y
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
@@ -265,23 +265,23 @@ def generate_secret_rooms(
 def connect_secret_room(
     dungeon: GameMap, parent_room: RectangularRoom, secret_room: RectangularRoom, direction: str
 ) -> None:
-    """Conecta una habitación secreta a una habitación principal mediante un túnel."""
+    """Conecta una habitación secreta a una habitación principal mediante un túnel, dejando una pared de separación."""
     if direction == "N":
-        door_x = (parent_room.x1 + parent_room.x2) // 2  # Centro de la pared norte
+        door_x = (parent_room.x1 + parent_room.x2) // 2
         door_y = parent_room.y1
-        tunnel_x, tunnel_y = door_x, secret_room.y2
+        tunnel_x, tunnel_y = door_x, secret_room.y2 - 1  # Deja una pared
     elif direction == "S":
-        door_x = (parent_room.x1 + parent_room.x2) // 2  # Centro de la pared sur
+        door_x = (parent_room.x1 + parent_room.x2) // 2
         door_y = parent_room.y2
-        tunnel_x, tunnel_y = door_x, secret_room.y1
+        tunnel_x, tunnel_y = door_x, secret_room.y1  # Ya está a una pared
     elif direction == "E":
         door_x = parent_room.x2
-        door_y = (parent_room.y1 + parent_room.y2) // 2  # Centro de la pared este
-        tunnel_x, tunnel_y = secret_room.x1, door_y
+        door_y = (parent_room.y1 + parent_room.y2) // 2
+        tunnel_x, tunnel_y = secret_room.x1, door_y  # Ya está a una pared
     else:  # "W"
         door_x = parent_room.x1
-        door_y = (parent_room.y1 + parent_room.y2) // 2  # Centro de la pared oeste
-        tunnel_x, tunnel_y = secret_room.x2, door_y
+        door_y = (parent_room.y1 + parent_room.y2) // 2
+        tunnel_x, tunnel_y = secret_room.x2 - 1, door_y  # Deja una pared
 
     # Genera un túnel desde la puerta hasta el interior de la sala secreta
     for x, y in tunnel_between((door_x, door_y), (tunnel_x, tunnel_y)):
