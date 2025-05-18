@@ -90,11 +90,17 @@ class Engine:
             maximum_value=self.player.fighter.max_hp,  # Salud máxima del jugador.
             total_width=20,  # Ancho total de la barra.
         )
+        render_functions.render_xp_bar(  # Renderiza la barra de experiencia.
+            console=console,
+            current_xp=self.player.level.current_xp,
+            xp_to_next_level=self.player.level.experience_to_next_level,
+            total_width=20,
+        )
 
         render_functions.render_dungeon_level(  # Renderiza el nivel del calabozo actual.
             console=console,
             dungeon_level=self.game_world.current_floor,  # Piso actual del juego.
-            location=(0, 47),  # Ubicación donde se renderiza el nivel.
+            location=(0, 48),  # Ubicación donde se renderiza el nivel.
         )
 
         render_functions.render_names_at_mouse_location(  # Renderiza el nombre de la entidad bajo el cursor del ratón.
