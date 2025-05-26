@@ -87,8 +87,12 @@ A continuación, se incluyen capturas de pantalla del juego para mostrar su esti
    ```bash
    cd ROGUETHON
    ```
-7. Ejecuta el juego con:
+7. Accede a esta parpeta:
+   ```bash
+   cd dist
    ```
-   start ROGUETHON.exe.lnk
+8. Ejecuta el juego con:
+   ```
+   start ROGUETHON.exe
    ```
 Y ahora disfruta del juego.
