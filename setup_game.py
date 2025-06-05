@@ -136,32 +136,25 @@ def get_player_name(context: tcod.context.Context, console: tcod.console.Console
                 raise SystemExit()
             elif isinstance(event, tcod.event.KeyDown):  # Si el jugador presiona una tecla.
                 if event.sym == tcod.event.KeySym.RETURN:  # Si presiona Enter, retorna el nombre.
-                    return name if name else "Link"
+                    if name.strip():
+                        fade_to_black(console, context)
+                        return name
                 elif event.sym == tcod.event.KeySym.BACKSPACE:  # Si presiona Backspace, borra un carácter.
                     name = name[:-1]
                     cursor_visible = True
                     last_blink_time = current_time
+                elif event.sym == tcod.event.KeySym.SPACE:  # Si se presiona espacio, agrega un espacio al nombre.
+                    if len(name) < name_width:
+                        name += " "
                 elif event.sym == tcod.event.KeySym.ESCAPE:  # Si presiona Escape, cierra el juego.
                     raise SystemExit()
-                elif event.sym == tcod.event.KeySym.MINUS and (event.mod & tcod.event.Modifier.SHIFT):  # Si presiona Shift + -, agrega un guion bajo.
+                elif len(event.sym.name) == 1 and event.sym.name.isalpha():  # Si el carácter es una letra, lo agrega al nombre.
                     if len(name) < name_width:
-                        name += "_"
-                        cursor_visible = True
-                        last_blink_time = current_time
-                else:
-                    char = event.sym.name  # Obtiene el carácter de la tecla presionada.
-                    is_shift = (event.mod & tcod.event.Modifier.SHIFT)  # Verifica si la tecla Shift está presionada.
-                    if len(char) == 1 and char.isprintable():  # Si el carácter es imprimible, lo agrega al nombre.
-                        char = char.upper() if is_shift else char.lower()
-                        if len(name) < name_width:
-                            name += char
-                            cursor_visible = True
-                            last_blink_time = current_time
-                    elif char == "space":  # Si se presiona espacio, agrega un espacio al nombre.
-                        if len(name) < name_width:
-                            name += " "
-                            cursor_visible = True
-                            last_blink_time = current_time
+                        char = event.sym.name.lower()
+                        if event.mod & tcod.event.KMOD_SHIFT:
+                            char = char.upper()
+                        name += char
+
         time.sleep(0.01)  # Pausa para el siguiente ciclo.
 
 # Función para hacer un desvanecimiento a negro en la pantalla.
