@@ -58,22 +58,23 @@ Si se retorna una acción y es válida, se cambia al manejador de eventos princi
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Gestiona un evento y retorna el siguiente manejador de eventos activo."""
-        state = self.dispatch(event)  # Llama al despachador de eventos para obtener el estado
+        state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
-            return state  # Si el estado es otro manejador, lo retorna como el nuevo manejador activo.
+            return state
         assert not isinstance(state, Action), f"{self!r} no puede gestionar las acciones."
-        return self  # Si no es un manejador, retorna el manejador actual.
+        return self
 
     def on_render(self, console: tcod.Console) -> None:
-        """Método abstracto que debe ser implementado por los manejadores específicos."""
         raise NotImplementedError()
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
-        """Manejador de eventos para salir del juego."""
         if hasattr(self, 'engine') and self.engine.player.is_alive:
-            self.engine.save_as("savegame.sav")  # Guarda la partida automáticamente.
+            self.engine.save_as("savegame.sav")
         self.engine.message_log.add_message("Partida guardada antes de salir.", color.welcome_text)
         raise SystemExit()
+
+    def ev_mousemotion(self, event): pass
+    def ev_mousebuttondown(self, event): pass
 
 
 # Manejador de eventos que muestra un mensaje emergente (popup).
@@ -130,11 +131,6 @@ class EventHandler(BaseEventHandler):
             self.engine.turn_count += 1  # Incrementa el contador de turnos
             return True
         return False
-
-    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
-        """Actualiza la ubicación del ratón si está dentro de los límites del mapa."""
-        if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
-            self.engine.mouse_location = event.tile.x, event.tile.y  # Actualiza la ubicación del ratón.
 
     def on_render(self, console: tcod.console.Console) -> None:
         """Renderiza el estado actual del juego en la consola."""
@@ -463,15 +459,6 @@ class SelectIndexHandler(AskUserEventHandler):
             return self.on_index_selected(*self.engine.mouse_location)
 
         return super().ev_keydown(event)  # Llama al manejador de eventos base si no es ninguna de las anteriores.
-
-    def ev_mousebuttondown(
-        self, event: tcod.event.MouseButtonDown
-    ) -> Optional[ActionOrHandler]:
-        """Confirma la selección con un clic izquierdo del ratón."""
-        if self.engine.game_map.in_bounds(*event.tile):  # Verifica que el clic esté dentro de los límites del mapa.
-            if event.button == 1:  # Si el botón presionado es el izquierdo.
-                return self.on_index_selected(*event.tile)  # Llama al método de selección con las coordenadas del clic.
-        return super().ev_mousebuttondown(event)  # Llama al manejador de eventos base si no es un clic válido.
 
     def on_index_selected(self, x: int, y: int) -> Optional[ActionOrHandler]:
         """Método llamado cuando se selecciona un índice. Este método debe ser implementado por las subclases."""

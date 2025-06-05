@@ -30,7 +30,6 @@ class Engine:
     def __init__(self, player: Actor, context: tcod.context.Context, console: tcod.Console):
         """Inicializa el motor del juego con el jugador, contexto y consola."""
         self.message_log = MessageLog()  # Crea un objeto para registrar los mensajes del juego.
-        self.mouse_location = (0, 0)  # Inicializa la ubicación del ratón.
         self.player = player  # Asigna el jugador al motor del juego.
         self.context = context  # Asigna el contexto de tcod.
         self.console = console  # Asigna la consola de tcod.
@@ -101,10 +100,6 @@ class Engine:
             console=console,
             dungeon_level=self.game_world.current_floor,  # Piso actual del juego.
             location=(0, 48),  # Ubicación donde se renderiza el nivel.
-        )
-
-        render_functions.render_names_at_mouse_location(  # Renderiza el nombre de la entidad bajo el cursor del ratón.
-            console=console, x=21, y=44, engine=self
         )
 
     def save_as(self, filename: str) -> None:
