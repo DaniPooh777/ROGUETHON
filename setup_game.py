@@ -300,6 +300,7 @@ class MainMenu(input_handlers.BaseEventHandler):
                 (color.player_atk, ""),
                 (color.menu_text, "Objetos:"),
                 ((127, 0, 255), " - Pocion de salud: !"),
+                ((255, 0, 0), " - Pocion de salud mayor: !"),
                 ((207, 63, 255), " - Pergamino de confusion: ~"),
                 ((255, 0, 0), " - Pergamino de fuego: ~"),
                 ((255, 255, 0), " - Pergamino relampago: ~"),
@@ -324,7 +325,7 @@ class MainMenu(input_handlers.BaseEventHandler):
             ]
 
             frame_width = 35
-            frame_height = 32
+            frame_height = 33
             frame_x = (self.console.width - frame_width) // 2
             frame_y = (self.console.height - frame_height) // 2
 
@@ -367,6 +368,8 @@ class MainMenu(input_handlers.BaseEventHandler):
                 (color.menu_text, " - Recoger objetos: g"),
                 (color.menu_text, " - Soltar objetos: f"),
                 (color.menu_text, " - Abrir inventario: i"),
+                (color.menu_text, " - Cerrar inventario: Cualquier tecla que"),
+                (color.menu_text, "   no sean letras ni el Esc"),
                 (color.menu_text, " - Bajar escaleras: e"),
                 (color.enemy_atk, ""),
                 (color.menu_title, "Combate:"),
@@ -382,7 +385,7 @@ class MainMenu(input_handlers.BaseEventHandler):
             ]
 
             frame_width = 45
-            frame_height = 24
+            frame_height = 26
             frame_x = (self.console.width - frame_width) // 2
             frame_y = (self.console.height - frame_height) // 2
 

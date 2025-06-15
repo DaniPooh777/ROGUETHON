@@ -81,7 +81,7 @@ health_potion = Item(
 
 greater_health_potion = Item(
     char="!",  # Carácter que representa la poción de salud mayor.
-    color=(255, 0, 255),  # Color rosa.
+    color=(255, 0, 0),  # Color rojo.
     name="Pocion de salud mayor",  # Nombre del objeto.
     consumable=consumable.HealingConsumable(amount=10),  # Cura 10 puntos de salud al ser consumida.
 )
