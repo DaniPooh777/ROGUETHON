@@ -151,7 +151,7 @@ def get_player_name(context: tcod.context.Context, console: tcod.console.Console
                 elif len(event.sym.name) == 1 and event.sym.name.isalpha():  # Si el carácter es una letra, lo agrega al nombre.
                     if len(name) < name_width:
                         char = event.sym.name.lower()
-                        if event.mod & tcod.event.KMOD_SHIFT:
+                        if event.mod & tcod.event.Modifier.SHIFT:
                             char = char.upper()
                         name += char
 

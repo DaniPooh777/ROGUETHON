@@ -43,10 +43,10 @@ item_chances: Dict[int, List[Tuple[Entity, int]]] = {
         (entity_factories.defensive_scroll, 20),  # 20% de probabilidad de pergamino defensivo.
     ],
     6: [
-        (entity_factories.health_potion, 0) # 0% de probabilidad de poción de salud (no aparece).
-        (entity_factories.fireball_scroll, 25),  # 25% de probabilidad de pergamino de bola de fuego.
-        (entity_factories.chain_mail, 15),  # 15% de probabilidad de cota de malla.
-        (entity_factories.greater_health_potion, 35) # 35% de probabilidad de poción de salud mayor.
+        (entity_factories.health_potion, 0),  # 0% de probabilidad de poción de salud (no aparece)
+        (entity_factories.fireball_scroll, 25),  # 25% de probabilidad de pergamino de bola de fuego
+        (entity_factories.chain_mail, 15),  # 15% de probabilidad de cota de malla
+        (entity_factories.greater_health_potion, 35),  # 35% de probabilidad de poción de salud mayor
     ],
 }
 
