@@ -23,7 +23,7 @@ A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
 
 ### Interacción
 - **Tecla `g`**: Recoger objetos del suelo.
-- **Tecla `i`**: Abrir el inventario.
+- **Tecla `i`**: Abrir el inventario. Para cerrar inventario pulsa cualquier tecla excepto las letras y la tecla Esc.
 - **Tecla `f`**: Soltar un objeto del inventario.
 - **Tecla `e`**: Para acceder a las escaleras.
 
@@ -53,7 +53,8 @@ Cada enemigo tiene fortalezas y debilidades que deberás aprender para enfrentar
 
 Durante tu aventura, encontrarás diversos objetos consumibles que te ayudarán a sobrevivir:
 
-- **Poción de salud**: Restaura puntos de vida.
+- **Poción de salud**: Restaura 5 puntos de vida.
+- **Poción de salud mayor**: Restaura 10 puntos de vida.
 - **Pergamino de confusión**: Confunde a un enemigo, haciéndolo moverse aleatoriamente durante varios turnos.
 - **Pergamino de relámpago**: Lanza un rayo que inflige daño al enemigo más cercano.
 - **Pergamino de bola de fuego**: Causa daño en un área, afectando a múltiples enemigos.
@@ -69,6 +70,10 @@ A continuación, se incluyen capturas de pantalla del juego para mostrar su esti
 ![Captura de pantalla 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%202.png?raw=true)
 <br/><br/>
 ![Captura de pantalla 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego.png?raw=true)
+<br/><br/>
+![Captura de pantalla 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%204.png?raw=true)
+<br/><br/>
+![Captura de pantalla 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%203.png?raw=true)
 
 ## Cómo ejecutar el juego
 
