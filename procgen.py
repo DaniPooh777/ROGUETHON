@@ -35,16 +35,18 @@ max_monsters_by_floor = [
 
 # Probabilidades de que ciertos ítems aparezcan en niveles específicos.
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.health_potion, 35)],  # 35% de probabilidad de poción de salud en el nivel 0.
-    2: [(entity_factories.confusion_scroll, 10)],  # 10% de probabilidad de pergamino de confusión en el nivel 2.
+    0: [(entity_factories.health_potion, 35)],  # 35% de probabilidad de poción de salud.
+    2: [(entity_factories.confusion_scroll, 10)],  # 10% de probabilidad de pergamino de confusión.
     4: [
         (entity_factories.lightning_scroll, 25),  # 25% de probabilidad de pergamino de relámpago.
         (entity_factories.sword, 10),  # 10% de probabilidad de espada.
         (entity_factories.defensive_scroll, 20),  # 20% de probabilidad de pergamino defensivo.
     ],
     6: [
+        (entity_factories.health_potion, 0) # 0% de probabilidad de poción de salud (no aparece).
         (entity_factories.fireball_scroll, 25),  # 25% de probabilidad de pergamino de bola de fuego.
         (entity_factories.chain_mail, 15),  # 15% de probabilidad de cota de malla.
+        (entity_factories.greater_health_potion, 35) # 35% de probabilidad de poción de salud mayor.
     ],
 }
 

@@ -79,6 +79,13 @@ health_potion = Item(
     consumable=consumable.HealingConsumable(amount=5),  # Cura 4 puntos de salud al ser consumida.
 )
 
+greater_health_potion = Item(
+    char="!",  # Carácter que representa la poción de salud mayor.
+    color=(255, 0, 255),  # Color rosa.
+    name="Pocion de salud mayor",  # Nombre del objeto.
+    consumable=consumable.HealingConsumable(amount=10),  # Cura 10 puntos de salud al ser consumida.
+)
+
 lightning_scroll = Item(
     char="~",  # Carácter que representa al pergamino de relámpago.
     color=(255, 255, 0),  # Color amarillo.
