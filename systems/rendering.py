@@ -105,9 +105,3 @@ def render_dungeon_level(
     console.print(
         x=x, y=y, string=f""" Piso: {dungeon_level}"""
     )  # Imprime el nivel de la mazmorras en la consola.
-
-
-def render_names_at_mouse_location(
-    console: Console, x: int, y: int, engine: Engine
-) -> None:
-    pass
