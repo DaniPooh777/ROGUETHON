@@ -60,6 +60,7 @@ Durante tu aventura, encontrarás diversos objetos consumibles que te ayudarán 
 - **Pergamino de bola de fuego**: Causa daño en un área, afectando a múltiples enemigos.
 - **Pergamino defensivo**: Aumenta temporalmente tu defensa, reduciendo el daño recibido.
 - **Pergamino invisible**: El jugador se vuelve temporalmente invisible para los enemigos.
+- **Pergamino de inmunidad**: Protege al jugador contra el siguiente ataque, anulando todo el daño recibido una vez.
 
 Usa estos objetos estratégicamente para superar los desafíos de las mazmorras.
 
