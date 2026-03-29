@@ -163,19 +163,3 @@ class Engine:
                         "Partida guardada automáticamente al salir.", color.welcome_text
                     )
                 raise SystemExit()  # Sale del juego.
-
-
-class Actor:
-    @property
-    def is_alive(self) -> bool:
-        """El jugador está vivo si tiene puntos de vida positivos."""
-        return self.hp > 0  # Verifica si los puntos de vida son mayores a 0.
-
-
-class Fighter(BaseComponent):
-    def die(self) -> None:
-        if self.engine.player is self.parent:  # Verifica si el jugador es el que muere.
-            original_name = self.parent.name  # Guarda el nombre original del jugador.
-            self.engine.last_player_name = (
-                original_name  # Asigna el nombre original al atributo.
-            )
