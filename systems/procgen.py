@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 max_items_by_floor = [
     (1, 1),  # A partir del nivel 1, máximo 1 ítem.
     (3, 2),  # A partir del nivel 3, máximo 2 ítems.
-    (7, 3),  # A partir del nivel 5, máximo 3 ítems.
+    (7, 3),  # A partir del nivel 7, máximo 3 ítems.
 ]
 
 # Definición de los máximos posibles de monstruos por nivel de piso.

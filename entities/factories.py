@@ -37,9 +37,9 @@ orc = Actor(
     equipment=Equipment(),  # Equipamiento vacío.
     fighter=Fighter(
         hp=10, base_defense=0, base_power=4
-    ),  # Atributos de lucha (10 HP, defensa 0, poder 3).
+    ),  # Atributos de lucha (10 HP, defensa 0, poder 4).
     inventory=Inventory(capacity=0),  # Inventario vacío.
-    level=Level(xp_given=40),  # Da 35 XP al ser derrotado.
+    level=Level(xp_given=40),  # Da 40 XP al ser derrotado.
 )
 
 troll = Actor(
@@ -50,7 +50,7 @@ troll = Actor(
     equipment=Equipment(),  # Equipamiento vacío.
     fighter=Fighter(
         hp=16, base_defense=1, base_power=5
-    ),  # Atributos de lucha (16 HP, defensa 1, poder 4).
+    ),  # Atributos de lucha (16 HP, defensa 1, poder 5).
     inventory=Inventory(capacity=0),  # Inventario vacío.
     level=Level(xp_given=100),  # Da 100 XP al ser derrotado.
 )
@@ -93,7 +93,7 @@ health_potion = Item(
     name="Pocion de salud",  # Nombre del objeto.
     consumable=consumable.HealingConsumable(
         amount=5
-    ),  # Cura 4 puntos de salud al ser consumida.
+    ),  # Cura 5 puntos de salud al ser consumida.
 )
 
 greater_health_potion = Item(
