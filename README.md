@@ -67,13 +67,13 @@ Usa estos objetos estratégicamente para superar los desafíos de las mazmorras.
 
 A continuación, se incluyen capturas de pantalla del juego para mostrar su estilo visual y mecánicas:
 
-![Captura de pantalla 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%202.png?raw=true)
+![Captura de pantalla 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%202.png?raw=true)
 <br/><br/>
-![Captura de pantalla 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego.png?raw=true)
+![Captura de pantalla 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego.png?raw=true)
 <br/><br/>
-![Captura de pantalla 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%204.png?raw=true)
+![Captura de pantalla 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%204.png?raw=true)
 <br/><br/>
-![Captura de pantalla 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/Imagen%20juego%203.png?raw=true)
+![Captura de pantalla 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%203.png?raw=true)
 
 ## Cómo ejecutar el juego
 
