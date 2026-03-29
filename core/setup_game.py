@@ -473,7 +473,7 @@ class MainMenu(input_handlers.BaseEventHandler):
                 (color.menu_title, "Otros controles:"),
                 (color.menu_text, " - Salir al menu: Esc"),
                 (color.menu_text, " - Confirmar seleccion de objetivo: Enter"),
-                (color.menu_text, " - Estadisticas personaje: e"),
+                (color.menu_text, " - Estadisticas personaje: c"),
                 (color.menu_text, " - Mostrar historial: h"),
                 (color.menu_text, " - En el historial: ↑ y ↓"),
             ]
