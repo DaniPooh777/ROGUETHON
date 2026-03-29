@@ -134,7 +134,7 @@ invisibility_scroll = Item(
 
 immunity_scroll = Item(
     char="~",  # Carácter que representa al pergamino de inmunidad.
-    color=(255, 215, 0),  # Color dorado.
+    color=(255, 165, 0),  # Color naranja.
     name="Pergamino de inmunidad",  # Nombre del objeto.
     consumable=consumable.ImmunityScrollConsumable(
         number_of_turns=15
