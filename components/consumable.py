@@ -277,3 +277,22 @@ class InvisibilityScrollConsumable(Consumable):
         )
 
         self.consume()
+
+
+class ImmunityScrollConsumable(Consumable):
+    """Consumible que otorga inmunidad total al jugador."""
+
+    def __init__(self, number_of_turns: int):
+        self.number_of_turns = number_of_turns
+
+    def get_action(self, consumer: Actor) -> Optional[ActionOrHandler]:
+        return actions.ItemAction(consumer, self.parent)
+
+    def activate(self, action: actions.ItemAction) -> None:
+        consumer = action.entity
+        consumer.fighter.activate_defensive_mode(self.number_of_turns)
+        self.consume()
+        self.engine.message_log.add_message(
+            f"{consumer.name} es completamente inmune durante {self.number_of_turns} turnos!",
+            color.status_effect_applied,
+        )

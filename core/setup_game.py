@@ -390,6 +390,7 @@ class MainMenu(input_handlers.BaseEventHandler):
                 ((255, 0, 0), " - Pergamino de fuego: ~"),
                 ((255, 255, 0), " - Pergamino relampago: ~"),
                 ((0, 191, 255), " - Pergamino defensivo: ~"),
+                ((255, 215, 0), " - Pergamino de inmunidad: ~"),
                 ((128, 128, 255), " - Pergamino invisible: ~"),
                 (color.player_atk, ""),
                 (color.menu_text, "Equipamiento:"),

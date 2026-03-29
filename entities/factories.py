@@ -132,6 +132,15 @@ invisibility_scroll = Item(
     ),  # Hace al jugador invisible durante 30 turnos.
 )
 
+immunity_scroll = Item(
+    char="~",  # Carácter que representa al pergamino de inmunidad.
+    color=(255, 215, 0),  # Color dorado.
+    name="Pergamino de inmunidad",  # Nombre del objeto.
+    consumable=consumable.ImmunityScrollConsumable(
+        number_of_turns=15
+    ),  # Otorga inmunidad total durante 15 turnos.
+)
+
 # Se crean objetos equipables, como dagas y armaduras.
 dagger = Item(
     char="/",  # Carácter que representa la daga.
