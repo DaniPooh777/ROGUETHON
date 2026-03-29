@@ -19,7 +19,7 @@ player = Actor(
     char="@",  # Carácter que representa al jugador.
     color=(255, 255, 255),  # Color blanco.
     name="Player",  # Nombre del jugador.
-    ai_cls=HostileEnemy,  # Asigna una clase de IA para enemigo hostil.
+    ai_cls=HostileEnemy,  # Necesario para que is_alive funcione, no se ejecuta en el jugador.
     equipment=Equipment(),  # El jugador tiene equipo vacío por ahora.
     fighter=Fighter(
         hp=30, base_defense=1, base_power=2
