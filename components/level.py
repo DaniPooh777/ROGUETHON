@@ -5,16 +5,20 @@ Proporciona métodos para calcular la experiencia necesaria para subir de nivel,
 
 from __future__ import annotations  # Permite el uso de anotaciones de tipo futuras
 from typing import TYPE_CHECKING  # Importa herramientas para comprobación de tipos
-from components.base_component import BaseComponent  # Importa la clase base para componentes
+from components.base_component import (
+    BaseComponent,
+)  # Importa la clase base para componentes
 
 # Importación condicional para la clase Actor solo en tiempo de comprobación de tipos
 if TYPE_CHECKING:
-    from entity import Actor  # Importa la clase Actor para el tipo de 'parent' en la clase Level
+    from entities.entity import (
+        Actor,
+    )  # Importa la clase Actor para el tipo de 'parent' en la clase Level
 
 
 class Level(BaseComponent):
     """Componente que gestiona el nivel, la experiencia y el aumento de nivel de un Actor."""
-    
+
     parent: Actor  # Actor al que pertenece este componente de nivel
 
     def __init__(
@@ -61,7 +65,9 @@ class Level(BaseComponent):
 
     def increase_level(self) -> None:
         """Aumenta el nivel del actor, deduciendo la experiencia necesaria."""
-        self.current_xp -= self.experience_to_next_level  # Resta la experiencia usada para subir de nivel
+        self.current_xp -= (
+            self.experience_to_next_level
+        )  # Resta la experiencia usada para subir de nivel
 
         self.current_level += 1  # Incrementa el nivel
 

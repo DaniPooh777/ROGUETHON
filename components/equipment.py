@@ -1,21 +1,36 @@
-""" 
+"""
 Este código define la clase 'Equipment', que es un componente que gestiona el equipo
 de un actor dentro de un juego. Permite al actor equiparse con armas y armaduras,
 calculando las bonificaciones de defensa y poder de los ítems equipados. Además,
 proporciona funciones para equipar y desquitar ítems, y generar mensajes relacionados
 con estos cambios (por ejemplo, cuando un ítem es equipado o desequipado).
 """
-from __future__ import annotations  # Se asegura de que las anotaciones de tipo que contienen referencias a clases se resuelvan correctamente.
-from typing import Optional, TYPE_CHECKING  # Importa las herramientas necesarias para anotaciones de tipo condicional y opcional.
-from components.base_component import BaseComponent  # Importa la clase base para los componentes de entidad.
-from equipment_types import EquipmentType  # Importa el tipo de equipo para diferenciar armas y armaduras.
+
+from __future__ import (
+    annotations,
+)  # Se asegura de que las anotaciones de tipo que contienen referencias a clases se resuelvan correctamente.
+from typing import (
+    Optional,
+    TYPE_CHECKING,
+)  # Importa las herramientas necesarias para anotaciones de tipo condicional y opcional.
+from components.base_component import (
+    BaseComponent,
+)  # Importa la clase base para los componentes de entidad.
+from ui.equipment_types import (
+    EquipmentType,
+)  # Importa el tipo de equipo para diferenciar armas y armaduras.
 
 # Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
 if TYPE_CHECKING:
-    from entity import Actor, Item  # Importa las clases Actor e Item solo durante la comprobación de tipos.
+    from entities.entity import (
+        Actor,
+        Item,
+    )  # Importa las clases Actor e Item solo durante la comprobación de tipos.
+
 
 class Equipment(BaseComponent):
     """Componente que gestiona el equipo (armas y armaduras) de un actor."""
+
     parent: Actor  # Se refiere al actor que tiene este componente de equipo.
 
     def __init__(self, weapon: Optional[Item] = None, armor: Optional[Item] = None):
@@ -81,7 +96,9 @@ class Equipment(BaseComponent):
         :param item: El ítem a verificar.
         :return: Verdadero si el ítem está equipado, de lo contrario Falso.
         """
-        return self.weapon == item or self.armor == item  # Verifica si el ítem está en el arma o la armadura equipada.
+        return (
+            self.weapon == item or self.armor == item
+        )  # Verifica si el ítem está en el arma o la armadura equipada.
 
     def unequip_message(self, item_name: str) -> None:
         """
@@ -118,15 +135,21 @@ class Equipment(BaseComponent):
         :param item: El ítem a equipar.
         :param add_message: Indica si debe agregarse un mensaje al registro (si es True, se agrega el mensaje).
         """
-        current_item = getattr(self, slot)  # Obtiene el ítem actual en el slot especificado.
+        current_item = getattr(
+            self, slot
+        )  # Obtiene el ítem actual en el slot especificado.
 
         if current_item is not None:
-            self.unequip_from_slot(slot, add_message)  # Si hay un ítem actual, se desquita antes de equipar el nuevo.
+            self.unequip_from_slot(
+                slot, add_message
+            )  # Si hay un ítem actual, se desquita antes de equipar el nuevo.
 
         setattr(self, slot, item)  # Asigna el nuevo ítem al slot especificado.
 
         if add_message:
-            self.equip_message(item.name)  # Muestra un mensaje indicando que el ítem fue equipado.
+            self.equip_message(
+                item.name
+            )  # Muestra un mensaje indicando que el ítem fue equipado.
 
     def unequip_from_slot(self, slot: str, add_message: bool) -> None:
         """
@@ -138,10 +161,14 @@ class Equipment(BaseComponent):
         :param slot: El nombre del slot del que se va a desquitar el ítem (arma o armadura).
         :param add_message: Indica si se debe agregar un mensaje al registro (si es True, se agrega el mensaje).
         """
-        current_item = getattr(self, slot)  # Obtiene el ítem actual en el slot especificado.
+        current_item = getattr(
+            self, slot
+        )  # Obtiene el ítem actual en el slot especificado.
 
         if add_message and current_item is not None:
-            self.unequip_message(current_item.name)  # Muestra un mensaje si hay un ítem que desquitar.
+            self.unequip_message(
+                current_item.name
+            )  # Muestra un mensaje si hay un ítem que desquitar.
 
         setattr(self, slot, None)  # Desquita el ítem del slot especificado.
 

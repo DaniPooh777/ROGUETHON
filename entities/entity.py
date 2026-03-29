@@ -3,22 +3,33 @@ Este módulo define las clases Entity, Actor e Item, que representan objetos gen
 Proporciona métodos para manejar la posición, movimiento, y relaciones jerárquicas entre entidades y sus componentes.
 """
 
-from __future__ import annotations  # Permite las anotaciones de tipo dentro de la misma clase.
-from typing import Optional, Tuple, Type, TypeVar, Union, TYPE_CHECKING # Importa herramientas para la comprobación de tipos.
-from render_order import RenderOrder # Importa el orden de renderizado para las entidades.
+from __future__ import (
+    annotations,
+)  # Permite las anotaciones de tipo dentro de la misma clase.
+from typing import (
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    TYPE_CHECKING,
+)  # Importa herramientas para la comprobación de tipos.
+from ui.render_order import (
+    RenderOrder,
+)  # Importa el orden de renderizado para las entidades.
 
-import copy # Importa el módulo copy para crear copias profundas de objetos.
-import math # Importa el módulo math para operaciones matemáticas.
-import color # Importa el módulo de colores personalizados.
+import copy  # Importa el módulo copy para crear copias profundas de objetos.
+import math  # Importa el módulo math para operaciones matemáticas.
+from ui import colors as color  # Importa el módulo de colores personalizados.
 
 
 # Esto es para evitar errores de referencia circular, ya que estos módulos se importan más abajo en el código.
-if TYPE_CHECKING: 
-    from components.ai import BaseAI 
+if TYPE_CHECKING:
+    from components.ai import BaseAI
     from components.consumable import Consumable
     from components.fighter import Fighter
     from components.inventory import Inventory
-    from game_map import GameMap
+    from core.game_map import GameMap
     from components.level import Level
     from components.equippable import Equippable
     from components.equipment import Equipment
@@ -26,13 +37,16 @@ if TYPE_CHECKING:
 # Definición de un tipo genérico T, que se usa para referirse a la clase Entity.
 T = TypeVar("T", bound="Entity")
 
+
 # La clase Entity representa cualquier objeto en el juego (jugador, enemigo, ítem, etc.).
 class Entity:
     """
     Un objeto genérico para representar jugadores, enemigos, ítems, etc.
     """
 
-    parent: Union[GameMap, Inventory]  # El objeto al que pertenece (puede ser un mapa o inventario).
+    parent: Union[
+        GameMap, Inventory
+    ]  # El objeto al que pertenece (puede ser un mapa o inventario).
 
     def __init__(
         self,
@@ -53,15 +67,19 @@ class Entity:
         self.name = name  # Nombre del objeto
         self.blocks_movement = blocks_movement  # Si bloquea el movimiento
         self.render_order = render_order  # Orden de renderizado
-        
+
         # Si el objeto tiene un padre (por ejemplo, un mapa), se lo asigna
         if parent:
             self.parent = parent  # Asigna el padre
-            parent.entities.add(self)  # Añade este objeto a la lista de entidades del padre
+            parent.entities.add(
+                self
+            )  # Añade este objeto a la lista de entidades del padre
 
     @property
     def gamemap(self) -> GameMap:
-        return self.parent.gamemap  # Devuelve el mapa de juego al que pertenece el objeto
+        return (
+            self.parent.gamemap
+        )  # Devuelve el mapa de juego al que pertenece el objeto
 
     def spawn(self: T, gamemap: GameMap, x: int, y: int) -> T:
         """Crea una copia del objeto y lo coloca en una nueva ubicación."""
@@ -79,7 +97,9 @@ class Entity:
         if gamemap:
             if hasattr(self, "parent"):  # Verifica si el objeto tiene un padre
                 if self.parent is self.gamemap:  # Si el padre es el mapa actual
-                    self.gamemap.entities.remove(self)  # Elimina al objeto del mapa anterior
+                    self.gamemap.entities.remove(
+                        self
+                    )  # Elimina al objeto del mapa anterior
             self.parent = gamemap  # Asigna el nuevo mapa como padre
             gamemap.entities.add(self)  # Añade el objeto al nuevo mapa
 
@@ -87,7 +107,9 @@ class Entity:
         """
         Devuelve la distancia entre este objeto y un punto dado en el mapa.
         """
-        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)  # Calcula la distancia euclidiana
+        return math.sqrt(
+            (x - self.x) ** 2 + (y - self.y) ** 2
+        )  # Calcula la distancia euclidiana
 
     def move(self, dx: int, dy: int) -> None:
         # Mueve el objeto por una cantidad dada de píxeles (dx, dy)
@@ -158,8 +180,12 @@ class Item(Entity):
         char: str = "?",
         color: Tuple[int, int, int] = (255, 255, 255),
         name: str = "<Unnamed>",
-        consumable: Optional[Consumable] = None,  # El objeto es consumible si se especifica
-        equippable: Optional[Equippable] = None,  # El objeto es equipable si se especifica
+        consumable: Optional[
+            Consumable
+        ] = None,  # El objeto es consumible si se especifica
+        equippable: Optional[
+            Equippable
+        ] = None,  # El objeto es equipable si se especifica
     ):
         super().__init__(  # Llamada al constructor de la clase base (Entity)
             x=x,

@@ -4,11 +4,19 @@ Proporciona clases para manejar mensajes individuales y un log completo de mensa
 Los mensajes pueden apilarse si son repetitivos y se renderizan en una región específica de la consola.
 """
 
-from typing import Iterable, List, Reversible, Tuple  # Importaciones necesarias para anotaciones de tipo.
+from typing import (
+    Iterable,
+    List,
+    Reversible,
+    Tuple,
+)  # Importaciones necesarias para anotaciones de tipo.
 
 import textwrap  # Se importa para poder ajustar el texto a un ancho determinado.
 import tcod  # Importa la biblioteca tcod, que se utiliza para la consola y gráficos del juego.
-import color  # Importa un módulo de colores que se utilizará en la visualización de los mensajes.
+from ui import (
+    colors as color,
+)  # Importa un módulo de colores que se utilizará en la visualización de los mensajes.
+
 
 # Clase que representa un mensaje individual en el log.
 class Message:
@@ -24,13 +32,18 @@ class Message:
             return f"{self.plain_text} (x{self.count})"  # Si se repite, muestra el contador entre paréntesis.
         return self.plain_text  # Si solo se muestra una vez, solo el texto.
 
+
 # Clase que maneja el registro y renderizado de los mensajes.
 class MessageLog:
     def __init__(self) -> None:
         self.messages: List[Message] = []  # Lista para almacenar los mensajes.
 
     def add_message(
-        self, text: str, fg: Tuple[int, int, int] = color.white, *, stack: bool = True,
+        self,
+        text: str,
+        fg: Tuple[int, int, int] = color.white,
+        *,
+        stack: bool = True,
     ) -> None:
         """
         Agrega un mensaje al registro de mensajes.
@@ -44,13 +57,20 @@ class MessageLog:
         if stack and self.messages and text == self.messages[-1].plain_text:
             self.messages[-1].count += 1
         else:
-            self.messages.append(Message(text, fg))  # Si no, agrega el nuevo mensaje al log.
+            self.messages.append(
+                Message(text, fg)
+            )  # Si no, agrega el nuevo mensaje al log.
 
         # Debugging: Imprime el texto del mensaje para verificar el contenido
         print(f"Mensaje visible: {text}")
 
     def render(
-        self, console: tcod.console.Console, x: int, y: int, width: int, height: int,
+        self,
+        console: tcod.console.Console,
+        x: int,
+        y: int,
+        width: int,
+        height: int,
     ) -> None:
         """
         Renderiza el log de mensajes sobre la consola.
@@ -68,7 +88,9 @@ class MessageLog:
         """
         for line in string.splitlines():  # Maneja las nuevas líneas dentro del mensaje.
             yield from textwrap.wrap(
-                line, width, expand_tabs=True,
+                line,
+                width,
+                expand_tabs=True,
             )
 
     @classmethod

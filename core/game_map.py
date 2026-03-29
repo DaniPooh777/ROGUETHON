@@ -12,17 +12,19 @@ from typing import Iterable, Iterator, Optional, TYPE_CHECKING
 
 # Importa la librería numpy para manipular arrays de forma eficiente.
 import numpy as np  # type: ignore
+
 # Importa la clase Console de tcod para renderizar la consola en pantalla.
 from tcod.console import Console
 
 # Importa las clases Actor, Item y otros tipos necesarios del archivo 'entity'.
-from entity import Actor, Item
-import tile_types  # Importa tipos de tile, como 'wall' y 'SHROUD'.
+from entities.entity import Actor, Item
+import core.tile_types as tile_types  # Importa tipos de tile, como 'wall' y 'SHROUD'.
 
 # Si TYPE_CHECKING está activo, realiza importaciones para chequear tipos.
 if TYPE_CHECKING:
-    from engine import Engine  # Importa la clase Engine.
-    from entity import Entity  # Importa la clase Entity.
+    from core.engine import Engine  # Importa la clase Engine.
+    from entities.entity import Entity  # Importa la clase Entity.
+
 
 # Clase que representa el mapa del juego.
 class GameMap:
@@ -33,7 +35,9 @@ class GameMap:
         self.engine = engine  # Referencia al motor del juego.
         self.width, self.height = width, height  # Dimensiones del mapa.
         self.entities = set(entities)  # Conjunto de entidades en el mapa.
-        self.tiles = np.full((width, height), fill_value=tile_types.wall, order="F")  # Mapa de tiles, por defecto todo es una pared.
+        self.tiles = np.full(
+            (width, height), fill_value=tile_types.wall, order="F"
+        )  # Mapa de tiles, por defecto todo es una pared.
 
         # Matrices que controlan lo que el jugador puede ver y lo que ha explorado.
         self.visible = np.full(
@@ -65,7 +69,9 @@ class GameMap:
         yield from (entity for entity in self.entities if isinstance(entity, Item))
 
     def get_blocking_entity_at_location(
-        self, location_x: int, location_y: int,
+        self,
+        location_x: int,
+        location_y: int,
     ) -> Optional[Entity]:
         """Devuelve una entidad que bloquea el movimiento en una ubicación dada, si existe."""
         for entity in self.entities:
@@ -97,7 +103,10 @@ class GameMap:
         Si no ha sido explorado, se dibuja como "SHROUD".
         """
         console.rgb[0 : self.width, 0 : self.height] = np.select(
-            condlist=[self.visible, self.explored],  # Condiciones para elegir los colores.
+            condlist=[
+                self.visible,
+                self.explored,
+            ],  # Condiciones para elegir los colores.
             choicelist=[self.tiles["light"], self.tiles["dark"]],
             default=tile_types.SHROUD,  # Si no se cumplen las condiciones, usa "SHROUD".
         )
@@ -114,6 +123,7 @@ class GameMap:
                     x=entity.x, y=entity.y, string=entity.char, fg=entity.color
                 )
 
+
 # Clase que gestiona el mundo del juego, incluyendo la generación de mapas y el manejo de pisos.
 class GameWorld:
     """
@@ -129,7 +139,7 @@ class GameWorld:
         max_rooms: int,
         room_min_size: int,
         room_max_size: int,
-        current_floor: int = 0
+        current_floor: int = 0,
     ):
         # Inicializa el mundo del juego con sus parámetros.
         self.engine = engine  # Referencia al motor del juego.
@@ -141,7 +151,9 @@ class GameWorld:
         self.current_floor = current_floor  # Piso actual del juego.
 
     def generate_floor(self) -> None:
-        from procgen import generate_dungeon  # Importa la función para generar el dungeon.
+        from systems.procgen import (
+            generate_dungeon,
+        )  # Importa la función para generar el dungeon.
 
         self.current_floor += 1  # Aumenta el número de piso cuando se genera uno nuevo.
 

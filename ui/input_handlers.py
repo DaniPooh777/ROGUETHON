@@ -3,35 +3,49 @@ Este módulo gestiona los manejadores de eventos del juego, incluyendo la intera
 Proporciona clases para manejar entradas del teclado, clics del ratón y renderizado de mensajes emergentes.
 """
 
-from __future__ import annotations  # Permite el uso de anotaciones de tipo que se refieren a clases que aún no se han definido.
-from actions import (Action, BumpAction, PickupAction, RevealHiddenWallAction, WaitAction,) # Importa clases específicas del módulo de acciones.
-from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union  # Importa tipos para anotaciones.
+from __future__ import (
+    annotations,
+)  # Permite el uso de anotaciones de tipo que se refieren a clases que aún no se han definido.
+from systems.actions import (
+    Action,
+    BumpAction,
+    PickupAction,
+    RevealHiddenWallAction,
+    WaitAction,
+)  # Importa clases específicas del módulo de acciones.
+from typing import (
+    Callable,
+    Optional,
+    Tuple,
+    TYPE_CHECKING,
+    Union,
+)  # Importa tipos para anotaciones.
 
 import tcod  # Librería para desarrollo de juegos roguelike.
 import libtcodpy  # Versión alternativa de la librería libtcod.
-import actions  # Importa el módulo de acciones del juego.
-import color  # Módulo para manejar colores en el juego.
-import exceptions  # Módulo que define excepciones personalizadas.
-import tile_types  # Módulo que define tipos de tiles (casillas) del mapa.
+import systems.actions as actions  # Importa el módulo de acciones del juego.
+from ui import colors as color  # Módulo para manejar colores en el juego.
+import core.exceptions as exceptions  # Módulo que define excepciones personalizadas.
+import core.tile_types as tile_types  # Módulo que define tipos de tiles (casillas) del mapa.
 import os  # Módulo para interactuar con el sistema operativo.
 
 # Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
 if TYPE_CHECKING:
-    from engine import Engine 
-    from entity import Item  
+    from core.engine import Engine
+    from entities.entity import Item
 
 
 # Diccionario que asocia las teclas de dirección a los movimientos en el mapa.
 # Cada tecla de dirección corresponde a un desplazamiento en el eje X o Y.
 MOVE_KEYS = {
     tcod.event.KeySym.UP: (0, -1),  # Mover hacia arriba
-    tcod.event.KeySym.w: (0, -1),   # Mover hacia arriba (también con 'w')
+    tcod.event.KeySym.w: (0, -1),  # Mover hacia arriba (también con 'w')
     tcod.event.KeySym.DOWN: (0, 1),  # Mover hacia abajo
-    tcod.event.KeySym.s: (0, 1),    # Mover hacia abajo (también con 's')
-    tcod.event.KeySym.LEFT: (-1, 0), # Mover hacia la izquierda
-    tcod.event.KeySym.a: (-1, 0),   # Mover hacia la izquierda (también con 'a')
-    tcod.event.KeySym.RIGHT: (1, 0),# Mover hacia la derecha
-    tcod.event.KeySym.d: (1, 0),    # Mover hacia la derecha (también con 'd')
+    tcod.event.KeySym.s: (0, 1),  # Mover hacia abajo (también con 's')
+    tcod.event.KeySym.LEFT: (-1, 0),  # Mover hacia la izquierda
+    tcod.event.KeySym.a: (-1, 0),  # Mover hacia la izquierda (también con 'a')
+    tcod.event.KeySym.RIGHT: (1, 0),  # Mover hacia la derecha
+    tcod.event.KeySym.d: (1, 0),  # Mover hacia la derecha (también con 'd')
 }
 
 # Tecla para esperar la acción. En este caso, solo la tecla ESPACIO.
@@ -54,6 +68,7 @@ Si se retorna un manejador, este será el manejador de eventos activo para los s
 Si se retorna una acción y es válida, se cambia al manejador de eventos principal (MainGameEventHandler).
 """
 
+
 # Clase base para los manejadores de eventos del juego. Hereda de EventDispatch para despachar eventos.
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
@@ -61,20 +76,27 @@ class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
         state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
             return state
-        assert not isinstance(state, Action), f"{self!r} no puede gestionar las acciones."
+        assert not isinstance(state, Action), (
+            f"{self!r} no puede gestionar las acciones."
+        )
         return self
 
     def on_render(self, console: tcod.Console) -> None:
         raise NotImplementedError()
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
-        if hasattr(self, 'engine') and self.engine.player.is_alive:
+        if hasattr(self, "engine") and self.engine.player.is_alive:
             self.engine.save_as("savegame.sav")
-        self.engine.message_log.add_message("Partida guardada antes de salir.", color.welcome_text)
+        self.engine.message_log.add_message(
+            "Partida guardada antes de salir.", color.welcome_text
+        )
         raise SystemExit()
 
-    def ev_mousemotion(self, event): pass
-    def ev_mousebuttondown(self, event): pass
+    def ev_mousemotion(self, event):
+        pass
+
+    def ev_mousebuttondown(self, event):
+        pass
 
 
 # Manejador de eventos que muestra un mensaje emergente (popup).
@@ -109,7 +131,9 @@ class PopupMessage(BaseEventHandler):
 # Manejador de eventos principal del juego, que maneja la interacción del jugador.
 class EventHandler(BaseEventHandler):
     def __init__(self, engine: Engine):
-        self.engine = engine  # El motor del juego, que contiene la lógica y el estado del juego.
+        self.engine = (
+            engine  # El motor del juego, que contiene la lógica y el estado del juego.
+        )
 
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Gestiona eventos para los manejadores de entrada con el motor del juego."""
@@ -119,7 +143,9 @@ class EventHandler(BaseEventHandler):
         if self.handle_action(action_or_state):  # Si se gestionó una acción válida
             if not self.engine.player.is_alive:  # Si el jugador murió
                 return GameOverEventHandler(self.engine)
-            elif self.engine.player.level.requires_level_up:  # Si el jugador sube de nivel
+            elif (
+                self.engine.player.level.requires_level_up
+            ):  # Si el jugador sube de nivel
                 return LevelUpEventHandler(self.engine)
             return MainGameEventHandler(self.engine)  # Retorna al manejador principal.
         return self
@@ -135,6 +161,7 @@ class EventHandler(BaseEventHandler):
     def on_render(self, console: tcod.console.Console) -> None:
         """Renderiza el estado actual del juego en la consola."""
         self.engine.render(console)  # Dibuja el estado actual del juego en la consola.
+
 
 # Manejador de eventos para acciones que requieren una entrada especial del usuario.
 class AskUserEventHandler(EventHandler):
@@ -206,10 +233,14 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             x=x + 1, y=y + 2, string=f"XP: {self.engine.player.level.current_xp}"
         )
         console.print(
-            x=x + 1, y=y + 3, string=f"XP para el proximo nivel: {self.engine.player.level.experience_to_next_level}",
+            x=x + 1,
+            y=y + 3,
+            string=f"XP para el proximo nivel: {self.engine.player.level.experience_to_next_level}",
         )
         console.print(
-            x=x + 1, y=y + 5, string=f"Salud: {self.engine.player.fighter.hp}/{self.engine.player.fighter.max_hp}"
+            x=x + 1,
+            y=y + 5,
+            string=f"Salud: {self.engine.player.fighter.hp}/{self.engine.player.fighter.max_hp}",
         )
         console.print(
             x=x + 1, y=y + 6, string=f"Ataque: {self.engine.player.fighter.power}"
@@ -217,6 +248,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1, y=y + 7, string=f"Defensa: {self.engine.player.fighter.defense}"
         )
+
 
 # Manejador de eventos para la subida de nivel del jugador.
 class LevelUpEventHandler(AskUserEventHandler):
@@ -290,6 +322,7 @@ class LevelUpEventHandler(AskUserEventHandler):
         """
         return None  # Impide que el clic de ratón cierre el menú de subida de nivel.
 
+
 # Manejador de eventos para gestionar la selección de un ítem en el inventario.
 class InventoryEventHandler(AskUserEventHandler):
     """Este manejador permite al usuario seleccionar un item.
@@ -305,12 +338,14 @@ class InventoryEventHandler(AskUserEventHandler):
         La posición del menú se ajusta según la ubicación del jugador, para que siempre esté visible.
         """
         super().on_render(console)  # Llama a la renderización del manejador padre.
-        
+
         # Obtiene el número de ítems en el inventario del jugador.
         number_of_items_in_inventory = len(self.engine.player.inventory.items)
 
-        height = number_of_items_in_inventory + 2  # Altura del menú basada en el número de ítems.
-        
+        height = (
+            number_of_items_in_inventory + 2
+        )  # Altura del menú basada en el número de ítems.
+
         if height <= 3:
             height = 3  # Asegura que el menú tenga al menos 3 líneas de altura.
 
@@ -351,26 +386,34 @@ class InventoryEventHandler(AskUserEventHandler):
                 # Muestra el ítem en la consola.
                 console.print(x + 1, y + i + 1, item_string)
         else:
-            console.print(x + 1, y + 1, "(Vacio)")  # Si no hay ítems, muestra un mensaje indicando que está vacío.
+            console.print(
+                x + 1, y + 1, "(Vacio)"
+            )  # Si no hay ítems, muestra un mensaje indicando que está vacío.
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         player = self.engine.player  # Obtiene al jugador.
         key = event.sym  # Obtiene la tecla presionada.
-        index = key - tcod.event.KeySym.a  # Calcula el índice del ítem seleccionado (a, b, c...).
+        index = (
+            key - tcod.event.KeySym.a
+        )  # Calcula el índice del ítem seleccionado (a, b, c...).
 
         # Verifica que la tecla presionada corresponda a un ítem válido en el inventario (índice de 0 a 26).
         if 0 <= index <= 26:
             try:
-                selected_item = player.inventory.items[index]  # Obtiene el ítem seleccionado.
+                selected_item = player.inventory.items[
+                    index
+                ]  # Obtiene el ítem seleccionado.
             except IndexError:
                 # Si la tecla presionada está fuera del rango, muestra un mensaje de error.
                 self.engine.message_log.add_message("Tecla no valida.", color.invalid)
                 return None  # No hace nada si la tecla es inválida.
-            
+
             # Llama al método correspondiente para gestionar la selección del ítem.
             return self.on_item_selected(selected_item)
-        
-        return super().ev_keydown(event)  # Llama al manejador de eventos padre si la tecla no es válida.
+
+        return super().ev_keydown(
+            event
+        )  # Llama al manejador de eventos padre si la tecla no es válida.
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         """Método llamado cuando el usuario selecciona un ítem válido.
@@ -392,11 +435,11 @@ class InventoryActivateHandler(InventoryEventHandler):
         # Si el ítem es consumible, obtiene la acción asociada a consumirlo.
         if item.consumable:
             return item.consumable.get_action(self.engine.player)
-        
+
         # Si el ítem es equipable, devuelve la acción de equiparlo.
         elif item.equippable:
             return actions.EquipAction(self.engine.player, item)
-        
+
         return None  # Si el ítem no es ni consumible ni equipable, no hace nada.
 
 
@@ -412,6 +455,7 @@ class InventoryDropHandler(InventoryEventHandler):
         # Llama a la acción para soltar el ítem seleccionado.
         return actions.DropItem(self.engine.player, item)
 
+
 # Clase para manejar la selección de un índice en el mapa por parte del jugador.
 class SelectIndexHandler(AskUserEventHandler):
     """Maneja la solicitud del usuario para un índice en el mapa."""
@@ -420,19 +464,26 @@ class SelectIndexHandler(AskUserEventHandler):
         """Inicializa el manejador y establece el cursor en la posición del jugador."""
         super().__init__(engine)  # Llama al constructor de la clase base.
         player = self.engine.player  # Obtiene al jugador.
-        engine.mouse_location = player.x, player.y  # Coloca el cursor en la posición del jugador.
+        engine.mouse_location = (
+            player.x,
+            player.y,
+        )  # Coloca el cursor en la posición del jugador.
 
     def on_render(self, console: tcod.console.Console) -> None:
         """Destaca el tile (casilla) bajo el cursor."""
         super().on_render(console)  # Llama al método de renderizado del manejador base.
         x, y = self.engine.mouse_location  # Obtiene la posición del cursor.
-        console.rgb["bg"][x, y] = color.white  # Cambia el color de fondo del tile bajo el cursor.
-        console.rgb["fg"][x, y] = color.black  # Cambia el color de texto del tile bajo el cursor.
+        console.rgb["bg"][x, y] = (
+            color.white
+        )  # Cambia el color de fondo del tile bajo el cursor.
+        console.rgb["fg"][x, y] = (
+            color.black
+        )  # Cambia el color de texto del tile bajo el cursor.
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         """Maneja la entrada de teclas para mover el cursor o confirmar la selección."""
         key = event.sym  # Obtiene la tecla presionada.
-        
+
         # Si la tecla es una de las teclas de movimiento, mueve el cursor.
         if key in MOVE_KEYS:
             modifier = 1  # El modificador define la velocidad del movimiento.
@@ -447,7 +498,7 @@ class SelectIndexHandler(AskUserEventHandler):
             dx, dy = MOVE_KEYS[key]  # Obtiene el desplazamiento de la tecla presionada.
             x += dx * modifier  # Aplica el desplazamiento en el eje X.
             y += dy * modifier  # Aplica el desplazamiento en el eje Y.
-            
+
             # Restringe el cursor dentro de los límites del mapa.
             x = max(0, min(x, self.engine.game_map.width - 1))
             y = max(0, min(y, self.engine.game_map.height - 1))
@@ -458,7 +509,9 @@ class SelectIndexHandler(AskUserEventHandler):
         elif key in CONFIRM_KEYS:
             return self.on_index_selected(*self.engine.mouse_location)
 
-        return super().ev_keydown(event)  # Llama al manejador de eventos base si no es ninguna de las anteriores.
+        return super().ev_keydown(
+            event
+        )  # Llama al manejador de eventos base si no es ninguna de las anteriores.
 
     def on_index_selected(self, x: int, y: int) -> Optional[ActionOrHandler]:
         """Método llamado cuando se selecciona un índice. Este método debe ser implementado por las subclases."""
@@ -482,11 +535,15 @@ class SingleRangedAttackHandler(SelectIndexHandler):
         self, engine: Engine, callback: Callable[[Tuple[int, int]], Optional[Action]]
     ):
         super().__init__(engine)  # Inicializa la clase base.
-        self.callback = callback  # Guarda la función de callback para ejecutar el ataque.
+        self.callback = (
+            callback  # Guarda la función de callback para ejecutar el ataque.
+        )
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         """Cuando se selecciona un índice, ejecuta la acción de ataque usando el callback."""
-        return self.callback((x, y))  # Llama al callback con las coordenadas seleccionadas.
+        return self.callback(
+            (x, y)
+        )  # Llama al callback con las coordenadas seleccionadas.
 
 
 # Subclase de SelectIndexHandler que maneja el ataque en área dentro de un radio determinado.
@@ -501,7 +558,9 @@ class AreaRangedAttackHandler(SelectIndexHandler):
     ):
         super().__init__(engine)  # Inicializa la clase base.
         self.radius = radius  # Guarda el radio del área de efecto.
-        self.callback = callback  # Guarda la función de callback para ejecutar el ataque en área.
+        self.callback = (
+            callback  # Guarda la función de callback para ejecutar el ataque en área.
+        )
 
     def on_render(self, console: tcod.console.Console) -> None:
         """Destaca el área de ataque alrededor del cursor."""
@@ -513,15 +572,18 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         console.draw_frame(
             x=x - self.radius - 1,  # Ajusta la posición en X para centrar el área.
             y=y - self.radius - 1,  # Ajusta la posición en Y para centrar el área.
-            width=self.radius ** 2,  # Calcula el ancho del área de ataque.
-            height=self.radius ** 2,  # Calcula la altura del área de ataque.
+            width=self.radius**2,  # Calcula el ancho del área de ataque.
+            height=self.radius**2,  # Calcula la altura del área de ataque.
             fg=color.red,  # Color del marco de la zona afectada.
             clear=False,  # No limpia el área, solo dibuja el marco.
         )
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         """Cuando se selecciona un índice, ejecuta la acción de ataque en área usando el callback."""
-        return self.callback((x, y))  # Llama al callback con las coordenadas seleccionadas.
+        return self.callback(
+            (x, y)
+        )  # Llama al callback con las coordenadas seleccionadas.
+
 
 # Clase principal que maneja los eventos del juego mientras está en curso.
 class MainGameEventHandler(EventHandler):
@@ -552,14 +614,17 @@ class MainGameEventHandler(EventHandler):
         # Si la tecla presionada corresponde a una de movimiento, ejecuta un movimiento.
         if key in MOVE_KEYS:
             dx, dy = MOVE_KEYS[key]  # Obtiene el desplazamiento en X y Y.
-            action = BumpAction(player, dx, dy)  # Crea la acción de movimiento (BumpAction).
+            action = BumpAction(
+                player, dx, dy
+            )  # Crea la acción de movimiento (BumpAction).
         # Si la tecla presionada corresponde a una tecla de espera, ejecuta la acción de espera.
         elif key in WAIT_KEYS:
             action = WaitAction(player)
 
         # Si se presiona la tecla Escape, regresa al menú principal.
         elif key == tcod.event.KeySym.ESCAPE:
-            from setup_game import MainMenu
+            from core.setup_game import MainMenu
+
             return MainMenu(self.engine.context, self.engine.console)
         # Si se presiona la tecla H, muestra el historial de mensajes.
         elif key == tcod.event.KeySym.h:
@@ -572,15 +637,15 @@ class MainGameEventHandler(EventHandler):
         # Si se presiona la tecla I, abre la pantalla de inventario para usar un item.
         elif key == tcod.event.KeySym.i:
             return InventoryActivateHandler(self.engine)
-        
+
         # Si se presiona la tecla F, abre la pantalla de inventario para soltar un item.
         elif key == tcod.event.KeySym.f:
             return InventoryDropHandler(self.engine)
-        
+
         # Si se presiona la tecla C, abre la pantalla de estadísticas del personaje.
         elif key == tcod.event.KeySym.c:
             return CharacterScreenEventHandler(self.engine)
-        
+
         # Si se presiona la tecla de barra inclinada (/), permite al jugador mirar alrededor.
         elif key == tcod.event.KeySym.SLASH:
             return LookHandler(self.engine)
@@ -619,17 +684,25 @@ class GameOverEventHandler(EventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
         """Maneja las opciones seleccionadas por el jugador."""
         if event.sym == tcod.event.KeySym.n:  # Iniciar nueva partida
-            from setup_game import new_game
-            engine = new_game(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
-            engine.player.name = self.engine.player.name  # Mantiene el nombre del jugador anterior.
+            from core.setup_game import new_game
+
+            engine = new_game(
+                self.engine.context, self.engine.console
+            )  # Pasa el contexto y la consola.
+            engine.player.name = (
+                self.engine.player.name
+            )  # Mantiene el nombre del jugador anterior.
             engine.message_log.add_message(
                 f"Bienvenido, {engine.player.name}, a una nueva mazmorra.",
-                color.welcome_text
+                color.welcome_text,
             )
             return MainGameEventHandler(engine)
         elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
-            from setup_game import MainMenu
-            return MainMenu(self.engine.context, self.engine.console)  # Pasa el contexto y la consola.
+            from core.setup_game import MainMenu
+
+            return MainMenu(
+                self.engine.context, self.engine.console
+            )  # Pasa el contexto y la consola.
         elif event.sym == tcod.event.KeySym.q:  # Salir del juego
             raise exceptions.QuitWithoutSaving()  # Cierra la ventana sin guardar la partida.
         return None
@@ -650,18 +723,27 @@ class HistoryViewer(EventHandler):
 
     def __init__(self, engine: Engine):
         super().__init__(engine)  # Llama al constructor de la clase base.
-        self.log_length = len(engine.message_log.messages)  # Obtiene la longitud del historial de mensajes.
+        self.log_length = len(
+            engine.message_log.messages
+        )  # Obtiene la longitud del historial de mensajes.
         self.cursor = self.log_length - 1  # Establece el cursor en el último mensaje.
 
     def on_render(self, console: tcod.console.Console) -> None:
         super().on_render(console)  # Dibuja el estado principal como fondo.
 
-        log_console = tcod.console.Console(console.width - 6, console.height - 6)  # Crea un área para mostrar el historial.
+        log_console = tcod.console.Console(
+            console.width - 6, console.height - 6
+        )  # Crea un área para mostrar el historial.
 
         # Dibuja un marco con un título personalizado para la ventana de historial.
         log_console.draw_frame(0, 0, log_console.width, log_console.height)
         log_console.print_box(
-            0, 0, log_console.width, 1, "┤Historial de mensajes├", alignment=libtcodpy.CENTER
+            0,
+            0,
+            log_console.width,
+            1,
+            "┤Historial de mensajes├",
+            alignment=libtcodpy.CENTER,
         )
 
         # Dibuja los mensajes del historial en la ventana del historial.
@@ -673,7 +755,9 @@ class HistoryViewer(EventHandler):
             log_console.height - 2,
             self.engine.message_log.messages[: self.cursor + 1],
         )
-        log_console.blit(console, 3, 3)  # Dibuja la consola del historial en la consola principal.
+        log_console.blit(
+            console, 3, 3
+        )  # Dibuja la consola del historial en la consola principal.
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[MainGameEventHandler]:
         """Maneja el desplazamiento por el historial con las teclas de flecha y otras teclas."""
@@ -701,8 +785,13 @@ class GameEventHandler(EventHandler):
     def handle_action(self, action: Optional[Action]) -> None:
         # Verifica si la acción es un BumpAction (intento de moverse a una casilla).
         if isinstance(action, BumpAction):
-            target_x, target_y = action.target_x, action.target_y  # Obtiene las coordenadas objetivo.
-            tile = self.engine.game_map.tiles[target_x, target_y]  # Obtiene el tipo de tile en las coordenadas objetivo.
+            target_x, target_y = (
+                action.target_x,
+                action.target_y,
+            )  # Obtiene las coordenadas objetivo.
+            tile = self.engine.game_map.tiles[
+                target_x, target_y
+            ]  # Obtiene el tipo de tile en las coordenadas objetivo.
 
             # Si el jugador intenta moverse hacia una pared falsa, cambia la acción para revelarla.
             if tile == tile_types.hidden_wall_tile:

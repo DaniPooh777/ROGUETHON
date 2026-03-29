@@ -1,20 +1,33 @@
 """
-Este código define la clase `Fighter`, que es un componente del actor en un juego tipo roguelike. 
+Este código define la clase `Fighter`, que es un componente del actor en un juego tipo roguelike.
 La clase se encarga de manejar las estadísticas de combate de un actor, incluyendo su salud, defensa, y poder de ataque.
 También implementa funcionalidades como curar al actor, recibir daño, activar efectos defensivos, y gestionar su muerte.
 """
 
-from __future__ import annotations  # Permite usar anotaciones de tipo con cadenas para clases no definidas aún.
-from typing import TYPE_CHECKING  # Importa TYPE_CHECKING para importaciones que solo se usan en la verificación de tipos.
-from components.base_component import BaseComponent  # Importa la clase BaseComponent, de la que hereda Fighter.
-from render_order import RenderOrder  # Importa el enum RenderOrder para controlar el orden de renderización de los actores.
+from __future__ import (
+    annotations,
+)  # Permite usar anotaciones de tipo con cadenas para clases no definidas aún.
+from typing import (
+    TYPE_CHECKING,
+)  # Importa TYPE_CHECKING para importaciones que solo se usan en la verificación de tipos.
+from components.base_component import (
+    BaseComponent,
+)  # Importa la clase BaseComponent, de la que hereda Fighter.
+from ui.render_order import (
+    RenderOrder,
+)  # Importa el enum RenderOrder para controlar el orden de renderización de los actores.
 
-import color  # Importa el módulo 'color' que gestiona los colores para los mensajes de log.
+from ui import (
+    colors as color,
+)  # Importa el módulo 'color' que gestiona los colores para los mensajes de log.
 import os  # Importa el módulo 'os' para manejar operaciones del sistema de archivos.
 
 # Importación condicional para la clase 'Item', que solo ocurre en la fase de comprobación de tipos, mejorando la eficiencia en tiempo de ejecución.
 if TYPE_CHECKING:
-    from entity import Actor  # Importa la clase Actor para el tipo de 'parent' de Fighter
+    from entities.entity import (
+        Actor,
+    )  # Importa la clase Actor para el tipo de 'parent' de Fighter
+
 
 class Fighter(BaseComponent):
     """Componente que representa las estadísticas de combate de un Actor (salud, defensa, poder de ataque)."""
@@ -39,7 +52,9 @@ class Fighter(BaseComponent):
     @hp.setter
     def hp(self, value: int) -> None:
         """Establece la salud, asegurando que no sea menor que 0 ni mayor que la salud máxima."""
-        self._hp = max(0, min(value, self.max_hp))  # Limita la salud entre 0 y el valor máximo
+        self._hp = max(
+            0, min(value, self.max_hp)
+        )  # Limita la salud entre 0 y el valor máximo
         if self._hp == 0 and self.parent.ai:
             self.die()  # Si la salud llega a 0, el actor muere
 
@@ -57,7 +72,9 @@ class Fighter(BaseComponent):
     def defense_bonus(self) -> int:
         """Obtiene el bono de defensa proporcionado por el equipo del actor (si tiene)."""
         if self.parent.equipment:
-            return self.parent.equipment.defense_bonus  # Retorna el bono de defensa del equipo
+            return (
+                self.parent.equipment.defense_bonus
+            )  # Retorna el bono de defensa del equipo
         else:
             return 0  # Si no tiene equipo, no hay bono
 
@@ -65,7 +82,9 @@ class Fighter(BaseComponent):
     def power_bonus(self) -> int:
         """Obtiene el bono de poder de ataque proporcionado por el equipo del actor (si tiene)."""
         if self.parent.equipment:
-            return self.parent.equipment.power_bonus  # Retorna el bono de poder del equipo
+            return (
+                self.parent.equipment.power_bonus
+            )  # Retorna el bono de poder del equipo
         else:
             return 0  # Si no tiene equipo, no hay bono
 
@@ -73,7 +92,9 @@ class Fighter(BaseComponent):
         """Se ejecuta cuando el actor muere. Cambia su estado y muestra un mensaje de muerte."""
         # Si el actor es el jugador, se muestra un mensaje de muerte personalizado
         if self.engine.player is self.parent:
-            self.engine.last_player_name = self.parent.name  # Guarda el nombre del jugador antes de cambiarlo
+            self.engine.last_player_name = (
+                self.parent.name
+            )  # Guarda el nombre del jugador antes de cambiarlo
             death_message = "Has muerto"
             death_message_color = color.player_die
 
@@ -90,7 +111,9 @@ class Fighter(BaseComponent):
         self.parent.color = (191, 0, 0)  # Rojo para indicar que está muerto
         self.parent.blocks_movement = False  # Deja que los demás actores pasen por él
         self.parent.ai = None  # El actor deja de tener IA
-        self.parent.render_order = RenderOrder.CORPSE  # Lo marca como cadáver para la renderización
+        self.parent.render_order = (
+            RenderOrder.CORPSE
+        )  # Lo marca como cadáver para la renderización
 
         # Muestra el mensaje de muerte en el log
         self.engine.message_log.add_message(death_message, death_message_color)
