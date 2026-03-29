@@ -205,18 +205,3 @@ class Item(Entity):
 
         if self.equippable:
             self.equippable.parent = self  # Asigna el ítem como "padre" del equipable
-
-
-def handle_enemy_turns(self) -> None:
-    """Maneja los turnos de los enemigos y reduce el contador de invisibilidad del jugador."""
-    if self.player.invisibility_turns > 0:
-        self.player.invisibility_turns -= 1
-        if self.player.invisibility_turns == 0:
-            self.message_log.add_message(
-                f"{self.player.name} vuelve a ser visible.",
-                color.status_effect_applied,
-            )
-
-    for entity in set(self.game_map.actors) - {self.player}:
-        if entity.ai:
-            entity.ai.perform()
