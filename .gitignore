@@ -15,3 +15,6 @@ venv
 
 # Saved games
 *.sav
+
+# Informes internos (nunca subir a GitHub)
+INFORME_*.md
