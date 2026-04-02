@@ -304,8 +304,6 @@ def generate_secret_rooms(
 
                 # Coloca un objeto específico en el centro de la habitación secreta.
                 # Random: uno u otro (inmunidad o invisibilidad), no los dos.
-                import random
-
                 secret_item = random.choice(
                     [
                         entity_factories.invisibility_scroll,

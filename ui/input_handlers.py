@@ -332,23 +332,46 @@ class InventoryEventHandler(AskUserEventHandler):
     """
 
     TITLE = "<missing title>"  # Título del menú de inventario (debe ser definido por las subclases).
+    ITEMS_PER_PAGE = 10  # Número de ítems por página
+
+    def __init__(self, *args, **kwargs):
+        """Inicializa el manejador de inventario con paginación."""
+        super().__init__(*args, **kwargs)
+        self.current_page = 0  # Página actual del inventario
+
+    def _get_pagination_info(self):
+        """Calcula la información de paginación del inventario."""
+        total_items = len(self.engine.player.inventory.items)
+        total_pages = max(
+            1, (total_items + self.ITEMS_PER_PAGE - 1) // self.ITEMS_PER_PAGE
+        )
+        # Asegura que la página actual sea válida
+        if self.current_page >= total_pages:
+            self.current_page = max(0, total_pages - 1)
+        return total_items, total_pages
+
+    def _get_current_page_items(self):
+        """Obtiene los ítems de la página actual."""
+        start = self.current_page * self.ITEMS_PER_PAGE
+        end = start + self.ITEMS_PER_PAGE
+        return self.engine.player.inventory.items[start:end]
 
     def on_render(self, console: tcod.Console) -> None:
-        """Renderiza un menú de inventario, que muestra los ítems en el inventario y la letra para seleccionarlos.
+        """Renderiza un menú de inventario paginado.
 
-        La posición del menú se ajusta según la ubicación del jugador, para que siempre esté visible.
+        Muestra los ítems en páginas de 10, con navegación entre páginas.
         """
         super().on_render(console)  # Llama a la renderización del manejador padre.
 
-        # Obtiene el número de ítems en el inventario del jugador.
-        number_of_items_in_inventory = len(self.engine.player.inventory.items)
+        # Obtiene información de paginación
+        total_items, total_pages = self._get_pagination_info()
+        page_items = self._get_current_page_items()
 
-        height = (
-            number_of_items_in_inventory + 2
-        )  # Altura del menú basada en el número de ítems.
+        # Altura del menú: 10 items máx + indicadores de página + marco
+        height = self.ITEMS_PER_PAGE + 4
 
-        if height <= 3:
-            height = 3  # Asegura que el menú tenga al menos 3 líneas de altura.
+        if height < 6:
+            height = 6  # Altura mínima con navegación
 
         # Ajusta la posición en X en función de la ubicación del jugador.
         if self.engine.player.x <= 30:
@@ -358,8 +381,9 @@ class InventoryEventHandler(AskUserEventHandler):
 
         y = 1  # Posición en el eje Y.
 
-        # El ancho del menú se basa en el título del menú.
-        width = len(self.TITLE) + 4
+        # El ancho del menú se basa en el título más indicador de página
+        page_indicator = f" {self.current_page + 1}/{total_pages}"
+        width = len(self.TITLE + page_indicator) + 4
 
         # Dibuja un marco alrededor del menú de inventario.
         console.draw_frame(
@@ -367,16 +391,18 @@ class InventoryEventHandler(AskUserEventHandler):
             y=y,
             width=width,
             height=height,  # Altura del menú.
-            title=self.TITLE,  # Título del menú.
+            title=self.TITLE + page_indicator,  # Título con número de página.
             clear=True,
             fg=(255, 255, 255),  # Color del texto.
             bg=(0, 0, 0),  # Color del fondo.
         )
 
-        # Si hay ítems en el inventario, los muestra.
-        if number_of_items_in_inventory > 0:
-            for i, item in enumerate(self.engine.player.inventory.items):
-                item_key = chr(ord("a") + i)  # La tecla asociada al ítem (a, b, c...).
+        # Muestra los ítems de la página actual.
+        if total_items > 0:
+            for i, item in enumerate(page_items):
+                # Calcula el índice real en el inventario (considerando la página)
+                real_index = self.current_page * self.ITEMS_PER_PAGE + i
+                item_key = chr(ord("a") + real_index)  # Tecla única para cada ítem
                 is_equipped = self.engine.player.equipment.item_is_equipped(item)
 
                 item_string = f"({item_key}) {item.name}"  # String que muestra el ítem.
@@ -386,35 +412,51 @@ class InventoryEventHandler(AskUserEventHandler):
 
                 # Muestra el ítem en la consola.
                 console.print(x + 1, y + i + 1, item_string)
+
+            # Muestra controles de navegación si hay más de una página
+            if total_pages > 1:
+                nav_y = y + self.ITEMS_PER_PAGE + 1
+                if self.current_page > 0:
+                    console.print(x + 1, nav_y, "<) Pagina anterior", (150, 150, 150))
+                if self.current_page < total_pages - 1:
+                    console.print(
+                        x + width - 14, nav_y, "Pagina sig. >", (150, 150, 150)
+                    )
         else:
-            console.print(
-                x + 1, y + 1, "(Vacio)"
-            )  # Si no hay ítems, muestra un mensaje indicando que está vacío.
+            console.print(x + 1, y + 1, "(Vacio)")
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
-        player = self.engine.player  # Obtiene al jugador.
-        key = event.sym  # Obtiene la tecla presionada.
-        index = (
-            key - tcod.event.KeySym.a
-        )  # Calcula el índice del ítem seleccionado (a, b, c...).
+        """Maneja las teclas para navegar páginas y seleccionar ítems."""
+        player = self.engine.player
+        key = event.sym
+        total_items, total_pages = self._get_pagination_info()
 
-        # Verifica que la tecla presionada corresponda a un ítem válido en el inventario (índice de 0 a 26).
-        if 0 <= index <= 26:
+        # Navegación de páginas
+        if key == tcod.event.KeySym.COMMA or key == tcod.event.KeySym.COMMA:  # ,
+            if self.current_page > 0:
+                self.current_page -= 1
+            return None
+
+        if key == tcod.event.KeySym.PERIOD or key == tcod.event.KeySym.PERIOD:  # .
+            if self.current_page < total_pages - 1:
+                self.current_page += 1
+            return None
+
+        # Selección de ítems con letras a-z (soporta hasta 26 ítems únicos)
+        index = key - tcod.event.KeySym.a
+
+        if (
+            0 <= index < total_items
+        ):  # Permite cualquier índice válido del inventario total
             try:
-                selected_item = player.inventory.items[
-                    index
-                ]  # Obtiene el ítem seleccionado.
+                selected_item = player.inventory.items[index]  # Índice real en la lista
             except IndexError:
-                # Si la tecla presionada está fuera del rango, muestra un mensaje de error.
                 self.engine.message_log.add_message("Tecla no valida.", color.invalid)
-                return None  # No hace nada si la tecla es inválida.
+                return None
 
-            # Llama al método correspondiente para gestionar la selección del ítem.
             return self.on_item_selected(selected_item)
 
-        return super().ev_keydown(
-            event
-        )  # Llama al manejador de eventos padre si la tecla no es válida.
+        return super().ev_keydown(event)
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         """Método llamado cuando el usuario selecciona un ítem válido.
