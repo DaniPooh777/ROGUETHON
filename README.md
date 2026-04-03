@@ -133,19 +133,29 @@ ROGUETHON/
 
 ## 🚀 Cómo ejecutar el juego
 
-```bash
-# 1. Instalar Python 3.10+ (si no lo tienes)
-# 2. Instalar dependencias
-pip install tcod
-
-# 3. Clonar el repositorio
-git clone https://github.com/DaniPooh777/ROGUETHON.git
-
-# 4. Ejecutar
-cd ROGUETHON
-cd dist
-start ROGUETHON.exe
-```
+1. Asegúrate de tener Python 3.10 o superior instalado.
+2. Descarga Git para poder clonar el código:
+   [Pulsa aquí](https://git-scm.com/downloads/win)
+4. Instala las dependencias necesarias en el Símbolo del Sistema ejecutando:
+   ```bash
+   pip install tcod
+   ```
+5. Clona el repositorio con:
+   ```bash
+   git clone https://github.com/DaniPooh777/ROGUETHON.git
+   ```
+6. Accede a la carpeta con:
+   ```bash
+   cd ROGUETHON
+   ```
+7. Accede a esta parpeta:
+   ```bash
+   cd dist
+   ```
+8. Ejecuta el juego con:
+   ```
+   start ROGUETHON.exe
+   ```
 
 ---
 
