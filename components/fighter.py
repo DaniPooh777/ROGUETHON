@@ -140,6 +140,10 @@ class Fighter(BaseComponent):
 
     def take_damage(self, amount: int) -> None:
         """Reduce la salud del actor por la cantidad de daño recibido."""
+        # Si ya está muerto, no procesa más daño
+        if self.hp <= 0:
+            return
+
         if self.defensive_turns > 0:
             self.engine.message_log.add_message(
                 f"{self.parent.name} ignora el dano gracias al efecto defensivo.",

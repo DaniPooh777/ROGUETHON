@@ -216,13 +216,14 @@ class MeleeAction(ActionWithDirection):
             self.engine.message_log.add_message(
                 f"{attack_desc} Hace {damage} puntos de dano.", attack_color
             )
-            target.fighter.hp -= damage
+            # Usa take_damage para respetar efectos de inmunidad
+            target.fighter.take_damage(damage)
         else:
             # Si el daño es 0 o negativo, el ataque solo hace 1 de daño
             self.engine.message_log.add_message(
                 f"{attack_desc} Hace 1 punto de dano.", attack_color
             )
-            target.fighter.hp -= 1
+            target.fighter.take_damage(1)
 
 
 class MovementAction(ActionWithDirection):
