@@ -606,9 +606,9 @@ def generate_dungeon(
             room_min_size, room_max_size
         )  # Altura aleatoria de la sala.
 
-        # Elegir tipo de habitación al azar (30% cada una no-circular, 10% circular)
+        # Elegir tipo de habitación al azar (25% cada una)
         room_type = random.choices(
-            ["rectangular", "circular", "L", "T"], weights=[30, 10, 30, 30]
+            ["rectangular", "circular", "L", "T"], weights=[25, 25, 25, 25]
         )[0]
 
         new_room = None
