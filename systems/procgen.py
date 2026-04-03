@@ -614,25 +614,34 @@ def generate_dungeon(
         new_room = None
 
         if room_type == "rectangular":
-            x = random.randint(0, dungeon.width - room_width - 1)
-            y = random.randint(0, dungeon.height - room_height - 1)
+            x = random.randint(1, dungeon.width - room_width - 2)
+            y = random.randint(1, dungeon.height - room_height - 2)
             new_room = RectangularRoom(x, y, room_width, room_height)
         elif room_type == "circular":
             radius_x = room_width // 2
             radius_y = room_height // 2
-            center_x = random.randint(radius_x + 1, dungeon.width - radius_x - 1)
-            center_y = random.randint(radius_y + 1, dungeon.height - radius_y - 1)
+            center_x = random.randint(radius_x + 2, dungeon.width - radius_x - 2)
+            center_y = random.randint(radius_y + 2, dungeon.height - radius_y - 2)
             new_room = CircularRoom(center_x, center_y, radius_x, radius_y)
         elif room_type == "L":
-            x = random.randint(0, dungeon.width - room_width - 1)
-            y = random.randint(0, dungeon.height - room_height - 1)
+            x = random.randint(1, dungeon.width - room_width - 2)
+            y = random.randint(1, dungeon.height - room_height - 2)
             orientation = random.choice(["NE", "SE", "NW", "SW"])
             new_room = LShapedRoom(x, y, room_width, room_height, orientation)
         else:  # T
-            x = random.randint(0, dungeon.width - room_width - 1)
-            y = random.randint(0, dungeon.height - room_height - 1)
+            x = random.randint(1, dungeon.width - room_width - 2)
+            y = random.randint(1, dungeon.height - room_height - 2)
             orientation = random.choice(["up", "down", "left", "right"])
             new_room = TShapedRoom(x, y, room_width, room_height, orientation)
+
+        # Verificar que la sala no se salga de los límites
+        if (
+            new_room.x1 < 1
+            or new_room.y1 < 1
+            or new_room.x2 > dungeon.width - 1
+            or new_room.y2 > dungeon.height - 1
+        ):
+            continue
 
         if any(new_room.intersects(other_room) for other_room in rooms):
             continue  # Si la sala se superpone con otra, se descarta.
