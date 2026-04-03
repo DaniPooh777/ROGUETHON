@@ -1,104 +1,150 @@
-# ROGUETHON
+# 🎮 ROGUETHON
 
-**ROGUETHON** es un juego de tipo *roguelike* desarrollado en Python, inspirado en los clásicos del género. En este juego, explorarás mazmorras generadas proceduralmente, lucharás contra enemigos, recogerás objetos y mejorarás a tu personaje mientras intentas sobrevivir en un entorno hostil lleno de desafíos.
+**ROGUETHON** es un juego de tipo *roguelike* desarrollado en Python, inspirado en los clásicos del género. En este juego, explorarás mazmorras generadas proceduralmente, lutarás contra enemigos, recogerás objetos y mejorarás a tu personaje mientras intentas sobrevivir en un entorno hostil lleno de desafíos.
 
 El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para la creación de gráficos y manejo de eventos, ofreciendo una experiencia visual retro y mecánicas por turnos.
 
-## Funcionalidades principales
+---
 
-- **Generación procedural de mazmorras**: Cada partida es única gracias a la creación aleatoria de mapas.
-- **Sistema de combate por turnos**: Lucha contra enemigos utilizando armas, hechizos y objetos consumibles.
-- **Inventario y equipo**: Recoge, equipa y utiliza objetos como armas, armaduras y pociones.
-- **Subida de nivel**: Mejora las habilidades de tu personaje a medida que ganas experiencia.
-- **Registro de mensajes**: Un sistema de registro que muestra eventos importantes durante el juego.
-- **Gráficos retro**: Estilo visual basado en tilesets clásicos.
+## 🖼️ Imágenes del juego
 
-## Controles del juego
+![Captura 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%202.png?raw=true)
 
-A continuación, se detallan los controles básicos para jugar a **ROGUETHON**:
+![Captura 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego.png?raw=true)
+
+![Captura 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%204.png?raw=true)
+
+![Captura 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%203.png?raw=true)
+
+---
+
+## ✨ Nuevas Funcionalidades (v1.0.4)
+
+- **Panel de estados en HUD** — Muestra los efectos activos del jugador (inmunidad, invisibilidad, defensa) y de los enemigos (confusión)
+- **Pergamino de inmunidad** — Ahora funciona correctamente, bloqueando todo el daño temporalmente
+- **Textos sin tildes** — Sistema de encoding mejorado para evitar problemas visuales
+
+---
+
+## 🎯 Funcionalidades principales
+
+| Categoría | Descripción |
+|-----------|-------------|
+| **Generación procedural** | Cada partida es única gracias a la creación aleatoria de mapas |
+| **Combate por turnos** | Lucha contra enemigos usando armas, hechizos y objetos |
+| **Inventario** | Recoge, equipa y usa objetos (armas, armaduras, pociones) |
+| **Subida de nivel** | Mejora tus habilidades al ganar experiencia |
+| **Habitaciones secretas** | Mazmorras con áreas ocultas por descubrir |
+| **Registro de mensajes** | Historial de eventos importantes del juego |
+
+---
+
+## ⌨️ Controles del juego
 
 ### Movimiento
-- **Teclas de dirección `(↑,  ↓,  ←,  →)`**: Mover al personaje en las direcciones correspondientes.
-- **Teclas `(w, a, s, d)`**: Mover al personaje en las direcciones correspondientes.
+| Tecla | Acción |
+|-------|--------|
+| `↑, ↓, ←, →` | Mover al personaje |
+| `w, a, s, d` | Mover al personaje (alternativo) |
+| `Espacio` | Pasar el turno |
 
 ### Interacción
-- **Tecla `g`**: Recoger objetos del suelo.
-- **Tecla `i`**: Abrir el inventario. Para cerrar inventario pulsa cualquier tecla excepto las letras y la tecla Esc.
-- **Tecla `f`**: Soltar un objeto del inventario.
-- **Tecla `e`**: Para acceder a las escaleras.
+| Tecla | Acción |
+|-------|--------|
+| `g` | Recoger objetos del suelo |
+| `i` | Abrir/cerrar inventario |
+| `f` | Soltar un objeto |
+| `e` | Bajar por las escaleras |
 
-### Combate
-- Moverse hacia un enemigo para atacarlo cuerpo a cuerpo.
-- Usar objetos consumibles (como pociones) desde el inventario.
+### Otros
+| Tecla | Acción |
+|-------|--------|
+| `Esc` | Salir del juego |
+| `Enter` | Confirmar selección |
+| `c` | Estadísticas del personaje |
+| `h` | Historial de acciones |
 
-### Otros controles
-- **Tecla `Esc`**: Salir del juego.
-- **Tecla `Enter`**: Confirmar selecciones en menús.
-- **Tecla `Espace`**: Pasar el turno.
-- **Tecla `h`**: Mostrar el historial de acciones del jugador.
-- **Tecla `c`**: Mostrar las estadísticas del personaje.
-- **Tecla `(↑,  ↓)`**: En el historial de acciones del jugador para moverse arriba y abajo a lo largo de todos los mensajes.
+---
 
-## Enemigos
+## 👾 Enemigos
 
-En **ROGUETHON**, te enfrentarás a una variedad de enemigos, cada uno con habilidades y comportamientos únicos. Algunos ejemplos incluyen:
+En **ROGUETHON**, te enfrentarás a una variedad de enemigos únicos:
 
-- **Orcos**: Enemigos básicos con ataques cuerpo a cuerpo.
-- **Trolls**: Criaturas más fuertes con alta salud y poder de ataque.
-- **Goblins**: Enemigos rápidos que atacan a distancia.
+- **Orcos** — Enemigos básicos con ataques cuerpo a cuerpo
+- **Trolls** — Criaturas fuertes con alta salud y poder de ataque
+- **Goblins** — Enemigos rápidos que atacan a distancia
 
-Cada enemigo tiene fortalezas y debilidades que deberás aprender para enfrentarlos de manera efectiva.
+---
 
-## Objetos consumibles
+## 🧪 Objetos consumibles
 
-Durante tu aventura, encontrarás diversos objetos consumibles que te ayudarán a sobrevivir:
+| Objeto | Efecto |
+|--------|--------|
+| **Poción de salud** | Restaura 5 puntos de vida |
+| **Poción de salud mayor** | Restaura 10 puntos de vida |
+| **Pergamino de confusión** | Confunde al enemigo por varios turnos |
+| **Pergamino de relámpago** | Daño al enemigo más cercano |
+| **Pergamino de bola de fuego** | Daño en área a múltiples enemigos |
+| **Pergamino defensivo** | +Defensa temporal |
+| **Pergamino invisible** | Invisibilidad temporal |
+| **Pergamino de inmunidad** | Invulnerabilidad total temporal |
 
-- **Poción de salud**: Restaura 5 puntos de vida.
-- **Poción de salud mayor**: Restaura 10 puntos de vida.
-- **Pergamino de confusión**: Confunde a un enemigo, haciéndolo moverse aleatoriamente durante varios turnos.
-- **Pergamino de relámpago**: Lanza un rayo que inflige daño al enemigo más cercano.
-- **Pergamino de bola de fuego**: Causa daño en un área, afectando a múltiples enemigos.
-- **Pergamino defensivo**: Aumenta temporalmente tu defensa, reduciendo el daño recibido.
-- **Pergamino invisible**: El jugador se vuelve temporalmente invisible para los enemigos.
-- **Pergamino de inmunidad**: Protege al jugador contra los siguientes ataques, anulando todo el daño recibido temporalmente.
+---
 
-Usa estos objetos estratégicamente para superar los desafíos de las mazmorras.
+## 🗂️ Estructura del proyecto
 
-## Imágenes del juego
+```
+ROGUETHON/
+├── assets/
+│   ├── fonts/          # Fuentes del juego
+│   └── images/         # Imágenes y capturas
+├── build/              # Archivos de compilación
+├── components/         # Componentes del juego
+│   ├── ai.py          # Inteligencia artificial de enemigos
+│   ├── consumable.py  # Objetos consumibles
+│   ├── equipment.py   # Sistema de equipamiento
+│   ├── fighter.py     # Estadísticas de combate
+│   ├── inventory.py   # Gestión de inventario
+│   └── level.py       # Sistema de niveles
+├── core/              # Núcleo del juego
+│   ├── engine.py      # Motor principal
+│   ├── game_map.py    # Mapa del juego
+│   └── setup_game.py  # Configuración inicial
+├── entities/          # Entidades del juego
+│   ├── entity.py      # Clase base de entidades
+│   └── factories.py   # Fábrcias de entidades
+├── systems/           # Sistemas del juego
+│   ├── actions.py     # Acciones del jugador
+│   ├── procgen.py     # Generación procedural
+│   └── rendering.py   # Renderizado
+├── ui/                # Interfaz de usuario
+│   ├── colors.py      # Colores del juego
+│   ├── input_handlers.py  # Manejadores de entrada
+│   └── message_log.py    # Registro de mensajes
+├── dist/              # Ejecutable compilado
+├── saves/             # Partidas guardadas
+├── main.py            # Punto de entrada
+└── README.md          # Este archivo
+```
 
-A continuación, se incluyen capturas de pantalla del juego para mostrar su estilo visual y mecánicas:
+---
 
-![Captura de pantalla 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%202.png?raw=true)
-<br/><br/>
-![Captura de pantalla 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego.png?raw=true)
-<br/><br/>
-![Captura de pantalla 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%204.png?raw=true)
-<br/><br/>
-![Captura de pantalla 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%203.png?raw=true)
+## 🚀 Cómo ejecutar el juego
 
-## Cómo ejecutar el juego
+```bash
+# 1. Instalar Python 3.10+ (si no lo tienes)
+# 2. Instalar dependencias
+pip install tcod
 
-1. Asegúrate de tener Python 3.10 o superior instalado.
-2. Descarga Git para poder clonar el código:
-   [Pulsa aquí](https://git-scm.com/downloads/win)
-4. Instala las dependencias necesarias en el Símbolo del Sistema ejecutando:
-   ```bash
-   pip install tcod
-   ```
-5. Clona el repositorio con:
-   ```bash
-   git clone https://github.com/DaniPooh777/ROGUETHON.git
-   ```
-6. Accede a la carpeta con:
-   ```bash
-   cd ROGUETHON
-   ```
-7. Accede a esta parpeta:
-   ```bash
-   cd dist
-   ```
-8. Ejecuta el juego con:
-   ```
-   start ROGUETHON.exe
-   ```
-Y ahora disfruta del juego.
+# 3. Clonar el repositorio
+git clone https://github.com/DaniPooh777/ROGUETHON.git
+
+# 4. Ejecutar
+cd ROGUETHON
+cd dist
+start ROGUETHON.exe
+```
+
+---
+
+*¡Explora las mazmorras, mejora tu personaje y survive al máximo de pisos que puedas!*
