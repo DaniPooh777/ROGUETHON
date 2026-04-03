@@ -6,26 +6,6 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 
 ---
 
-## 🖼️ Imágenes del juego
-
-![Captura 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%202.png?raw=true)
-
-![Captura 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego.png?raw=true)
-
-![Captura 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%204.png?raw=true)
-
-![Captura 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%203.png?raw=true)
-
----
-
-## ✨ Nuevas Funcionalidades (v1.0.4)
-
-- **Panel de estados en HUD** — Muestra los efectos activos del jugador (inmunidad, invisibilidad, defensa) y de los enemigos (confusión)
-- **Pergamino de inmunidad** — Ahora funciona correctamente, bloqueando todo el daño temporalmente
-- **Textos sin tildes** — Sistema de encoding mejorado para evitar problemas visuales
-
----
-
 ## 🎯 Funcionalidades principales
 
 | Categoría | Descripción |
@@ -91,40 +71,62 @@ En **ROGUETHON**, te enfrentarás a una variedad de enemigos únicos:
 
 ---
 
+## 🖼️ Imágenes del juego
+
+![Captura 1](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego.png?raw=true)
+
+![Captura 2](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%202.png?raw=true)
+
+![Captura 3](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%203.png?raw=true)
+
+![Captura 4](https://github.com/DaniPooh777/ROGUETHON/blob/main/assets/images/Imagen%20juego%204.png?raw=true)
+
+---
+
 ## 🗂️ Estructura del proyecto
 
 ```
 ROGUETHON/
-├── assets/
-│   ├── fonts/          # Fuentes del juego
-│   └── images/         # Imágenes y capturas
-├── build/              # Archivos de compilación
-├── components/         # Componentes del juego
-│   ├── ai.py          # Inteligencia artificial de enemigos
-│   ├── consumable.py  # Objetos consumibles
-│   ├── equipment.py   # Sistema de equipamiento
-│   ├── fighter.py     # Estadísticas de combate
-│   ├── inventory.py   # Gestión de inventario
-│   └── level.py       # Sistema de niveles
-├── core/              # Núcleo del juego
-│   ├── engine.py      # Motor principal
-│   ├── game_map.py    # Mapa del juego
-│   └── setup_game.py  # Configuración inicial
-├── entities/          # Entidades del juego
-│   ├── entity.py      # Clase base de entidades
-│   └── factories.py   # Fábrcias de entidades
-├── systems/           # Sistemas del juego
-│   ├── actions.py     # Acciones del jugador
-│   ├── procgen.py     # Generación procedural
-│   └── rendering.py   # Renderizado
-├── ui/                # Interfaz de usuario
-│   ├── colors.py      # Colores del juego
-│   ├── input_handlers.py  # Manejadores de entrada
-│   └── message_log.py    # Registro de mensajes
-├── dist/              # Ejecutable compilado
-├── saves/             # Partidas guardadas
 ├── main.py            # Punto de entrada
-└── README.md          # Este archivo
+├── README.md          # Este archivo
+├── .gitignore         # Archivos ignorados por Git
+├── main.spec          # Configuración de PyInstaller
+├── menu_background.png # Imagen de fondo del menú
+├── savegame.sav       # Partida guardada
+├── assets/
+│   ├── fonts/
+│   └── images/
+├── build/
+├── components/
+│   ├── ai.py
+│   ├── base_component.py
+│   ├── consumable.py
+│   ├── equipment.py
+│   ├── equippable.py
+│   ├── fighter.py
+│   ├── inventory.py
+│   └── level.py
+├── core/
+│   ├── engine.py
+│   ├── exceptions.py
+│   ├── game_map.py
+│   ├── setup_game.py
+│   └── tile_types.py
+├── dist/              # Ejecutable compilado
+├── entities/
+│   ├── entity.py
+│   └── factories.py
+├── saves/             # Partidas guardadas
+├── systems/
+│   ├── actions.py
+│   ├── procgen.py
+│   └── rendering.py
+└── ui/
+    ├── colors.py
+    ├── equipment_types.py
+    ├── input_handlers.py
+    ├── message_log.py
+    └── render_order.py
 ```
 
 ---
