@@ -19,6 +19,7 @@ from typing import (
     TYPE_CHECKING,
     Dict,
     Union,
+    Optional,
 )  # Importación de tipos para la comprobación de tipos.
 
 import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
@@ -456,19 +457,49 @@ def get_room_connection_point(room: Room, target: Tuple[int, int]) -> Tuple[int,
 
 # Función para generar un túnel en forma de L entre dos puntos dados.
 def tunnel_between(
-    start: Tuple[int, int], end: Tuple[int, int]
+    start: Tuple[int, int],
+    end: Tuple[int, int],
+    avoid_rooms: Optional[List[Room]] = None,
 ) -> Iterator[Tuple[int, int]]:
-    """Devuelve un túnel en forma de L entre los centros de las salas, dejando una pared de separación con las salas."""
+    """Devuelve un túnel en forma de L entre dos puntos dados, evitando intersectear con otras habitaciones."""
     x1, y1 = start
     x2, y2 = end
-    # Conectar solo al centro de la sala (ya ajustado por quien llama a esta función)
-    if random.random() < 0.5:  # 50% de probabilidad.
-        # Mueve horizontalmente, luego verticalmente.
-        corner_x, corner_y = x2, y1
-    else:
-        # Mueve verticalmente, luego horizontalmente.
-        corner_x, corner_y = x1, y2
 
+    # Intentar ambas rutas (horizontal-vertical y vertical-horizontal)
+    for attempt in range(2):
+        if attempt == 0:
+            corner_x, corner_y = x2, y1  # Primero horizontal, luego vertical
+        else:
+            corner_x, corner_y = x1, y2  # Primero vertical, luego horizontal
+
+        # Generar el túnel temporal para verificar
+        tunnel_tiles = []
+        for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
+            tunnel_tiles.append((x, y))
+        for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
+            tunnel_tiles.append((x, y))
+
+        # Verificar si el túnel cruza alguna habitación que debe evitar
+        intersects = False
+        if avoid_rooms:
+            for tx, ty in tunnel_tiles:
+                for room in avoid_rooms:
+                    if room.x1 < tx < room.x2 and room.y1 < ty < room.y2:
+                        intersects = True
+                        break
+                if intersects:
+                    break
+
+        if not intersects:
+            # Este túnel no cruza habitaciones no deseadas, usarlo
+            for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
+                yield x, y
+            for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
+                yield x, y
+            return
+
+    # Si ambas rutas fallan, usar la ruta por defecto (sin evitar)
+    corner_x, corner_y = x2, y1
     for x, y in tcod.los.bresenham((x1, y1), (corner_x, corner_y)).tolist():
         yield x, y
     for x, y in tcod.los.bresenham((corner_x, corner_y), (x2, y2)).tolist():
@@ -686,9 +717,11 @@ def generate_dungeon(
             )  # Coloca al jugador en el centro de la primera sala.
         else:
             # Conectar los puntos de borde de las habitaciones (con separación de 2 tiles)
+            # Evitar que el túnel cruze otras habitaciones
             start_point = get_room_connection_point(rooms[-1], new_room.center)
             end_point = get_room_connection_point(new_room, rooms[-1].center)
-            for x, y in tunnel_between(start_point, end_point):
+            avoid_rooms = [r for r in rooms if r is not rooms[-1] and r is not new_room]
+            for x, y in tunnel_between(start_point, end_point, avoid_rooms):
                 dungeon.tiles[x, y] = tile_types.floor  # Crea un túnel entre salas.
 
         place_entities(
