@@ -52,17 +52,30 @@ class MessageLog:
 
         Si `stack` es True, los mensajes iguales se apilarán (su contador aumentará).
         """
+        # Normalizar texto: quitar tildes y convertir ñ -> n
+        text_normalized = (
+            text.replace("á", "a")
+            .replace("é", "e")
+            .replace("í", "i")
+            .replace("ó", "o")
+            .replace("ú", "u")
+            .replace("Á", "A")
+            .replace("É", "E")
+            .replace("Í", "I")
+            .replace("Ó", "O")
+            .replace("Ú", "U")
+            .replace("ñ", "n")
+            .replace("Ñ", "N")
+        )
+
         # Si el mensaje puede apilarse (stack es True) y el texto del nuevo mensaje es igual al último,
         # se incrementa el contador del mensaje anterior.
-        if stack and self.messages and text == self.messages[-1].plain_text:
+        if stack and self.messages and text_normalized == self.messages[-1].plain_text:
             self.messages[-1].count += 1
         else:
             self.messages.append(
-                Message(text, fg)
+                Message(text_normalized, fg)
             )  # Si no, agrega el nuevo mensaje al log.
-
-        # Debugging: Imprime el texto del mensaje para verificar el contenido
-        print(f"Mensaje visible: {text}")
 
     def render(
         self,

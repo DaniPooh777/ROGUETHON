@@ -12,6 +12,7 @@ from typing import (
 )  # IMPORTA: TYPE_CHECKING ayuda con las verificaciones de tipos en tiempo de análisis, y Tuple es para tuplas con tipos definidos.
 
 from ui import colors as color  # Importa el módulo de colores personalizados.
+import components.ai  # Importa el módulo de IA para verificar efectos de confusión.
 
 # Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
 if TYPE_CHECKING:
@@ -120,6 +121,7 @@ def render_status_effects(console: Console, game_map: "GameMap") -> None:
     COLOR_INVISIBILITY = (128, 128, 255)  # Azul - Pergamino invisible
     COLOR_DEFENSE = (0, 191, 255)  # Azul claro - Pergamino defensivo
     COLOR_IMMUNITY = (255, 165, 0)  # Naranja - Pergamino de inmunidad
+    COLOR_CONFUSION = (207, 63, 255)  # Púrpura - Pergamino de confusión
     COLOR_NO_EFFECT = (128, 128, 128)  # Gris - Sin efectos
     COLOR_ENEMY = (255, 100, 100)  # Rojo claro - Efectos de enemigos
 
@@ -139,6 +141,10 @@ def render_status_effects(console: Console, game_map: "GameMap") -> None:
             effects.append((COLOR_DEFENSE, f"Defensa {fighter.defense_bonus_turns}"))
         if fighter.defensive_turns > 0:
             effects.append((COLOR_IMMUNITY, f"Inmunidad {fighter.defensive_turns}"))
+
+        # Mostrar efectos de confusión en enemigos
+        if isinstance(actor.ai, components.ai.ConfusedEnemy):
+            effects.append((COLOR_CONFUSION, f"Confusion {actor.ai.turns_remaining}"))
 
     # Marco con altura fija
     frame_width = 24
