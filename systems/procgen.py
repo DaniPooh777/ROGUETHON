@@ -18,17 +18,35 @@ from typing import (
     Tuple,
     TYPE_CHECKING,
     Dict,
+    Union,
 )  # Importación de tipos para la comprobación de tipos.
 
 import tcod  # Importa la biblioteca tcod para gráficos y operaciones relacionadas con el juego.
 import random  # Se importa para generar números aleatorios.
+import math  # Se importa para cálculos matemáticos.
 import entities.factories as entity_factories  # Importa las fábricas de entidades, donde se definen las entidades como pociones, monstruos, etc.
 import core.tile_types as tile_types  # Importa los tipos de tiles del juego, como el suelo, las paredes, etc.
 
-# Este bloque solo importa las clases cuando se está realizando una comprobación de tipos, no se ejecuta en tiempo de ejecución.
+# Definición de tipos de habitaciones (antes de las clases para forward reference)
 if TYPE_CHECKING:
     from core.engine import Engine
     from entities.entity import Entity
+
+    # Forward declaration para el tipo Room
+    class RectangularRoom:
+        def __init__(self, x: int, y: int, width: int, height: int): ...
+        @property
+        def center(self) -> Tuple[int, int]: ...
+        @property
+        def x1(self) -> int: ...
+        @property
+        def x2(self) -> int: ...
+        @property
+        def y1(self) -> int: ...
+        @property
+        def y2(self) -> int: ...
+        def intersects(self, other: "Room") -> bool: ...
+
 
 # Definición de los máximos posibles de ítems por nivel de piso.
 max_items_by_floor = [
@@ -164,7 +182,7 @@ class RectangularRoom:
         """Devuelve el área interna de la sala como un índice de arreglo 2D."""
         return slice(self.x1 + 1, self.x2), slice(self.y1 + 1, self.y2)
 
-    def intersects(self, other: RectangularRoom) -> bool:
+    def intersects(self, other: Room) -> bool:
         """Devuelve True si esta sala se superpone con otra."""
         return (
             self.x1 <= other.x2
@@ -174,8 +192,207 @@ class RectangularRoom:
         )
 
 
+# Clase que representa una sala circular/ovalada en el mapa del juego.
+class CircularRoom:
+    def __init__(self, center_x: int, center_y: int, radius_x: int, radius_y: int):
+        self.center_x = center_x
+        self.center_y = center_y
+        self.radius_x = radius_x  # Radio en X (semieje mayor)
+        self.radius_y = radius_y  # Radio en Y (semieje menor)
+
+    @property
+    def center(self) -> Tuple[int, int]:
+        return self.center_x, self.center_y
+
+    @property
+    def x1(self) -> int:
+        return self.center_x - self.radius_x
+
+    @property
+    def x2(self) -> int:
+        return self.center_x + self.radius_x
+
+    @property
+    def y1(self) -> int:
+        return self.center_y - self.radius_y
+
+    @property
+    def y2(self) -> int:
+        return self.center_y + self.radius_y
+
+    def intersects(self, other: Room) -> bool:
+        """Devuelve True si esta sala se superpone con otra."""
+        return (
+            self.x1 - 1 <= other.x2
+            and self.x2 + 1 >= other.x1
+            and self.y1 - 1 <= other.y2
+            and self.y2 + 1 >= other.y1
+        )
+
+    def is_floor(self, x: int, y: int) -> bool:
+        """Devuelve True si el tile está dentro de la/elipse."""
+        # Ecuación de elipse: (x-h)²/a² + (y-k)²/b² <= 1
+        dx = (x - self.center_x) ** 2
+        dy = (y - self.center_y) ** 2
+        rx = self.radius_x**2
+        ry = self.radius_y**2
+        # Usamos radio -1 para dejar pared en el borde
+        return (dx / (rx - 2 * self.radius_x + 1)) + (
+            dy / (ry - 2 * self.radius_y + 1)
+        ) <= 1
+
+    def get_inner_tiles(self) -> List[Tuple[int, int]]:
+        """Devuelve una lista de coordenadas de los tiles internos de la sala."""
+        tiles = []
+        for x in range(self.x1 + 1, self.x2):
+            for y in range(self.y1 + 1, self.y2):
+                if self.is_floor(x, y):
+                    tiles.append((x, y))
+        return tiles
+
+
+# Clase que representa una sala en forma de L.
+class LShapedRoom:
+    def __init__(
+        self, x: int, y: int, width: int, height: int, orientation: str = "SE"
+    ):
+        self.x1 = x
+        self.y1 = y
+        self.x2 = x + width
+        self.y2 = y + height
+        self.orientation = orientation  # "NE", "SE", "NW", "SW"
+
+    @property
+    def center(self) -> Tuple[int, int]:
+        center_x = int((self.x1 + self.x2) / 2)
+        center_y = int((self.y1 + self.y2) / 2)
+        return center_x, center_y
+
+    def intersects(self, other: RectangularRoom) -> bool:
+        return (
+            self.x1 <= other.x2
+            and self.x2 >= other.x1
+            and self.y1 <= other.y2
+            and self.y2 >= other.y1
+        )
+
+    def get_inner_tiles(self) -> List[Tuple[int, int]]:
+        """Devuelve los tiles internos de la sala en L."""
+        tiles = []
+        w = self.x2 - self.x1
+        h = self.y2 - self.y1
+
+        if self.orientation == "SE":
+            # Dos rectángulos: uno vertical a la derecha, otro horizontal abajo
+            # Rectángulo 1: parte vertical
+            for x in range(self.x1 + w // 2, self.x2):
+                for y in range(self.y1, self.y2):
+                    tiles.append((x, y))
+            # Rectángulo 2: parte horizontal
+            for x in range(self.x1, self.x2):
+                for y in range(self.y1 + h // 2, self.y2):
+                    tiles.append((x, y))
+        elif self.orientation == "SW":
+            for x in range(self.x1, self.x1 + w // 2):
+                for y in range(self.y1, self.y2):
+                    tiles.append((x, y))
+            for x in range(self.x1, self.x2):
+                for y in range(self.y1 + h // 2, self.y2):
+                    tiles.append((x, y))
+        elif self.orientation == "NE":
+            for x in range(self.x1 + w // 2, self.x2):
+                for y in range(self.y1, self.y2):
+                    tiles.append((x, y))
+            for x in range(self.x1, self.x2):
+                for y in range(self.y1, self.y1 + h // 2):
+                    tiles.append((x, y))
+        else:  # NW
+            for x in range(self.x1, self.x1 + w // 2):
+                for y in range(self.y1, self.y2):
+                    tiles.append((x, y))
+            for x in range(self.x1, self.x2):
+                for y in range(self.y1, self.y1 + h // 2):
+                    tiles.append((x, y))
+
+        return tiles
+
+
+# Clase que representa una sala en forma de T.
+class TShapedRoom:
+    def __init__(
+        self, x: int, y: int, width: int, height: int, orientation: str = "down"
+    ):
+        self.x1 = x
+        self.y1 = y
+        self.x2 = x + width
+        self.y2 = y + height
+        self.orientation = orientation  # "up", "down", "left", "right"
+
+    @property
+    def center(self) -> Tuple[int, int]:
+        center_x = int((self.x1 + self.x2) / 2)
+        center_y = int((self.y1 + self.y2) / 2)
+        return center_x, center_y
+
+    def intersects(self, other: RectangularRoom) -> bool:
+        return (
+            self.x1 <= other.x2
+            and self.x2 >= other.x1
+            and self.y1 <= other.y2
+            and self.y2 >= other.y1
+        )
+
+    def get_inner_tiles(self) -> List[Tuple[int, int]]:
+        """Devuelve los tiles internos de la sala en T."""
+        tiles = []
+        w = self.x2 - self.x1
+        h = self.y2 - self.y1
+
+        if self.orientation == "down":
+            # Barra horizontal arriba, tallo vertical abajo centrado
+            bar_height = h // 2
+            # Barra horizontal completa
+            for x in range(self.x1, self.x2):
+                for y in range(self.y1, self.y1 + bar_height):
+                    tiles.append((x, y))
+            # Tallo vertical
+            for x in range(self.x1 + w // 4, self.x1 + 3 * w // 4):
+                for y in range(self.y1 + bar_height, self.y2):
+                    tiles.append((x, y))
+        elif self.orientation == "up":
+            bar_y = self.y1 + h // 2
+            for x in range(self.x1, self.x2):
+                for y in range(bar_y, self.y2):
+                    tiles.append((x, y))
+            for x in range(self.x1 + w // 4, self.x1 + 3 * w // 4):
+                for y in range(self.y1, bar_y):
+                    tiles.append((x, y))
+        elif self.orientation == "left":
+            bar_width = w // 2
+            for x in range(self.x1, self.x1 + bar_width):
+                for y in range(self.y1, self.y2):
+                    tiles.append((x, y))
+            for x in range(self.x1 + bar_width, self.x2):
+                for y in range(self.y1 + h // 4, self.y1 + 3 * h // 4):
+                    tiles.append((x, y))
+        else:  # right
+            bar_x = self.x1 + w // 2
+            for x in range(bar_x, self.x2):
+                for y in range(self.y1, self.y2):
+                    tiles.append((x, y))
+            for x in range(self.x1, bar_x):
+                for y in range(self.y1 + h // 4, self.y1 + 3 * h // 4):
+                    tiles.append((x, y))
+
+        return tiles
+
+
+# TipoUnion para cualquier tipo de habitación
+Room = Union[RectangularRoom, CircularRoom, LShapedRoom, TShapedRoom]
+
+
 # Función que coloca entidades (monstruos y objetos) en una sala.
-def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -> None:
+def place_entities(room: Room, dungeon: GameMap, floor_number: int) -> None:
     """Coloca enemigos y objetos en una habitación."""
     number_of_monsters = random.randint(
         0, get_max_value_for_floor(max_monsters_by_floor, floor_number)
@@ -191,16 +408,25 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int) -
         item_chances, number_of_items, floor_number
     )
 
+    # Obtener tiles internos según el tipo de habitación
+    if isinstance(room, RectangularRoom):
+        valid_tiles = [
+            (x, y)
+            for x in range(room.x1 + 1, room.x2)
+            for y in range(room.y1 + 1, room.y2)
+        ]
+    else:
+        valid_tiles = room.get_inner_tiles()
+
     for entity in monsters + items:
         for _ in range(10):  # Intenta encontrar una posición válida hasta 10 veces.
-            x = random.randint(room.x1 + 1, room.x2 - 1)
-            y = random.randint(room.y1 + 1, room.y2 - 1)
-
-            if dungeon.in_bounds(x, y) and not any(
-                e.x == x and e.y == y for e in dungeon.entities
-            ):
-                entity.spawn(dungeon, x, y)
-                break
+            if valid_tiles:
+                x, y = random.choice(valid_tiles)
+                if dungeon.in_bounds(x, y) and not any(
+                    e.x == x and e.y == y for e in dungeon.entities
+                ):
+                    entity.spawn(dungeon, x, y)
+                    break
 
 
 # Función para generar un túnel en forma de L entre dos puntos dados.
@@ -227,7 +453,7 @@ def tunnel_between(
 # Función para generar habitaciones secretas conectadas a las habitaciones existentes.
 def generate_secret_rooms(
     dungeon: GameMap,
-    rooms: List[RectangularRoom],
+    rooms: List[Room],
     num_secrets: int,
     width: int = 6,
     height: int = 6,
@@ -369,7 +595,7 @@ def generate_dungeon(
     player = engine.player  # Obtiene al jugador.
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
 
-    rooms: List[RectangularRoom] = []  # Lista para almacenar las salas generadas.
+    rooms: List[Room] = []  # Lista para almacenar las salas generadas.
     center_of_last_room = (0, 0)  # Centro de la última sala generada.
 
     for _ in range(max_rooms):
@@ -380,19 +606,45 @@ def generate_dungeon(
             room_min_size, room_max_size
         )  # Altura aleatoria de la sala.
 
-        x = random.randint(0, dungeon.width - room_width - 1)  # Coordenada X inicial.
-        y = random.randint(0, dungeon.height - room_height - 1)  # Coordenada Y inicial.
+        # Elegir tipo de habitación al azar (30% cada una no-circular, 10% circular)
+        room_type = random.choices(
+            ["rectangular", "circular", "L", "T"], weights=[30, 10, 30, 30]
+        )[0]
 
-        new_room = RectangularRoom(
-            x, y, room_width, room_height
-        )  # Crea una nueva sala.
+        new_room = None
+
+        if room_type == "rectangular":
+            x = random.randint(0, dungeon.width - room_width - 1)
+            y = random.randint(0, dungeon.height - room_height - 1)
+            new_room = RectangularRoom(x, y, room_width, room_height)
+        elif room_type == "circular":
+            radius_x = room_width // 2
+            radius_y = room_height // 2
+            center_x = random.randint(radius_x + 1, dungeon.width - radius_x - 1)
+            center_y = random.randint(radius_y + 1, dungeon.height - radius_y - 1)
+            new_room = CircularRoom(center_x, center_y, radius_x, radius_y)
+        elif room_type == "L":
+            x = random.randint(0, dungeon.width - room_width - 1)
+            y = random.randint(0, dungeon.height - room_height - 1)
+            orientation = random.choice(["NE", "SE", "NW", "SW"])
+            new_room = LShapedRoom(x, y, room_width, room_height, orientation)
+        else:  # T
+            x = random.randint(0, dungeon.width - room_width - 1)
+            y = random.randint(0, dungeon.height - room_height - 1)
+            orientation = random.choice(["up", "down", "left", "right"])
+            new_room = TShapedRoom(x, y, room_width, room_height, orientation)
 
         if any(new_room.intersects(other_room) for other_room in rooms):
             continue  # Si la sala se superpone con otra, se descarta.
 
-        dungeon.tiles[new_room.inner] = (
-            tile_types.floor
-        )  # Marca el área de la sala como suelo.
+        # Pintar el suelo según el tipo de habitación
+        if isinstance(new_room, RectangularRoom):
+            dungeon.tiles[new_room.inner] = tile_types.floor
+        else:
+            # Para habitaciones especiales, marcar cada tile interno
+            for tx, ty in new_room.get_inner_tiles():
+                if dungeon.in_bounds(tx, ty):
+                    dungeon.tiles[tx, ty] = tile_types.floor
 
         if len(rooms) == 0:
             player.place(
