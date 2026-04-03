@@ -149,4 +149,4 @@ start ROGUETHON.exe
 
 ---
 
-*¡Explora las mazmorras, mejora tu personaje y survive al máximo de pisos que puedas!*
+*¡Explora las mazmorras, mejora tu personaje y sobrevive al máximo de pisos que puedas!*
