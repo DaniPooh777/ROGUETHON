@@ -109,7 +109,7 @@ class Engine:
         self.game_map.render(console)  # Dibuja el mapa del juego.
 
         self.message_log.render(
-            console=console, x=21, y=45, width=40, height=5
+            console=console, x=21, y=45, width=35, height=5
         )  # Renderiza el registro de mensajes.
 
         render_functions.render_bar(  # Renderiza la barra de salud del jugador.
@@ -129,6 +129,11 @@ class Engine:
             console=console,
             dungeon_level=self.game_world.current_floor,  # Piso actual del juego.
             location=(0, 48),  # Ubicación donde se renderiza el nivel.
+        )
+
+        render_functions.render_status_effects(  # Renderiza los efectos activos de todos los actores.
+            console=console,
+            game_map=self.game_map,
         )
 
     def save_as(self, filename: str) -> None:

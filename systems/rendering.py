@@ -24,6 +24,8 @@ if TYPE_CHECKING:
     from core.game_map import (
         GameMap,
     )  # Trae el tipo GameMap de game_map solo en tiempo de verificación.
+    from components.fighter import Fighter
+    from entities.entity import Actor
 
 
 def get_names_at_location(x: int, y: int, game_map: GameMap) -> str:
@@ -105,3 +107,78 @@ def render_dungeon_level(
     console.print(
         x=x, y=y, string=f""" Piso: {dungeon_level}"""
     )  # Imprime el nivel de la mazmorras en la consola.
+
+
+def render_status_effects(console: Console, game_map: "GameMap") -> None:
+    """
+    Renderiza los efectos activos de todos los actores en un panel con marco.
+    Muestra los turnos restantes de invisibilidad, bono de defensa y modo defensivo.
+    """
+    from components.fighter import Fighter
+
+    # Colores basados en los pergaminos correspondientes
+    COLOR_INVISIBILITY = (128, 128, 255)  # Azul - Pergamino invisible
+    COLOR_DEFENSE = (0, 191, 255)  # Azul claro - Pergamino defensivo
+    COLOR_IMMUNITY = (255, 165, 0)  # Naranja - Pergamino de inmunidad
+    COLOR_NO_EFFECT = (128, 128, 128)  # Gris - Sin efectos
+    COLOR_ENEMY = (255, 100, 100)  # Rojo claro - Efectos de enemigos
+
+    # Recolectar efectos activos de todos los actores
+    effects = []
+
+    for actor in game_map.actors:
+        fighter = actor.fighter
+        if fighter is None:
+            continue
+
+        if actor.invisibility_turns > 0:
+            effects.append(
+                (COLOR_INVISIBILITY, f"Invisibilidad {actor.invisibility_turns}")
+            )
+        if fighter.defense_bonus_turns > 0:
+            effects.append((COLOR_DEFENSE, f"Defensa {fighter.defense_bonus_turns}"))
+        if fighter.defensive_turns > 0:
+            effects.append((COLOR_IMMUNITY, f"Inmunidad {fighter.defensive_turns}"))
+
+    # Marco con altura fija
+    frame_width = 24
+    frame_height = 5  # Altura fija
+    frame_x = 55
+    frame_y = 44
+
+    # Dibujar el marco con borde
+    console.draw_frame(
+        x=frame_x,
+        y=frame_y,
+        width=frame_width,
+        height=frame_height,
+        title=" ESTADOS ",
+        clear=False,
+        fg=color.menu_text,
+        bg=color.black,
+    )
+
+    # Mostrar los efectos o mensaje de "sin efectos"
+    if effects:
+        # Mostrar hasta 2 efectos por línea
+        lines = []
+        for i in range(0, len(effects), 2):
+            line = "  ".join([text for _, text in effects[i : i + 2]])
+            lines.append(line)
+
+        # Mostrar cada línea
+        for i, line in enumerate(lines):
+            if i < frame_height - 1:  # No exceder la altura del marco
+                console.print(
+                    x=frame_x + 1,
+                    y=frame_y + 1 + i,
+                    string=line,
+                    fg=color.menu_text,
+                )
+    else:
+        console.print(
+            x=frame_x + 1,
+            y=frame_y + 1,
+            string="Sin efectos activos",
+            fg=COLOR_NO_EFFECT,
+        )
