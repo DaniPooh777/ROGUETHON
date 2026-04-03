@@ -429,6 +429,31 @@ def place_entities(room: Room, dungeon: GameMap, floor_number: int) -> None:
                     break
 
 
+# Función para encontrar el punto de conexión en el borde de una habitación (con offset de 2 tiles)
+def get_room_connection_point(room: Room, target: Tuple[int, int]) -> Tuple[int, int]:
+    """Devuelve un punto en el borde de la habitación, a 2 tiles de distancia de la pared."""
+    rx, ry = room.center
+    tx, ty = target
+
+    # Determinar qué lado de la habitación está más cerca del target
+    if abs(tx - rx) > abs(ty - ry):
+        # Conectar horizontalmente
+        if tx < rx:
+            # Target a la izquierda - conectar por el lado izquierdo
+            return (room.x1 + 2, ry)
+        else:
+            # Target a la derecha - conectar por el lado derecho
+            return (room.x2 - 3, ry)
+    else:
+        # Conectar verticalmente
+        if ty < ry:
+            # Target arriba - conectar por arriba
+            return (rx, room.y1 + 2)
+        else:
+            # Target abajo - conectar por abajo
+            return (rx, room.y2 - 3)
+
+
 # Función para generar un túnel en forma de L entre dos puntos dados.
 def tunnel_between(
     start: Tuple[int, int], end: Tuple[int, int]
@@ -660,7 +685,10 @@ def generate_dungeon(
                 *new_room.center, dungeon
             )  # Coloca al jugador en el centro de la primera sala.
         else:
-            for x, y in tunnel_between(rooms[-1].center, new_room.center):
+            # Conectar los puntos de borde de las habitaciones (con separación de 2 tiles)
+            start_point = get_room_connection_point(rooms[-1], new_room.center)
+            end_point = get_room_connection_point(new_room, rooms[-1].center)
+            for x, y in tunnel_between(start_point, end_point):
                 dungeon.tiles[x, y] = tile_types.floor  # Crea un túnel entre salas.
 
         place_entities(
