@@ -409,10 +409,13 @@ def generate_dungeon(
         center_of_last_room = new_room.center  # Actualiza el centro de la última sala.
 
     # Genera habitaciones secretas después de las salas normales.
-    # Lógica: piso 1-4 = 1 habitacion (50% probabilidad), piso 5+ = 2 habitaciones (50% probabilidad)
+    # Lógica: probabilidad 50% de generar habitaciones secretas
+    # - Pisos 1-4: hasta 1 habitación
+    # - Pisos 5+: hasta 2 habitaciones
     current_floor = engine.game_world.current_floor
-    num_secrets = 2 if current_floor >= 5 else 1
-    if random.random() < 0.5:  # 50% de probabilidad de generar habitaciones secretas
+    max_secrets = 2 if current_floor >= 5 else 1
+    if random.random() < 0.5:  # 50% de probabilidad
+        num_secrets = random.randint(1, max_secrets)  # 1 hasta max_secrets
         generate_secret_rooms(
             dungeon, rooms, num_secrets=num_secrets, width=6, height=6
         )
