@@ -11,11 +11,15 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 | Categoría | Descripción |
 |-----------|-------------|
 | **Generación procedural** | Cada partida es única gracias a la creación aleatoria de mapas |
+| **Variedad de habitaciones** | Habitaciones rectangulares, circulares, en L y en T |
+| **Habitaciones secretas** | Áreas ocultas que aparecen aleatoriamente |
 | **Combate por turnos** | Lucha contra enemigos usando armas, hechizos y objetos |
 | **Inventario** | Recoge, equipa y usa objetos (armas, armaduras, pociones) |
 | **Subida de nivel** | Mejora tus habilidades al ganar experiencia |
-| **Habitaciones secretas** | Mazmorras con áreas ocultas por descubrir |
+| **Mouse tooltip** | Muestra el nombre de entidades al pasar el mouse |
 | **Registro de mensajes** | Historial de eventos importantes del juego |
+| **Nombre por defecto** | "Link" si dejas el nombre vacío |
+| **Cursor visible** | Cursor del mouse visible en pantalla |
 
 ---
 
