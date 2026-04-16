@@ -32,37 +32,38 @@ if TYPE_CHECKING:
     from entities.entity import Actor
 
 
-def get_names_at_location(x: int, y: int, game_map: GameMap) -> str:
+def get_names_at_location(x: int, y: int, game_map: GameMap) -> list:
     """
-    Obtiene los nombres de las entidades en la ubicación (x, y) en el mapa del juego,
+    Obtiene los nombres y colores de las entidades en la ubicación (x, y) en el mapa del juego,
     si están dentro del alcance visible del jugador.
     """
     if (
         not game_map.in_bounds(x, y) or not game_map.visible[x, y]
     ):  # Si la posición no está en los límites o no es visible, no se muestra nada.
-        return ""
+        return []
 
-    # Filtra las entidades que están en la misma posición (x, y) y junta sus nombres en una cadena separada por comas.
-    names = ", ".join(
-        entity.name for entity in game_map.entities if entity.x == x and entity.y == y
-    )
-
-    return (
-        names.capitalize()
-    )  # Capitaliza la primera letra del nombre para presentación.
+    # Retorna lista de tuplas (nombre, color) para cada entidad en esa posición
+    return [
+        (entity.name, entity.color)
+        for entity in game_map.entities
+        if entity.x == x and entity.y == y
+    ]
 
 
 def render_names_at_mouse_location(
     console: Console, x: int, y: int, engine: "Engine"
 ) -> None:
-    """Renderiza los nombres de las entidades en la posición del mouse."""
+    """Renderiza los nombres de las entidades en la posición del mouse con sus colores."""
     mouse_x, mouse_y = engine.mouse_location
 
-    names_at_mouse_location = get_names_at_location(
-        x=mouse_x, y=mouse_y, game_map=engine.game_map
-    )
+    entities = get_names_at_location(x=mouse_x, y=mouse_y, game_map=engine.game_map)
 
-    console.print(x=x, y=y, string=names_at_mouse_location)
+    if not entities:
+        return
+
+    # Renderizar cada nombre con su color
+    for i, (name, color) in enumerate(entities):
+        console.print(x=x, y=y + i, string=name.capitalize(), fg=color)
 
 
 def render_bar(
