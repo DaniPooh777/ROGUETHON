@@ -52,6 +52,19 @@ def get_names_at_location(x: int, y: int, game_map: GameMap) -> str:
     )  # Capitaliza la primera letra del nombre para presentación.
 
 
+def render_names_at_mouse_location(
+    console: Console, x: int, y: int, engine: "Engine"
+) -> None:
+    """Renderiza los nombres de las entidades en la posición del mouse."""
+    mouse_x, mouse_y = engine.mouse_location
+
+    names_at_mouse_location = get_names_at_location(
+        x=mouse_x, y=mouse_y, game_map=engine.game_map
+    )
+
+    console.print(x=x, y=y, string=names_at_mouse_location)
+
+
 def render_bar(
     console: Console, current_value: int, maximum_value: int, total_width: int
 ) -> None:

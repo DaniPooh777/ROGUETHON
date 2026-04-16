@@ -136,6 +136,11 @@ class EventHandler(BaseEventHandler):
             engine  # El motor del juego, que contiene la lógica y el estado del juego.
         )
 
+    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
+        """Guarda la posición del mouse cuando se mueve."""
+        if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
+            self.engine.mouse_location = (event.tile.x, event.tile.y)
+
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
         """Gestiona eventos para los manejadores de entrada con el motor del juego."""
         action_or_state = self.dispatch(event)  # Llama al despachador de eventos

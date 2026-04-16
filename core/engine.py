@@ -57,6 +57,7 @@ class Engine:
         self.turn_count = 0  # Inicializa el contador de turnos en 0
         self.scheduled_tasks = []  # Lista para almacenar tareas programadas
         self.last_player_name = player.name  # Guarda el nombre del jugador inicial
+        self.mouse_location = (player.x, player.y)  # Posición inicial del mouse
 
     def schedule_task(self, turns: int, callback: Callable) -> None:
         """Programa una tarea para ejecutarse después de un número de turnos."""
@@ -136,12 +137,9 @@ class Engine:
             game_map=self.game_map,
         )
 
-        # Renderiza el tooltip del mouse
-        render_functions.render_tooltip(
-            console=console,
-            game_map=self.game_map,
-            mouse_x=self.mouse_location[0],
-            mouse_y=self.mouse_location[1],
+        # Renderiza los nombres de entidades en la posición del mouse
+        render_functions.render_names_at_mouse_location(
+            console=console, x=0, y=47, engine=self
         )
 
     def save_as(self, filename: str) -> None:

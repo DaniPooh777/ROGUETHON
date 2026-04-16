@@ -53,8 +53,8 @@ def main() -> None:
     ) as context:
         root_console = tcod.console.Console(screen_width, screen_height, order="F")
 
-        # Oculta el cursor del ratón siempre
-        libtcodpy.mouse_show_cursor(False)
+        # Muestra el cursor del ratón
+        libtcodpy.mouse_show_cursor(True)
 
         while True:
             handler: input_handlers.BaseEventHandler = setup_game.MainMenu(
@@ -79,6 +79,7 @@ def main() -> None:
                                         save_game(handler, "savegame.sav")
                                 raise SystemExit()
 
+                            # Pasar TODOS los eventos al handler (incluye MouseMotion)
                             if isinstance(event, tcod.event.KeyDown):
                                 if event.sym == tcod.event.KeySym.ESCAPE:
                                     if isinstance(handler, input_handlers.EventHandler):
@@ -87,7 +88,7 @@ def main() -> None:
                                         save_game(handler, "savegame.sav")
                                         handler = MainMenu(context, root_console)
                                         break
-                                handler = handler.handle_events(event)
+                            handler = handler.handle_events(event)
 
                     except Exception:
                         traceback.print_exc()
