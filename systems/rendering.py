@@ -11,6 +11,9 @@ from typing import (
     Tuple,
 )  # IMPORTA: TYPE_CHECKING ayuda con las verificaciones de tipos en tiempo de análisis, y Tuple es para tuplas con tipos definidos.
 
+if TYPE_CHECKING:
+    from core.game_map import GameMap
+
 from ui import colors as color  # Importa el módulo de colores personalizados.
 import components.ai  # Importa el módulo de IA para verificar efectos de confusión.
 
@@ -188,3 +191,77 @@ def render_status_effects(console: Console, game_map: "GameMap") -> None:
             string="Sin efectos activos",
             fg=COLOR_NO_EFFECT,
         )
+
+
+def render_tooltip(
+    console: Console, game_map: "GameMap", mouse_x: int, mouse_y: int
+) -> None:
+    """
+    Renderiza un tooltip con el nombre de la entidad bajo el mouse.
+    Se muestra solo si hay una entidad visible o conocida en esa posición.
+    """
+    if not game_map.in_bounds(mouse_x, mouse_y):
+        return
+
+    # Buscar entidades en la posición del mouse
+    entities_at_pos = [
+        entity
+        for entity in game_map.entities
+        if entity.x == mouse_x and entity.y == mouse_y
+    ]
+
+    if not entities_at_pos:
+        return
+
+    # Obtener los nombres de las entidades
+    names = [entity.name for entity in entities_at_pos]
+    tooltip_text = ", ".join(names)
+
+    if not tooltip_text:
+        return
+
+    # Calcular posición del tooltip (a la derecha del cursor, si no cabe, a la izquierda)
+    tooltip_width = len(tooltip_text) + 2
+    tooltip_height = 2
+
+    tooltip_x = mouse_x + 1
+    tooltip_y = mouse_y
+
+    # Ajustar si se sale de la pantalla
+    if tooltip_x + tooltip_width > console.width - 1:
+        tooltip_x = mouse_x - tooltip_width - 1
+    if tooltip_y + tooltip_height > console.height - 1:
+        tooltip_y = mouse_y - tooltip_height
+
+    # Asegurar que no tenga coordenadas negativas
+    tooltip_x = max(1, tooltip_x)
+    tooltip_y = max(1, tooltip_y)
+
+    # Dibujar el fondo del tooltip
+    console.draw_rect(
+        x=tooltip_x,
+        y=tooltip_y,
+        width=tooltip_width,
+        height=tooltip_height,
+        ch=ord(" "),
+        bg=(20, 20, 30),  # Fondo oscuro
+    )
+
+    # Dibujar el borde
+    console.draw_frame(
+        x=tooltip_x,
+        y=tooltip_y,
+        width=tooltip_width,
+        height=tooltip_height,
+        title="",
+        clear=False,
+        fg=(180, 180, 180),
+    )
+
+    # Escribir el nombre
+    console.print(
+        x=tooltip_x + 1,
+        y=tooltip_y + 1,
+        string=tooltip_text,
+        fg=(255, 255, 100),  # Color amarillo dorado
+    )

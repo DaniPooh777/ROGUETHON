@@ -136,6 +136,14 @@ class Engine:
             game_map=self.game_map,
         )
 
+        # Renderiza el tooltip del mouse
+        render_functions.render_tooltip(
+            console=console,
+            game_map=self.game_map,
+            mouse_x=self.mouse_location[0],
+            mouse_y=self.mouse_location[1],
+        )
+
     def save_as(self, filename: str) -> None:
         """Guarda el estado del motor del juego en un archivo comprimido, excluyendo el contexto y la consola."""
         context = self.context  # Excluye el contexto temporalmente.
