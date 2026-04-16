@@ -139,7 +139,7 @@ class Engine:
 
         # Renderiza los nombres de entidades en la posición del mouse
         render_functions.render_names_at_mouse_location(
-            console=console, x=0, y=47, engine=self
+            console=console, x=55, y=49, engine=self
         )
 
     def save_as(self, filename: str) -> None:
