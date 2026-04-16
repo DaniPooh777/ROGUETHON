@@ -176,9 +176,10 @@ def get_player_name(
                 if (
                     event.sym == tcod.event.KeySym.RETURN
                 ):  # Si presiona Enter, retorna el nombre.
-                    if name.strip():
-                        fade_to_black(console, context)
-                        return name
+                    if not name.strip():  # Si no hay nombre, usar Link por defecto
+                        name = "Link"
+                    fade_to_black(console, context)
+                    return name
                 elif (
                     event.sym == tcod.event.KeySym.BACKSPACE
                 ):  # Si presiona Backspace, borra un carácter.
