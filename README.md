@@ -18,8 +18,6 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 | **Subida de nivel** | Mejora tus habilidades al ganar experiencia |
 | **Mouse tooltip** | Muestra el nombre de entidades al pasar el mouse |
 | **Registro de mensajes** | Historial de eventos importantes del juego |
-| **Nombre por defecto** | "Link" si dejas el nombre vacío |
-| **Cursor visible** | Cursor del mouse visible en pantalla |
 
 ---
 
