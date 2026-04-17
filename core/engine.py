@@ -110,7 +110,7 @@ class Engine:
         self.game_map.render(console)  # Dibuja el mapa del juego.
 
         self.message_log.render(
-            console=console, x=21, y=45, width=35, height=5
+            console=console, x=21, y=45, width=34, height=5
         )  # Renderiza el registro de mensajes.
 
         render_functions.render_bar(  # Renderiza la barra de salud del jugador.
