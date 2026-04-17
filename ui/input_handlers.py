@@ -248,18 +248,94 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             y=y + 5,
             string=f"Salud: {self.engine.player.fighter.hp}/{self.engine.player.fighter.max_hp}",
         )
-        console.print(
-            x=x + 1, y=y + 6, string=f"Ataque: {self.engine.player.fighter.power}"
-        )
-        console.print(
-            x=x + 1, y=y + 7, string=f"Defensa: {self.engine.player.fighter.defense}"
-        )
+        
+        # Calcular ataque base y penalización por hambre
+        fighter = self.engine.player.fighter
+        base_power = fighter.base_power + fighter.power_bonus
+        if hasattr(self.engine.player, 'hunger'):
+            hunger_state = self.engine.player.hunger.state
+            if hunger_state == "weak":
+                current_power = int(base_power * 0.75)
+                penalty = base_power - current_power
+                console.print(
+                    x=x + 1, y=y + 6, 
+                    string=f"Ataque: {current_power} (-{penalty})"
+                )
+            elif hunger_state == "moribund":
+                current_power = int(base_power * 0.50)
+                penalty = base_power - current_power
+                console.print(
+                    x=x + 1, y=y + 6, 
+                    string=f"Ataque: {current_power} (-{penalty})"
+                )
+            else:
+                console.print(
+                    x=x + 1, y=y + 6, string=f"Ataque: {base_power}"
+                )
+        else:
+            console.print(
+                x=x + 1, y=y + 6, string=f"Ataque: {fighter.power}"
+            )
+        
+        # Calcular defensa base y penalización por efectos temporales o hambre
+        base_defense = fighter.base_defense + fighter.defense_bonus
+        if hasattr(self.engine.player, 'hunger'):
+            hunger_state = self.engine.player.hunger.state
+            has_temp_bonus = fighter.temp_defense_bonus > 0
+            
+            if hunger_state == "weak":
+                current_defense = int(base_defense * 0.75)
+                penalty = base_defense - current_defense
+                console.print(
+                    x=x + 1, y=y + 7, 
+                    string=f"Defensa: {current_defense} (-{penalty})"
+                )
+            elif hunger_state == "moribund":
+                current_defense = int(base_defense * 0.50)
+                penalty = base_defense - current_defense
+                console.print(
+                    x=x + 1, y=y + 7, 
+                    string=f"Defensa: {current_defense} (-{penalty})"
+                )
+            elif has_temp_bonus:
+                current_defense = base_defense + fighter.temp_defense_bonus
+                bonus = fighter.temp_defense_bonus
+                console.print(
+                    x=x + 1, y=y + 7, 
+                    string=f"Defensa: {current_defense} (+{bonus})"
+                )
+            else:
+                console.print(
+                    x=x + 1, y=y + 7, string=f"Defensa: {base_defense}"
+                )
+        else:
+            if fighter.temp_defense_bonus > 0:
+                current_defense = base_defense + fighter.temp_defense_bonus
+                bonus = fighter.temp_defense_bonus
+                console.print(
+                    x=x + 1, y=y + 7, 
+                    string=f"Defensa: {current_defense} (+{bonus})"
+                )
+            else:
+                console.print(
+                    x=x + 1, y=y + 7, string=f"Defensa: {base_defense}"
+                )
         
         # Mostrar hambre si el jugador tiene el componente
         if hasattr(self.engine.player, 'hunger'):
-            console.print(
-                x=x + 1, y=y + 8, string=f"Hambre: {self.engine.player.hunger.current_hunger}"
-            )
+            hunger = self.engine.player.hunger
+            hunger_value = hunger.current_hunger
+            # Agregar info de estado si no está satisfecho
+            if hunger.state != "satisfied":
+                state_names = {"hungry": "Hambriento", "weak": "Debil", "moribund": "Moribundo"}
+                console.print(
+                    x=x + 1, y=y + 8, 
+                    string=f"Hambre: {hunger_value} ({state_names[hunger.state]})"
+                )
+            else:
+                console.print(
+                    x=x + 1, y=y + 8, string=f"Hambre: {hunger_value}"
+                )
 
 
 # Manejador de eventos para la subida de nivel del jugador.

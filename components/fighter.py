@@ -63,7 +63,16 @@ class Fighter(BaseComponent):
     @property
     def defense(self) -> int:
         """Obtiene la defensa total del actor, incluyendo el bono temporal."""
-        return self.base_defense + self.defense_bonus + self.temp_defense_bonus
+        total = self.base_defense + self.defense_bonus + self.temp_defense_bonus
+        
+        # Aplicar penalización de hambre si está en estado weak o moribund
+        if hasattr(self.parent, 'hunger'):
+            if self.parent.hunger.state == "weak":
+                total = int(total * 0.75)  # -25% defensa
+            elif self.parent.hunger.state == "moribund":
+                total = int(total * 0.50)  # -50% defensa
+        
+        return total
 
     @property
     def power(self) -> int:

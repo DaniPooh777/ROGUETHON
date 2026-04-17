@@ -86,4 +86,9 @@ class Hunger(BaseComponent):
     
     def on_turn_end(self) -> None:
         """Se ejecuta al final de cada turno, reduciendo la hambre."""
-        self.current_hunger -= 1
+        if self.current_hunger > 0:
+            self.current_hunger -= 1
+        
+        # Verificar muerte por hambre si llega a 0
+        if self.current_hunger <= 0:
+            self.parent.fighter.die()  # El fighter matará al jugador
