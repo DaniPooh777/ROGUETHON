@@ -202,6 +202,21 @@ class MeleeAction(ActionWithDirection):
                 "Nada a lo que atacar."
             )  # Si no hay objetivo, lanza una excepción
 
+        # Verificar chance de golpe basado en estado de hambre
+        import random
+        hit_roll = random.randint(1, 100)
+        if hit_roll > self.entity.fighter.hit_chance:
+            # El ataque falla
+            attack_desc = f"{self.entity.name.capitalize()} ataca a {target.name}."
+            if self.entity is self.engine.player:
+                attack_color = color.player_atk
+            else:
+                attack_color = color.enemy_atk
+            self.engine.message_log.add_message(
+                f"{attack_desc} Falla el ataque.", attack_color
+            )
+            return
+
         damage = self.entity.fighter.power - target.fighter.defense  # Calcula el daño
 
         attack_desc = f"{self.entity.name.capitalize()} ataca a {target.name}."

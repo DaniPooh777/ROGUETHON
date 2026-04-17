@@ -43,6 +43,8 @@ class Fighter(BaseComponent):
         self.defensive_turns = 0  # Turnos restantes de inmunidad al daño.
         self.defense_bonus_turns = 0  # Turnos restantes del bono de defensa.
         self.temp_defense_bonus = 0  # Bono de defensa temporal.
+        self.temp_power_bonus = 0  # Bono de poder temporal.
+        self.power_bonus_turns = 0  # Turnos restantes del bono de poder.
 
     @property
     def hp(self) -> int:
@@ -65,8 +67,25 @@ class Fighter(BaseComponent):
 
     @property
     def power(self) -> int:
-        """Obtiene el poder de ataque total del actor, sumando el poder base y el bono de poder de equipo."""
-        return self.base_power + self.power_bonus
+        """Obtiene el poder de ataque total del actor, sumando el poder base y el bono de equipo."""
+        # Sumar poder base + bonus de equipo + bonus temporal
+        total = self.base_power + self.power_bonus + self.temp_power_bonus
+
+        # Aplicar penalización de hambre si está en estado weak o moribund
+        if hasattr(self.parent, 'hunger'):
+            if self.parent.hunger.state == "weak":
+                total = int(total * 0.75)  # -25% poder
+            elif self.parent.hunger.state == "moribund":
+                total = int(total * 0.50)  # -50% poder
+
+        return total
+
+    @property
+    def hit_chance(self) -> int:
+        """Obtiene el porcentaje de golpe del actor basado en su estado de hambre."""
+        if hasattr(self.parent, 'hunger'):
+            return self.parent.hunger.hit_chance
+        return 100  # Default si no tiene hunger
 
     @property
     def defense_bonus(self) -> int:
@@ -95,8 +114,14 @@ class Fighter(BaseComponent):
             self.engine.last_player_name = (
                 self.parent.name
             )  # Guarda el nombre del jugador antes de cambiarlo
-            death_message = "Has muerto"
-            death_message_color = color.player_die
+
+            # Verificar si la muerte fue por hambre
+            if hasattr(self.parent, 'hunger') and self.parent.hunger.current_hunger <= 0:
+                death_message = "Has muerto de hambre"
+                death_message_color = color.player_die
+            else:
+                death_message = "Has muerto"
+                death_message_color = color.player_die
 
             # Eliminar archivo de partida guardada
             save_file = "savegame.sav"
@@ -163,14 +188,22 @@ class Fighter(BaseComponent):
         self.defense_bonus_turns = turns
 
     def on_turn_end(self) -> None:
-        """Se ejecuta al final de cada turno, reduciendo los turnos restantes de inmunidad al daño."""
+        """Se ejecuta al final de cada turno, reduciendo los turnos restantes de efectos."""
         if self.defensive_turns > 0:
             self.defensive_turns -= 1
         if self.defense_bonus_turns > 0:
             self.defense_bonus_turns -= 1
-        if self.defense_bonus_turns == 0 and self.temp_defense_bonus > 0:
-            self.engine.message_log.add_message(
-                f"{self.parent.name} siente que su piel vuelve a la normalidad.",
-                color.status_effect_applied,
-            )
-            self.temp_defense_bonus = 0  # Elimina el bono de defensa temporal.
+            if self.defense_bonus_turns == 0 and self.temp_defense_bonus > 0:
+                self.engine.message_log.add_message(
+                    f"{self.parent.name} siente que su piel vuelve a la normalidad.",
+                    color.status_effect_applied,
+                )
+                self.temp_defense_bonus = 0
+        if self.power_bonus_turns > 0:
+            self.power_bonus_turns -= 1
+            if self.power_bonus_turns == 0 and self.temp_power_bonus > 0:
+                self.engine.message_log.add_message(
+                    f"{self.parent.name} siente que su fuerza vuelve a la normalidad.",
+                    color.status_effect_applied,
+                )
+                self.temp_power_bonus = 0

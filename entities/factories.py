@@ -10,6 +10,7 @@ from components import (
 )  # Importa componentes de consumibles y equipables.
 from components.fighter import Fighter  # Importa la clase Fighter (luchador).
 from components.inventory import Inventory  # Importa la clase Inventory (inventario).
+from components.hunger import Hunger  # Importa la clase Hunger (hambre).
 from entities.entity import Actor, Item  # Importa las clases Actor y Item.
 from components.level import Level  # Importa la clase Level (nivel).
 from components.equipment import Equipment  # Importa la clase Equipment (equipo).
@@ -26,6 +27,7 @@ player = Actor(
     ),  # Atributos de lucha (30 HP, defensa 1, poder 2).
     inventory=Inventory(capacity=26),  # Inventario con capacidad para 26 objetos.
     level=Level(level_up_base=200),  # El jugador sube de nivel al alcanzar 200 XP.
+    hunger=Hunger(max_hunger=1000),  # Sistema de hambre del jugador.
 )
 
 # Se crean varios enemigos como actores, cada uno con su propia IA y atributos.
@@ -182,4 +184,48 @@ chain_mail = Item(
     color=(105, 105, 105),  # Color gris oscuro.
     name="Armadura de hierro",  # Nombre del objeto.
     equippable=equippable.ChainMail(),  # La cota de malla es un objeto equipable.
+)
+
+# ==================== COMIDA ====================
+
+apple = Item(
+    char="%",  # Carácter que representa comida.
+    color=(255, 100, 100),  # Rojo (manzana).
+    name="Manzana",  # Nombre del objeto.
+    consumable=consumable.FoodConsumable(hunger_restore=80),
+)
+
+bread = Item(
+    char="%",  # Carácter que representa comida.
+    color=(210, 180, 140),  # Marrón (pan).
+    name="Pan",  # Nombre del objeto.
+    consumable=consumable.FoodConsumable(hunger_restore=120),
+)
+
+meat = Item(
+    char="%",  # Carácter que representa comida.
+    color=(139, 69, 19),  # Marrón oscuro (carne).
+    name="Carne",  # Nombre del objeto.
+    consumable=consumable.FoodConsumable(hunger_restore=180),
+)
+
+cheese = Item(
+    char="%",  # Carácter que representa comida.
+    color=(255, 255, 0),  # Amarillo (queso).
+    name="Queso",  # Nombre del objeto.
+    consumable=consumable.FoodConsumable(hunger_restore=100, defense_bonus=1, defense_turns=3),
+)
+
+roasted_meat = Item(
+    char="%",  # Carácter que representa comida.
+    color=(100, 50, 0),  # Marrón oscuro (carne asada).
+    name="Carne asada",  # Nombre del objeto.
+    consumable=consumable.FoodConsumable(hunger_restore=250, power_bonus=2, power_turns=5),
+)
+
+soup = Item(
+    char="%",  # Carácter que representa comida.
+    color=(255, 200, 150),  # Crema (sopa).
+    name="Sopa caliente",  # Nombre del objeto.
+    consumable=consumable.FoodConsumable(hunger_restore=150, defense_bonus=2, defense_turns=3),
 )

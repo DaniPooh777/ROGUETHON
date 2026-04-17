@@ -296,3 +296,45 @@ class ImmunityScrollConsumable(Consumable):
             f"{consumer.name} es completamente inmune durante {self.number_of_turns} turnos!",
             color.status_effect_applied,
         )
+
+
+class FoodConsumable(Consumable):
+    """Consumible de comida que restaura hambre y puede otorgar buffs temporales."""
+
+    def __init__(self, hunger_restore: int, defense_bonus: int = 0, defense_turns: int = 0,
+                 power_bonus: int = 0, power_turns: int = 0):
+        self.hunger_restore = hunger_restore
+        self.defense_bonus = defense_bonus
+        self.defense_turns = defense_turns
+        self.power_bonus = power_bonus
+        self.power_turns = power_turns
+
+    def activate(self, action: actions.ItemAction) -> None:
+        consumer = action.entity
+        
+        # Verificar que el consumidor tenga componente hunger
+        if not hasattr(consumer, 'hunger'):
+            raise Impossible("No puedes comer esto.")
+        
+        # Restaurar hambre
+        consumer.hunger.eat(self.hunger_restore)
+        
+        # Aplicar buff de defensa si tiene
+        if self.defense_bonus > 0:
+            consumer.fighter.activate_defense_bonus(self.defense_bonus, self.defense_turns)
+            self.engine.message_log.add_message(
+                f"Ganas {self.defense_bonus} puntos de defensa durante {self.defense_turns} turnos.",
+                color.status_effect_applied,
+            )
+        
+        # Aplicar buff de poder si tiene
+        if self.power_bonus > 0:
+            consumer.fighter.temp_power_bonus += self.power_bonus
+            consumer.fighter.power_bonus_turns = self.power_turns
+            self.engine.message_log.add_message(
+                f"Ganas {self.power_bonus} puntos de poder durante {self.power_turns} turnos.",
+                color.status_effect_applied,
+            )
+        
+        self.engine.message_log.add_message(f"Has comido {self.parent.name}.")
+        self.consume()

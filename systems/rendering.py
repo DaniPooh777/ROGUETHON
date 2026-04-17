@@ -131,6 +131,7 @@ def render_status_effects(console: Console, game_map: "GameMap") -> None:
     """
     Renderiza los efectos activos de todos los actores en un panel con marco.
     Muestra los turnos restantes de invisibilidad, bono de defensa y modo defensivo.
+    También muestra el estado de hambre del jugador.
     """
     from components.fighter import Fighter
 
@@ -141,9 +142,29 @@ def render_status_effects(console: Console, game_map: "GameMap") -> None:
     COLOR_CONFUSION = (207, 63, 255)  # Púrpura - Pergamino de confusión
     COLOR_NO_EFFECT = (128, 128, 128)  # Gris - Sin efectos
     COLOR_ENEMY = (255, 100, 100)  # Rojo claro - Efectos de enemigos
+    
+    # Colores para estado de hambre
+    COLOR_SATISFIED = (100, 255, 100)  # Verde
+    COLOR_HUNGRY = (255, 255, 100)  # Amarillo
+    COLOR_WEAK = (255, 165, 0)  # Naranja
+    COLOR_MORIBUND = (255, 50, 50)  # Rojo
 
     # Recolectar efectos activos de todos los actores
     effects = []
+    
+    # Agregar estado de hambre del jugador
+    player = game_map.engine.player
+    if hasattr(player, 'hunger'):
+        hunger_state = player.hunger.state
+        hunger_value = player.hunger.current_hunger
+        
+        # No mostrar "Satisfecho", solo los demás estados
+        if hunger_state == "hungry":
+            effects.append((COLOR_HUNGRY, f"Hambriento ({hunger_value})"))
+        elif hunger_state == "weak":
+            effects.append((COLOR_WEAK, f"Debil ({hunger_value})"))
+        elif hunger_state == "moribund":
+            effects.append((COLOR_MORIBUND, f"Moribundo! ({hunger_value})"))
 
     for actor in game_map.actors:
         fighter = actor.fighter

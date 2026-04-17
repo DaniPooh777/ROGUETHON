@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from components.level import Level
     from components.equippable import Equippable
     from components.equipment import Equipment
+    from components.hunger import Hunger
 
 # Definición de un tipo genérico T, que se usa para referirse a la clase Entity.
 T = TypeVar("T", bound="Entity")
@@ -132,6 +133,7 @@ class Actor(Entity):
         fighter: Fighter,  # Componentes de lucha del actor
         inventory: Inventory,  # Inventario del actor
         level: Level,  # Nivel del actor
+        hunger: Optional["Hunger"] = None,  # Componente de hambre (opcional)
     ):
         super().__init__(  # Llamada al constructor de la clase base (Entity)
             x=x,
@@ -158,6 +160,11 @@ class Actor(Entity):
         self.level.parent = self  # Asigna el actor como "padre" del nivel
 
         self.invisibility_turns = 0  # Contador de turnos de invisibilidad
+
+        # Componente de hambre (solo para el jugador)
+        if hunger:
+            self.hunger = hunger
+            self.hunger.parent = self
 
     @property
     def invisible(self) -> bool:

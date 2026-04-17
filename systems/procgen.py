@@ -122,6 +122,36 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     ],
 }
 
+# Probabilidades de que comida aparezca en niveles específicos.
+food_chances: Dict[int, List[Tuple[Entity, int]]] = {
+    1: [
+        (entity_factories.apple, 45),
+        (entity_factories.bread, 35),
+        (entity_factories.cheese, 20),
+    ],
+    2: [
+        (entity_factories.apple, 35),
+        (entity_factories.bread, 30),
+        (entity_factories.meat, 20),
+        (entity_factories.cheese, 15),
+    ],
+    3: [
+        (entity_factories.apple, 25),
+        (entity_factories.bread, 25),
+        (entity_factories.meat, 25),
+        (entity_factories.cheese, 15),
+        (entity_factories.roasted_meat, 10),
+    ],
+    5: [
+        (entity_factories.apple, 20),
+        (entity_factories.bread, 20),
+        (entity_factories.meat, 20),
+        (entity_factories.cheese, 15),
+        (entity_factories.roasted_meat, 15),
+        (entity_factories.soup, 10),
+    ],
+}
+
 
 # Función para obtener el valor máximo de ítems o monstruos por nivel de piso.
 def get_max_value_for_floor(
@@ -412,6 +442,13 @@ def place_entities(room: Room, dungeon: GameMap, floor_number: int) -> None:
     items: List[Entity] = get_entities_at_random(
         item_chances, number_of_items, floor_number
     )
+    
+    # Agregar comida (1-2 items de comida por habitación)
+    number_of_food = random.randint(1, 2)
+    food: List[Entity] = get_entities_at_random(
+        food_chances, number_of_food, floor_number
+    )
+    items.extend(food)
 
     # Obtener tiles internos según el tipo de habitación
     if isinstance(room, RectangularRoom):

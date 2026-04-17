@@ -224,7 +224,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             x=x,
             y=y,
             width=width,
-            height=9,  # Altura del marco de estadísticas.
+            height=10,  # Altura del marco de estadísticas.
             title=self.TITLE,  # Título de la ventana.
             clear=True,
             fg=(255, 255, 255),  # Color del texto.
@@ -254,6 +254,12 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         console.print(
             x=x + 1, y=y + 7, string=f"Defensa: {self.engine.player.fighter.defense}"
         )
+        
+        # Mostrar hambre si el jugador tiene el componente
+        if hasattr(self.engine.player, 'hunger'):
+            console.print(
+                x=x + 1, y=y + 8, string=f"Hambre: {self.engine.player.hunger.current_hunger}"
+            )
 
 
 # Manejador de eventos para la subida de nivel del jugador.
@@ -647,6 +653,10 @@ class MainGameEventHandler(EventHandler):
 
         if self.engine.player.fighter:
             self.engine.player.fighter.on_turn_end()
+        
+        # Actualizar hambre del jugador
+        if hasattr(self.engine.player, 'hunger'):
+            self.engine.player.hunger.on_turn_end()
 
         self.engine.handle_enemy_turns()
         self.engine.update_fov()
