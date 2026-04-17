@@ -189,28 +189,28 @@ chain_mail = Item(
 # ==================== COMIDA ====================
 
 apple = Item(
-    char="%",  # Carácter que representa comida.
+    char="*",  # Carácter que representa comida.
     color=(255, 100, 100),  # Rojo (manzana).
     name="Manzana",  # Nombre del objeto.
     consumable=consumable.FoodConsumable(hunger_restore=80),
 )
 
 bread = Item(
-    char="%",  # Carácter que representa comida.
+    char="-",  # Carácter que representa comida.
     color=(210, 180, 140),  # Marrón (pan).
     name="Pan",  # Nombre del objeto.
     consumable=consumable.FoodConsumable(hunger_restore=120),
 )
 
 meat = Item(
-    char="%",  # Carácter que representa comida.
+    char="&",  # Carácter que representa comida.
     color=(139, 69, 19),  # Marrón oscuro (carne).
     name="Carne",  # Nombre del objeto.
     consumable=consumable.FoodConsumable(hunger_restore=180),
 )
 
 cheese = Item(
-    char="%",  # Carácter que representa comida.
+    char="=",  # Carácter que representa comida.
     color=(255, 255, 0),  # Amarillo (queso).
     name="Queso",  # Nombre del objeto.
     consumable=consumable.FoodConsumable(hunger_restore=100, defense_bonus=1, defense_turns=3),
@@ -224,7 +224,7 @@ roasted_meat = Item(
 )
 
 soup = Item(
-    char="%",  # Carácter que representa comida.
+    char="~",  # Carácter que representa comida.
     color=(255, 200, 150),  # Crema (sopa).
     name="Sopa caliente",  # Nombre del objeto.
     consumable=consumable.FoodConsumable(hunger_restore=150, defense_bonus=2, defense_turns=3),
