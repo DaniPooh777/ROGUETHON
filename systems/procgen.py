@@ -102,7 +102,11 @@ item_chances: Dict[int, List[Tuple[Entity, int]]] = {
 
 # Probabilidades de que ciertos monstruos aparezcan en niveles específicos.
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],  # 80% de probabilidad de orco en el nivel 0.
+    0: [(entity_factories.rata, 80)],  # 80% de probabilidad de rata en el nivel 0.
+    1: [
+        (entity_factories.rata, 60),  # 60% de probabilidad de rata en el nivel 1.
+        (entity_factories.orc, 30),  # 30% de probabilidad de orco en el nivel 1.
+    ],
     2: [
         (entity_factories.goblin, 30)
     ],  # 30% de probabilidad de goblin a partir del nivel 2.

@@ -42,6 +42,19 @@ orc = Actor(
     level=Level(xp_given=40),  # Da 40 XP al ser derrotado.
 )
 
+rata = Actor(
+    char="r",  # Carácter que representa a la rata.
+    color=(160, 160, 160),  # Color gris.
+    name="Rata",  # Nombre del enemigo.
+    ai_cls=HostileEnemy,  # IA de enemigo hostil.
+    equipment=Equipment(),  # Equipamiento vacío.
+    fighter=Fighter(
+        hp=5, base_defense=0, base_power=2
+    ),  # Atributos de lucha (5 HP, defensa 0, poder 2).
+    inventory=Inventory(capacity=0),  # Inventario vacío.
+    level=Level(xp_given=15),  # Da 15 XP al ser derrotado.
+)
+
 troll = Actor(
     char="T",  # Carácter que representa al troll.
     color=(0, 127, 0),  # Color verde oscuro.
