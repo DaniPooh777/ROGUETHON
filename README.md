@@ -135,6 +135,9 @@ ROGUETHON/
 
 ## 🚀 Cómo ejecutar el juego
 
+> [!WARNING]
+> Este método sirve para jugar a la v1.0 debido al que el compilado no está actualizado a las últimas versiones. Para jugarlas busca el archivo main.py y ejecútalo.
+
 1. Asegúrate de tener Python 3.10 o superior instalado.
 2. Descarga Git para poder clonar el código:
    [Pulsa aquí](https://git-scm.com/downloads/win)
