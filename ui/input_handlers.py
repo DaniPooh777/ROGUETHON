@@ -761,23 +761,23 @@ class MainGameEventHandler(EventHandler):
 
             return MainMenu(self.engine.context, self.engine.console)
         # Si se presiona la tecla H, muestra el historial de mensajes.
-        elif key == tcod.event.KeySym.h:
+        elif key == tcod.event.KeySym.H:
             return HistoryViewer(self.engine)
 
         # Si se presiona la tecla G, el jugador recoge un objeto.
-        elif key == tcod.event.KeySym.g:
+        elif key == tcod.event.KeySym.G:
             action = PickupAction(player)
 
         # Si se presiona la tecla I, abre la pantalla de inventario para usar un item.
-        elif key == tcod.event.KeySym.i:
+        elif key == tcod.event.KeySym.I:
             return InventoryActivateHandler(self.engine)
 
         # Si se presiona la tecla F, abre la pantalla de inventario para soltar un item.
-        elif key == tcod.event.KeySym.f:
+        elif key == tcod.event.KeySym.F:
             return InventoryDropHandler(self.engine)
 
         # Si se presiona la tecla C, abre la pantalla de estadísticas del personaje.
-        elif key == tcod.event.KeySym.c:
+        elif key == tcod.event.KeySym.C:
             return CharacterScreenEventHandler(self.engine)
 
         # Si se presiona la tecla de barra inclinada (/), permite al jugador mirar alrededor.
@@ -785,7 +785,7 @@ class MainGameEventHandler(EventHandler):
             return LookHandler(self.engine)
 
         # Si se presiona la tecla E, permite al jugador tomar las escaleras.
-        elif key == tcod.event.KeySym.e:
+        elif key == tcod.event.KeySym.E:
             return actions.TakeStairsAction(player)
 
         # Si ninguna de las teclas válidas fue presionada, retorna la acción asociada (si la hay).
@@ -817,7 +817,7 @@ class GameOverEventHandler(EventHandler):
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[BaseEventHandler]:
         """Maneja las opciones seleccionadas por el jugador."""
-        if event.sym == tcod.event.KeySym.n:  # Iniciar nueva partida
+        if event.sym == tcod.event.KeySym.N:  # Iniciar nueva partida
             from core.setup_game import new_game
 
             engine = new_game(
@@ -831,13 +831,13 @@ class GameOverEventHandler(EventHandler):
                 color.welcome_text,
             )
             return MainGameEventHandler(engine)
-        elif event.sym == tcod.event.KeySym.b:  # Volver al menú principal
+        elif event.sym == tcod.event.KeySym.B:  # Volver al menú principal
             from core.setup_game import MainMenu
 
             return MainMenu(
                 self.engine.context, self.engine.console
             )  # Pasa el contexto y la consola.
-        elif event.sym == tcod.event.KeySym.q:  # Salir del juego
+        elif event.sym == tcod.event.KeySym.Q:  # Salir del juego
             raise exceptions.QuitWithoutSaving()  # Cierra la ventana sin guardar la partida.
         return None
 

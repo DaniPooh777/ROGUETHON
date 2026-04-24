@@ -322,7 +322,7 @@ class MainMenu(input_handlers.BaseEventHandler):
         ):  # Si se presiona Q o Escape, sale del juego.
             raise exceptions.QuitWithoutSaving
         elif (
-            event.sym == tcod.event.KeySym.c
+            event.sym == tcod.event.KeySym.C
         ):  # Si se presiona C, intenta cargar una partida guardada.
             try:
                 return input_handlers.MainGameEventHandler(
@@ -338,7 +338,7 @@ class MainMenu(input_handlers.BaseEventHandler):
                     self, f"No se ha podido cargar el archivo guardado:\n{exc}"
                 )
         elif (
-            event.sym == tcod.event.KeySym.n
+            event.sym == tcod.event.KeySym.N
         ):  # Si se presiona N, empieza una nueva partida.
             fade_to_black(
                 self.console, self.context
@@ -374,7 +374,7 @@ class MainMenu(input_handlers.BaseEventHandler):
             time.sleep(1.5)  # Espera un momento para que el jugador vea el mensaje.
 
             return handler  # Retorna el handler del juego.
-        elif event.sym == tcod.event.KeySym.l:
+        elif event.sym == tcod.event.KeySym.L:
             # Si se presiona L, muestra la leyenda del juego dentro de un marco.
             legend_text = [
                 (color.menu_text, "Jugador: @"),
@@ -448,10 +448,10 @@ class MainMenu(input_handlers.BaseEventHandler):
                         ):  # Salir al presionar ESCAPE.
                             return
                         elif (
-                            event.sym == tcod.event.KeySym.l
+                            event.sym == tcod.event.KeySym.L
                         ):  # Salir al presionar ESCAPE.
                             return
-        elif event.sym == tcod.event.KeySym.k:
+        elif event.sym == tcod.event.KeySym.K:
             legend_text = [
                 (color.menu_title, "Movimiento:"),
                 (color.menu_text, " - Arriba: W o ↑"),
@@ -515,7 +515,7 @@ class MainMenu(input_handlers.BaseEventHandler):
                             event.sym == tcod.event.KeySym.ESCAPE
                         ):  # Salir al presionar ESCAPE.
                             return
-                        elif event.sym == tcod.event.KeySym.k:  # Salir al presionar k.
+                        elif event.sym == tcod.event.KeySym.K:  # Salir al presionar K.
                             return
         return None  # No cambia el estado si ninguna tecla es presionada.
 
