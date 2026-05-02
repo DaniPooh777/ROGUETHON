@@ -39,13 +39,13 @@ if TYPE_CHECKING:
 # Cada tecla de dirección corresponde a un desplazamiento en el eje X o Y.
 MOVE_KEYS = {
     tcod.event.KeySym.UP: (0, -1),  # Mover hacia arriba
-    tcod.event.KeySym.w: (0, -1),  # Mover hacia arriba (también con 'w')
+    tcod.event.KeySym.W: (0, -1),  # Mover hacia arriba (también con 'w')
     tcod.event.KeySym.DOWN: (0, 1),  # Mover hacia abajo
-    tcod.event.KeySym.s: (0, 1),  # Mover hacia abajo (también con 's')
+    tcod.event.KeySym.S: (0, 1),  # Mover hacia abajo (también con 's')
     tcod.event.KeySym.LEFT: (-1, 0),  # Mover hacia la izquierda
-    tcod.event.KeySym.a: (-1, 0),  # Mover hacia la izquierda (también con 'a')
+    tcod.event.KeySym.A: (-1, 0),  # Mover hacia la izquierda (también con 'a')
     tcod.event.KeySym.RIGHT: (1, 0),  # Mover hacia la derecha
-    tcod.event.KeySym.d: (1, 0),  # Mover hacia la derecha (también con 'd')
+    tcod.event.KeySym.D: (1, 0),  # Mover hacia la derecha (también con 'd')
 }
 
 # Tecla para esperar la acción. En este caso, solo la tecla ESPACIO.
@@ -386,7 +386,7 @@ class LevelUpEventHandler(AskUserEventHandler):
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         player = self.engine.player  # Obtiene al jugador.
         key = event.sym  # Obtiene la tecla presionada.
-        index = key - tcod.event.KeySym.a  # Calcula el índice (a, b, c).
+        index = key - tcod.event.KeySym.A  # Calcula el índice (a, b, c).
 
         if 0 <= index <= 2:  # Verifica si la tecla es válida (a, b o c).
             if index == 0:
@@ -530,7 +530,7 @@ class InventoryEventHandler(AskUserEventHandler):
             return None
 
         # Selección de ítems con letras a-z (soporta hasta 26 ítems únicos)
-        index = key - tcod.event.KeySym.a
+        index = key - tcod.event.KeySym.A
 
         if (
             0 <= index < total_items

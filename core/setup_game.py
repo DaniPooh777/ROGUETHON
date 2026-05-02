@@ -317,7 +317,7 @@ class MainMenu(input_handlers.BaseEventHandler):
     ) -> Optional[input_handlers.BaseEventHandler]:
         """Maneja las entradas del teclado en el menú principal."""
         if event.sym in (
-            tcod.event.KeySym.q,
+            tcod.event.KeySym.Q,
             tcod.event.KeySym.ESCAPE,
         ):  # Si se presiona Q o Escape, sale del juego.
             raise exceptions.QuitWithoutSaving
