@@ -93,8 +93,8 @@ class HostileEnemy(BaseAI):
         self.turns_without_target = 0
         # Rango de búsqueda por defecto
         self.search_range = 10
-        # Threshold de miedo (30% HP)
-        self.fear_threshold = 0.3
+        # Threshold de miedo (50% HP)
+        self.fear_threshold = 0.5
         # Turnos de fear (para huir lento cada 2 turnos)
         self.fear_turns = 0
 
@@ -247,8 +247,8 @@ class RangedEnemy(BaseAI):
         self.turns_without_target = 0
         # Rango de búsqueda por defecto
         self.search_range = 8
-        # Threshold de miedo (30% HP)
-        self.fear_threshold = 0.3
+        # Threshold de miedo (50% HP)
+        self.fear_threshold = 0.5
         # Turnos de fear (para huir lento cada 2 turnos)
         self.fear_turns = 0
 
