@@ -86,9 +86,17 @@ class HostileEnemy(BaseAI):
         self.path: List[
             Tuple[int, int]
         ] = []  # Inicializa el atributo path (camino) como una lista vacía.
+        # Posición inicial para retorno
+        self.initial_x = entity.x
+        self.initial_y = entity.y
+        # Turnos sin ver al jugador
+        self.turns_without_target = 0
+        # Rango de búsqueda por defecto
+        self.search_range = 10
 
     def perform(self) -> None:
         if self.engine.player.invisible:
+            self.turns_without_target += 1
             return  # Si el jugador es invisible, el enemigo no hace nada.
 
         target = self.engine.player  # El objetivo del enemigo es el jugador.
@@ -98,15 +106,29 @@ class HostileEnemy(BaseAI):
             abs(dx), abs(dy)
         )  # Calcula la distancia de Chebyshev (máxima diferencia entre las coordenadas).
 
-        if self.engine.game_map.visible[self.entity.x, self.entity.y]:
-            if distance <= 1:  # Si el enemigo está cerca del jugador (distancia 1).
-                return MeleeAction(
-                    self.entity, dx, dy
-                ).perform()  # Realiza un ataque cuerpo a cuerpo.
+        # Verificar si ve al jugador
+        sees_player = self.engine.game_map.visible[self.entity.x, self.entity.y]
+        
+        if sees_player:
+            self.turns_without_target = 0
+        else:
+            self.turns_without_target += 1
+        
+        # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
+        if self.turns_without_target >= self.search_range:
+            return self._return_to_initial()
+        
+        # Si ve al jugador o lo persiguió recientemente
+        if self.turns_without_target < self.search_range:
+            if sees_player or distance <= self.search_range:
+                if distance <= 1:  # Si el enemigo está cerca del jugador (distancia 1).
+                    return MeleeAction(
+                        self.entity, dx, dy
+                    ).perform()  # Realiza un ataque cuerpo a cuerpo.
 
-            # Si no hay un camino, calcula uno nuevo hacia el jugador.
-            if not self.path:
-                self.path = self.get_path_to(target.x, target.y)
+                # Si no hay un camino, calcula uno nuevo hacia el jugador.
+                if not self.path:
+                    self.path = self.get_path_to(target.x, target.y)
 
         if self.path:
             dest_x, dest_y = self.path.pop(
@@ -123,6 +145,27 @@ class HostileEnemy(BaseAI):
                 ).perform()  # Mueve al enemigo.
 
         return WaitAction(self.entity).perform()  # Si no puede moverse, espera.
+
+    def _return_to_initial(self) -> None:
+        """Regresa a la posición inicial."""
+        if self.entity.x == self.initial_x and self.entity.y == self.initial_y:
+            self.turns_without_target = 0
+            return WaitAction(self.entity).perform()
+        
+        if not self.path:
+            self.path = self.get_path_to(self.initial_x, self.initial_y)
+        
+        if self.path:
+            dest_x, dest_y = self.path.pop(0)
+            if (
+                self.engine.game_map.in_bounds(dest_x, dest_y)
+                and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+            ):
+                return MovementAction(
+                    self.entity, dest_x - self.entity.x, dest_y - self.entity.y
+                ).perform()
+        
+        return WaitAction(self.entity).perform()
 
 
 class ConfusedEnemy(BaseAI):
@@ -166,23 +209,43 @@ class RangedEnemy(BaseAI):
     def __init__(self, entity: Actor):
         super().__init__(entity)  # Inicializa la clase base.
         self.turns_to_attack = 3  # El goblin ataca cada 3 turnos.
+        self.path: List[Tuple[int, int]] = []
+        # Posición inicial para retorno
+        self.initial_x = entity.x
+        self.initial_y = entity.y
+        # Turnos sin ver al jugador
+        self.turns_without_target = 0
+        # Rango de búsqueda por defecto
+        self.search_range = 8
 
     def perform(self) -> None:
         """Realiza la acción del goblin en su turno."""
         target = self.engine.player  # El objetivo es el jugador.
         # Si el jugador es invisible, el goblin no hace nada.
         if target.invisible:
+            self.turns_without_target += 1
             return WaitAction(self.entity).perform()
+        
         dx = target.x - self.entity.x  # Calcula la diferencia en las coordenadas x.
         dy = target.y - self.entity.y  # Calcula la diferencia en las coordenadas y.
         distance = max(abs(dx), abs(dy))  # Calcula la distancia de Chebyshev.
 
-        if not self.engine.game_map.visible[self.entity.x, self.entity.y]:
-            return WaitAction(
-                self.entity
-            ).perform()  # Espera si el goblin no está en la vista del jugador.
+        # Verificar si ve al jugador
+        sees_player = self.engine.game_map.visible[self.entity.x, self.entity.y]
+        
+        if sees_player:
+            self.turns_without_target = 0
+        else:
+            self.turns_without_target += 1
 
-        if distance <= 5:  # Si el jugador está dentro del rango de ataque a distancia.
+        # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
+        if self.turns_without_target >= self.search_range:
+            return self._return_to_initial()
+        
+        # Solo ataca a distancia si es orthogonal (no diagonal)
+        is_orthogonal = (dx == 0) != (dy == 0)
+        
+        if sees_player and distance <= 5 and is_orthogonal:
             if self.turns_to_attack <= 0:
                 # Ataca al jugador si es el turno de atacar.
                 damage = 4  # Define el daño que inflige el ataque a distancia.
@@ -190,22 +253,41 @@ class RangedEnemy(BaseAI):
                     f"{self.entity.name} dispara una flecha a {target.name}. Hace {damage} puntos de dano.",
                     color.enemy_atk,
                 )
-                target.fighter.take_damage(
-                    4
-                )  # El goblin hace 4 puntos de daño al jugador.
+                target.fighter.take_damage(4)  # El goblin hace 4 puntos de daño al jugador.
                 self.turns_to_attack = 3  # Reinicia el contador de turnos de ataque.
             else:
                 self.turns_to_attack -= 1  # Reduce el contador de turnos de ataque.
             return  # No se mueve si está dentro del rango de ataque.
 
-        # Si el jugador está fuera del rango, se mueve hacia él.
-        self.path = self.get_path_to(target.x, target.y)
-        if self.path:
-            dest_x, dest_y = self.path.pop(
-                0
-            )  # Obtiene el siguiente destino en el camino.
-            return MovementAction(
-                self.entity, dest_x - self.entity.x, dest_y - self.entity.y
-            ).perform()  # Mueve al goblin.
+        # Si está muy lejos o no ve al jugador, perseguir/moverse
+        if not sees_player and self.turns_without_target < self.search_range:
+            # Intentar acercarse
+            self.path = self.get_path_to(target.x, target.y)
+            if self.path:
+                dest_x, dest_y = self.path.pop(0)
+                return MovementAction(
+                    self.entity, dest_x - self.entity.x, dest_y - self.entity.y
+                ).perform()  # Mueve al goblin.
 
         return WaitAction(self.entity).perform()  # Si no puede moverse, espera.
+
+    def _return_to_initial(self) -> None:
+        """Regresa a la posición inicial."""
+        if self.entity.x == self.initial_x and self.entity.y == self.initial_y:
+            self.turns_without_target = 0
+            return WaitAction(self.entity).perform()
+        
+        if not self.path:
+            self.path = self.get_path_to(self.initial_x, self.initial_y)
+        
+        if self.path:
+            dest_x, dest_y = self.path.pop(0)
+            if (
+                self.engine.game_map.in_bounds(dest_x, dest_y)
+                and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+            ):
+                return MovementAction(
+                    self.entity, dest_x - self.entity.x, dest_y - self.entity.y
+                ).perform()
+        
+        return WaitAction(self.entity).perform()
