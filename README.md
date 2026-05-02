@@ -1,4 +1,4 @@
-# 🎮 ROGUETHON
+![Logo](assets/images/ROGUETHON_logo_Github.png)
 
 **ROGUETHON** es un juego de tipo *roguelike* desarrollado en Python, inspirado en los clásicos del género. En este juego, explorarás mazmorras generadas proceduralmente, lutarás contra enemigos, recogerás objetos y mejorarás a tu personaje mientras intentas sobrevivir en un entorno hostil lleno de desafíos.
 
