@@ -144,7 +144,10 @@ class HostileEnemy(BaseAI):
         # Si ve al jugador o lo persiguió recientemente
         if self.turns_without_target < self.search_range:
             if sees_player or distance <= self.search_range:
-                if distance <= 1:  # Si el enemigo está cerca del jugador (distancia 1).
+                # Solo ataca si es orthogonal (no diagonal)
+                is_orthogonal = (dx == 0) != (dy == 0)
+                
+                if distance == 1 and is_orthogonal:
                     return MeleeAction(
                         self.entity, dx, dy
                     ).perform()  # Realiza un ataque cuerpo a cuerpo.
