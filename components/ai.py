@@ -130,18 +130,22 @@ class HostileEnemy(BaseAI):
                 return WaitAction(self.entity).perform()
             return self._return_to_initial()
         
-        # Si tiene miedo (baja HP) y ya no ve al jugador, huir a posición inicial
+# Si tiene miedo (baja HP) y ya no ve al jugador, huir a posición inicial
         if hp_ratio < self.fear_threshold and self.turns_without_target > 0:
             self.fear_turns += 1
             if self.fear_turns % 2 != 0:
                 return WaitAction(self.entity).perform()
             return self._return_to_initial()
         
+        # Si tiene miedo, no continuar persiguiendo
+        if hp_ratio < self.fear_threshold:
+            return WaitAction(self.entity).perform()
+        
         # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
         if self.turns_without_target >= self.search_range:
             return self._return_to_initial()
         
-        # Si ve al jugador o lo persiguió recientemente
+        # Si ve al jugador o lo persiguió recentemente
         if self.turns_without_target < self.search_range:
             if sees_player or distance <= self.search_range:
                 # Solo ataca si es orthogonal (no diagonal)
@@ -286,6 +290,10 @@ class RangedEnemy(BaseAI):
             if self.fear_turns % 2 != 0:
                 return WaitAction(self.entity).perform()
             return self._return_to_initial()
+        
+        # Si tiene miedo, no continuar persiguiendo
+        if hp_ratio < self.fear_threshold:
+            return WaitAction(self.entity).perform()
         
         # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
         if self.turns_without_target >= self.search_range:
