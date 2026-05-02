@@ -93,6 +93,10 @@ class HostileEnemy(BaseAI):
         self.turns_without_target = 0
         # Rango de búsqueda por defecto
         self.search_range = 10
+        # Threshold de miedo (30% HP)
+        self.fear_threshold = 0.3
+        # Turnos de fear (para huir lento cada 2 turnos)
+        self.fear_turns = 0
 
     def perform(self) -> None:
         if self.engine.player.invisible:
@@ -113,6 +117,25 @@ class HostileEnemy(BaseAI):
             self.turns_without_target = 0
         else:
             self.turns_without_target += 1
+
+        # Ver estado de HP para fear response
+        max_hp = self.entity.fighter.max_hp
+        current_hp = self.entity.fighter.hp
+        hp_ratio = current_hp / max_hp if max_hp > 0 else 1.0
+        
+        # Si tiene miedo (baja HP) y ve al jugador, huir en lugar de atacar
+        if hp_ratio < self.fear_threshold and sees_player:
+            self.fear_turns += 1
+            if self.fear_turns % 2 != 0:
+                return WaitAction(self.entity).perform()
+            return self._return_to_initial()
+        
+        # Si tiene miedo (baja HP) y ya no ve al jugador, huir a posición inicial
+        if hp_ratio < self.fear_threshold and self.turns_without_target > 0:
+            self.fear_turns += 1
+            if self.fear_turns % 2 != 0:
+                return WaitAction(self.entity).perform()
+            return self._return_to_initial()
         
         # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
         if self.turns_without_target >= self.search_range:
@@ -217,6 +240,10 @@ class RangedEnemy(BaseAI):
         self.turns_without_target = 0
         # Rango de búsqueda por defecto
         self.search_range = 8
+        # Threshold de miedo (30% HP)
+        self.fear_threshold = 0.3
+        # Turnos de fear (para huir lento cada 2 turnos)
+        self.fear_turns = 0
 
     def perform(self) -> None:
         """Realiza la acción del goblin en su turno."""
@@ -238,6 +265,25 @@ class RangedEnemy(BaseAI):
         else:
             self.turns_without_target += 1
 
+        # Ver estado de HP para fear response
+        max_hp = self.entity.fighter.max_hp
+        current_hp = self.entity.fighter.hp
+        hp_ratio = current_hp / max_hp if max_hp > 0 else 1.0
+        
+        # Si tiene miedo (baja HP) y ve al jugador, huir en lugar de atacar
+        if hp_ratio < self.fear_threshold and sees_player:
+            self.fear_turns += 1
+            if self.fear_turns % 2 != 0:
+                return WaitAction(self.entity).perform()
+            return self._return_to_initial()
+        
+        # Si tiene miedo (baja HP) y ya no ve al jugador, huir a posición inicial
+        if hp_ratio < self.fear_threshold and self.turns_without_target > 0:
+            self.fear_turns += 1
+            if self.fear_turns % 2 != 0:
+                return WaitAction(self.entity).perform()
+            return self._return_to_initial()
+        
         # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
         if self.turns_without_target >= self.search_range:
             return self._return_to_initial()
