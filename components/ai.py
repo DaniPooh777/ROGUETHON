@@ -123,23 +123,10 @@ class HostileEnemy(BaseAI):
         current_hp = self.entity.fighter.hp
         hp_ratio = current_hp / max_hp if max_hp > 0 else 1.0
         
-        # Si tiene miedo (baja HP) y ve al jugador, huir en lugar de atacar
-        if hp_ratio < self.fear_threshold and sees_player:
-            self.fear_turns += 1
-            if self.fear_turns % 2 != 0:
-                return WaitAction(self.entity).perform()
-            return self._return_to_initial()
-        
-# Si tiene miedo (baja HP) y ya no ve al jugador, huir a posición inicial
-        if hp_ratio < self.fear_threshold and self.turns_without_target > 0:
-            self.fear_turns += 1
-            if self.fear_turns % 2 != 0:
-                return WaitAction(self.entity).perform()
-            return self._return_to_initial()
-        
-        # Si tiene miedo, no continuar persiguiendo
+        # Si tiene miedo (baja HP), huir siempre
         if hp_ratio < self.fear_threshold:
-            return WaitAction(self.entity).perform()
+            # Intentar huir cada turno (más visible)
+            return self._fleeing_from_player()
         
         # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
         if self.turns_without_target >= self.search_range:
@@ -176,8 +163,44 @@ class HostileEnemy(BaseAI):
 
         return WaitAction(self.entity).perform()  # Si no puede moverse, espera.
 
+    def _fleeing_from_player(self) -> None:
+        """Huye en dirección opuesta al jugador."""
+        target = self.engine.player
+        dx = self.entity.x - target.x  # Dirección opuesta
+        dy = self.entity.y - target.y
+        
+        # Normalizar a -1, 0, o 1
+        dx = 1 if dx > 0 else (-1 if dx < 0 else 0)
+        dy = 1 if dy > 0 else (-1 if dy < 0 else 0)
+        
+        # Intentar mover en dirección opuesta
+        dest_x = self.entity.x + dx
+        dest_y = self.entity.y + dy
+        
+        if (
+            self.engine.game_map.in_bounds(dest_x, dest_y)
+            and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+            and not self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y)
+        ):
+            return MovementAction(self.entity, dx, dy).perform()
+        
+        # Si está bloqueado, intentar direcciones alternativas
+        for alt_dx, alt_dy in [(0, dy), (dx, 0), (-dx, -dy), (1, 0), (-1, 0), (0, 1), (0, -1)]:
+            if alt_dx == 0 and alt_dy == 0:
+                continue
+            dest_x = self.entity.x + alt_dx
+            dest_y = self.entity.y + alt_dy
+            if (
+                self.engine.game_map.in_bounds(dest_x, dest_y)
+                and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+                and not self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y)
+            ):
+                return MovementAction(self.entity, alt_dx, alt_dy).perform()
+        
+        # Si no puede moverse, esperar
+        return WaitAction(self.entity).perform()
+    
     def _return_to_initial(self) -> None:
-        """Regresa a la posición inicial."""
         if self.entity.x == self.initial_x and self.entity.y == self.initial_y:
             self.turns_without_target = 0
             return WaitAction(self.entity).perform()
@@ -277,23 +300,9 @@ class RangedEnemy(BaseAI):
         current_hp = self.entity.fighter.hp
         hp_ratio = current_hp / max_hp if max_hp > 0 else 1.0
         
-        # Si tiene miedo (baja HP) y ve al jugador, huir en lugar de atacar
-        if hp_ratio < self.fear_threshold and sees_player:
-            self.fear_turns += 1
-            if self.fear_turns % 2 != 0:
-                return WaitAction(self.entity).perform()
-            return self._return_to_initial()
-        
-        # Si tiene miedo (baja HP) y ya no ve al jugador, huir a posición inicial
-        if hp_ratio < self.fear_threshold and self.turns_without_target > 0:
-            self.fear_turns += 1
-            if self.fear_turns % 2 != 0:
-                return WaitAction(self.entity).perform()
-            return self._return_to_initial()
-        
-        # Si tiene miedo, no continuar persiguiendo
+        # Si tiene miedo (baja HP), huir siempre
         if hp_ratio < self.fear_threshold:
-            return WaitAction(self.entity).perform()
+            return self._fleeing_from_player()
         
         # Timeout: si no encuentra al jugador por X turnos, volver a posición inicial
         if self.turns_without_target >= self.search_range:
