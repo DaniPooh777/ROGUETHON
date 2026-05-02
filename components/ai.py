@@ -337,6 +337,39 @@ class RangedEnemy(BaseAI):
 
         return WaitAction(self.entity).perform()  # Si no puede moverse, espera.
 
+    def _fleeing_from_player(self) -> None:
+        """Huye en dirección opuesta al jugador."""
+        target = self.engine.player
+        dx = self.entity.x - target.x
+        dy = self.entity.y - target.y
+        
+        dx = 1 if dx > 0 else (-1 if dx < 0 else 0)
+        dy = 1 if dy > 0 else (-1 if dy < 0 else 0)
+        
+        dest_x = self.entity.x + dx
+        dest_y = self.entity.y + dy
+        
+        if (
+            self.engine.game_map.in_bounds(dest_x, dest_y)
+            and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+            and not self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y)
+        ):
+            return MovementAction(self.entity, dx, dy).perform()
+        
+        for alt_dx, alt_dy in [(0, dy), (dx, 0), (-dx, -dy), (1, 0), (-1, 0), (0, 1), (0, -1)]:
+            if alt_dx == 0 and alt_dy == 0:
+                continue
+            dest_x = self.entity.x + alt_dx
+            dest_y = self.entity.y + alt_dy
+            if (
+                self.engine.game_map.in_bounds(dest_x, dest_y)
+                and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+                and not self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y)
+            ):
+                return MovementAction(self.entity, alt_dx, alt_dy).perform()
+        
+        return WaitAction(self.entity).perform()
+
 def _return_to_initial(self) -> None:
         """Huye en dirección opuesta al jugador."""
         target = self.engine.player
