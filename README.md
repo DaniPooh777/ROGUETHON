@@ -94,9 +94,7 @@ El sistema de hambre añade un desafío de supervivencia al juego. Tu hambre dis
 - Si el hambre llega a **0**, el jugador **muere por inanición**.
 - Los diferentes tipos de comida restauran cantidades variables de hambre.
 
----
-
-## 🍖 Tipos de comida
+### Tipos de comida
 
 | Símbolo | Comida | Hambre restaurada | Efecto adicional |
 |---------|-------|-------------------|-------------------|
@@ -106,12 +104,6 @@ El sistema de hambre añade un desafío de supervivencia al juego. Tu hambre dis
 | `=` | Queso | +100 | +1 Defensa durante 3 turnos |
 | `%` | Estofado | +250 | +2 Poder durante 5 turnos |
 | `~` | Guiso misterioso | +150 | +2 Defensa durante 3 turnos |
-
-### Efectos de las comidas
-
-- **Queso** (`=`): Otorga un bono de defensa temporal que reduce el daño recibido.
-- **Estofado** (`%`): Aumenta el poder de ataque temporalmente.
-- **Guiso misterioso** (`~`): Combina restauración de hambre con un bono de defensa.
 
 ---
 
