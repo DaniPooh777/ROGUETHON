@@ -52,9 +52,10 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 
 En **ROGUETHON**, te enfrentarás a una variedad de enemigos únicos:
 
-- **Orcos** — Enemigos básicos con ataques cuerpo a cuerpo
-- **Trolls** — Criaturas fuertes con alta salud y poder de ataque
-- **Goblins** — Enemigos rápidos que atacan a distancia
+- **Ratas:** Criaturas muy débiles que están en los primeros niveles de la mazmorra 
+- **Orcos:** Enemigos básicos con ataques cuerpo a cuerpo
+- **Trolls:** Criaturas fuertes con alta salud y poder de ataque
+- **Goblins:** Enemigos rápidos que atacan a distancia
 
 ---
 
@@ -70,6 +71,13 @@ En **ROGUETHON**, te enfrentarás a una variedad de enemigos únicos:
 | **Pergamino defensivo** | + Defensa temporal |
 | **Pergamino invisible** | Invisibilidad temporal |
 | **Pergamino de inmunidad** | Invulnerabilidad total temporal |
+
+---
+
+## 👨‍🍳 Sistema de hambre
+
+> [!IMPORTANT] 
+> Esto se explicará en un futuro
 
 ---
 
