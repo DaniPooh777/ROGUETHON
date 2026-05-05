@@ -74,10 +74,44 @@ En **ROGUETHON**, te enfrentarás a una variedad de enemigos únicos:
 
 ---
 
-## 👨‍🍳 Sistema de hambre
+## 🍖 Sistema de hambre
 
-> [!IMPORTANT] 
-> Esto se explicará en un futuro
+El sistema de hambre añade un desafío de supervivencia al juego. Tu hambre disminuye con cada acción y afecta directamente tu capacidad de combate.
+
+### Estados de hambre
+
+| Estado | Rango | Efectos |
+|--------|------|--------|
+| **Satisfecho** | 1000-800 | Sin efectos negativos |
+| **Hambriento** | 799-500 | -10% precisión de golpe |
+| **Débil** | 499-200 | -25% precisión, -25% poder de ataque |
+| **Moribundo** | 199-0 | 50% fallar, no puede actuar |
+
+### Cómo funciona
+
+- El jugador comienza con **1000 puntos de hambre** (satisfecho).
+- Cada acción (moverse, atacar, usar objetos) reduce el hambre en **1 punto**.
+- Si el hambre llega a **0**, el jugador **muere por inanición**.
+- Los diferentes tipos de comida restauran cantidades variables de hambre.
+
+---
+
+## 🍖 Tipos de comida
+
+| Símbolo | Comida | Hambre restaurada | Efecto adicional |
+|---------|-------|-------------------|-------------------|
+| `*` | Manzana | +80 | — |
+| `-` | Pan | +120 | — |
+| `&` | Carne | +180 | — |
+| `=` | Queso | +100 | +1 Defensa durante 3 turnos |
+| `%` | Estofado | +250 | +2 Poder durante 5 turnos |
+| `~` | Guiso misterioso | +150 | +2 Defensa durante 3 turnos |
+
+### Efectos de las comidas
+
+- **Queso** (`=`): Otorga un bono de defensa temporal que reduce el daño recibido.
+- **Estofado** (`%`): Aumenta el poder de ataque temporalmente.
+- **Guiso misterioso** (`~`): Combina restauración de hambre con un bono de defensa.
 
 ---
 
