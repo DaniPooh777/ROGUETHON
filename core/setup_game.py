@@ -35,7 +35,7 @@ else:
     # Si se ejecuta como un script de Python - subir un nivel ya que estamos en core/
     base_path = os.path.dirname(os.path.dirname(__file__))
 
-background_image = tcod.image.load(os.path.join(base_path, "menu_background.png"))[
+background_image = tcod.image.load(os.path.join(base_path, "assets/images/menu_background.png"))[
     :, :, :3
 ]
 

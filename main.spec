@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('menu_background.png', '.'), ('dejavu10x10_gs_tc.png', '.')],
+    datas=[('assets/images/menu_background.png', 'assets/images'), ('assets/fonts/dejavu10x10_gs_tc.png', 'assets/fonts')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
