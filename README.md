@@ -68,7 +68,7 @@ En **ROGUETHON**, te enfrentarás a una variedad de enemigos únicos:
 | **Pergamino de confusión** | Confunde al enemigo por varios turnos |
 | **Pergamino de relámpago** | Daño al enemigo más cercano |
 | **Pergamino de bola de fuego** | Daño en área a múltiples enemigos |
-| **Pergamino defensivo** | + Defensa temporal |
+| **Pergamino defensivo** | Defensa temporal |
 | **Pergamino invisible** | Invisibilidad temporal |
 | **Pergamino de inmunidad** | Invulnerabilidad total temporal |
 
