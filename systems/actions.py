@@ -153,6 +153,9 @@ class TakeStairsAction(Action):
             # Si la ubicación de la entidad es la de la escalera, genera un nuevo piso
             self.engine.game_world.generate_floor()
             self.engine.message_log.add_message("Bajas la escalera.", color.descend)
+            # Actualizar FOV inmediatamente para que el piso nuevo sea visible
+            self.engine.update_fov()
+            self.engine.update_visited_rooms()
         else:
             # Si no hay escalera, lanza una excepción
             raise exceptions.Impossible("No hay ninguna escalera aqui.")
