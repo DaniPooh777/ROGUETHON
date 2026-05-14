@@ -143,8 +143,11 @@ class HostileEnemy(BaseAI):
                         self.entity, dx, dy
                     ).perform()  # Realiza un ataque cuerpo a cuerpo.
 
-                # Si no hay un camino, calcula uno nuevo hacia el jugador.
-                if not self.path:
+                # Si VE al jugador: recalcula el camino cada turno hacia donde ESTA ahora.
+                # Si NO lo ve pero esta en rango: solo calcula si no hay camino (persecucion a ciegas).
+                if sees_player:
+                    self.path = self.get_path_to(target.x, target.y)
+                elif not self.path:
                     self.path = self.get_path_to(target.x, target.y)
 
         if self.path:
