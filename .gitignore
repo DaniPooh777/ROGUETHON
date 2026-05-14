@@ -18,3 +18,6 @@ venv
 
 # Informes internos (nunca subir a GitHub)
 INFORME_*.md
+
+# Skills
+.atl
