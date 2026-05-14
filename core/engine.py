@@ -94,6 +94,20 @@ class Engine:
             if entity.ai:  # Verifica si el enemigo tiene inteligencia artificial.
                 entity.ai.perform()  # Ejecuta la acción del enemigo.
 
+    def update_visited_rooms(self) -> None:
+        """Verifica si el jugador esta en una habitacion no visitada y la marca."""
+        rooms = getattr(self.game_map, 'rooms', [])
+        visited = getattr(self.game_map, 'visited_rooms', None)
+        if visited is None:
+            return  # Partida vieja sin tracking de habitaciones
+
+        player = self.player
+        for idx, (x1, y1, x2, y2) in enumerate(rooms):
+            if idx in visited:
+                continue
+            if x1 < player.x < x2 and y1 < player.y < y2:
+                visited.add(idx)
+
     def update_fov(self) -> None:
         """Recalcula el área visible basado en la posición del jugador."""
         self.game_map.visible[:] = compute_fov(  # Calcula el campo de visión (FOV).

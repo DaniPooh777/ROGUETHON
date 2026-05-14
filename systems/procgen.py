@@ -783,6 +783,9 @@ def generate_dungeon(
             dungeon, rooms, num_secrets=num_secrets, width=6, height=6
         )
 
+    # Guardar las habitaciones para tracking de exploracion
+    dungeon.rooms = [(r.x1, r.y1, r.x2, r.y2) for r in rooms]
+
     dungeon.tiles[center_of_last_room] = (
         tile_types.down_stairs
     )  # Coloca las escaleras hacia abajo.

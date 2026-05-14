@@ -715,6 +715,74 @@ class AreaRangedAttackHandler(SelectIndexHandler):
         )  # Llama al callback con las coordenadas seleccionadas.
 
 
+class StairsConfirmationHandler(AskUserEventHandler):
+    """Muestra confirmacion antes de bajar las escaleras."""
+
+    def on_render(self, console: tcod.Console) -> None:
+        super().on_render(console)
+
+        # Atenuar fondo
+        console.rgb["fg"] //= 8
+        console.rgb["bg"] //= 8
+
+        floor = self.engine.game_world.current_floor
+        next_floor = floor + 1
+
+        # Contar habitaciones visitadas / totales
+        game_rooms = getattr(self.engine.game_map, 'rooms', [])
+        game_visited = getattr(self.engine.game_map, 'visited_rooms', set())
+        total_rooms = len(game_rooms)
+        visited_rooms = len(game_visited)
+
+        # Contar enemigos vivos (excluyendo al jugador)
+        enemies_alive = sum(
+            1 for a in self.engine.game_map.actors
+            if a is not self.engine.player and a.is_alive
+        )
+
+        frame_width = 46
+        frame_height = 7
+        frame_x = console.width // 2 - frame_width // 2
+        frame_y = console.height // 2 - frame_height // 2
+
+        console.draw_frame(
+            x=frame_x, y=frame_y,
+            width=frame_width, height=frame_height,
+            title=" Escaleras ", clear=True,
+            fg=color.white, bg=color.black,
+        )
+
+        console.print(
+            x=frame_x + 1, y=frame_y + 1,
+            string=f"Bajar al piso {next_floor}?",
+        )
+
+        if total_rooms > 0:
+            console.print(
+                x=frame_x + 1, y=frame_y + 2,
+                string=f"Has visitado {visited_rooms} de {total_rooms} habitaciones.",
+                fg=(100, 200, 255),
+            )
+
+        if enemies_alive > 0:
+            console.print(
+                x=frame_x + 1, y=frame_y + 3,
+                string=f"Quedan {enemies_alive} enemigos en este piso.",
+                fg=(255, 200, 100),
+            )
+
+        console.print(
+            x=frame_x + 1, y=frame_y + 5,
+            string="Enter = Bajar     Otra tecla = Cancelar",
+            fg=(150, 150, 150),
+        )
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        if event.sym in CONFIRM_KEYS:
+            return actions.TakeStairsAction(self.engine.player)
+        return super().ev_keydown(event)
+
+
 # Clase principal que maneja los eventos del juego mientras está en curso.
 class MainGameEventHandler(EventHandler):
     def handle_action(self, action: Optional[Action]) -> bool:
@@ -736,6 +804,7 @@ class MainGameEventHandler(EventHandler):
 
         self.engine.handle_enemy_turns()
         self.engine.update_fov()
+        self.engine.update_visited_rooms()
         return True
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
@@ -786,7 +855,12 @@ class MainGameEventHandler(EventHandler):
 
         # Si se presiona la tecla E, permite al jugador tomar las escaleras.
         elif key == tcod.event.KeySym.E:
-            return actions.TakeStairsAction(player)
+            if (player.x, player.y) == self.engine.game_map.downstairs_location:
+                return StairsConfirmationHandler(self.engine)
+            self.engine.message_log.add_message(
+                "No hay ninguna escalera aqui.", color.impossible
+            )
+            return None
 
         # Si ninguna de las teclas válidas fue presionada, retorna la acción asociada (si la hay).
         return action

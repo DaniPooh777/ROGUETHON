@@ -48,6 +48,8 @@ class GameMap:
         )  # Tiles que el jugador ha visto previamente.
 
         self.downstairs_location = (0, 0)  # Ubicación de las escaleras hacia abajo.
+        self.rooms = []  # Lista de habitaciones como (x1, y1, x2, y2)
+        self.visited_rooms: set[int] = set()  # Índices de habitaciones visitadas por el jugador
 
     @property
     def gamemap(self) -> GameMap:
