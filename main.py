@@ -82,7 +82,9 @@ def main() -> None:
                             # Pasar TODOS los eventos al handler (incluye MouseMotion)
                             if isinstance(event, tcod.event.KeyDown):
                                 if event.sym == tcod.event.KeySym.ESCAPE:
-                                    if isinstance(handler, input_handlers.EventHandler):
+                                    if isinstance(handler, input_handlers.EventHandler) and not isinstance(
+                                        handler, input_handlers.StairsConfirmationHandler
+                                    ):
                                         from core.setup_game import MainMenu
 
                                         save_game(handler, "savegame.sav")
