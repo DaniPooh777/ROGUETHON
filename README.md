@@ -5,6 +5,9 @@
 El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para la creación de gráficos y manejo de eventos, ofreciendo una experiencia visual retro y mecánicas por turnos.
 
 ---
+## Índice
+- 1 [Funcionalidades principales](#Funcionalidades-principales)
+---
 
 ## 🎯 Funcionalidades principales
 
