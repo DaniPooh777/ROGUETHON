@@ -5,22 +5,6 @@
 El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para la creación de gráficos y manejo de eventos, ofreciendo una experiencia visual retro y mecánicas por turnos.
 
 ---
-## Índice
-- 1 [Funcionalidades principales](#-funcionalidades-principales)
-- 2 [Controles](#️⃣-controles)
-  - 2.1 [Movimiento](#movimiento)
-  - 2.2 [Interacciones](#interacciones)
-  - 2.3 [Otros](#otros)
-- 3 [Enemigos](#-enemigos)
-- 4 [Objetos consumibles](#-objetos-consumibles)
-- 5 [Sistema de hambre](#-sistema-de-hambre)
-  - 5.1 [Estados de hambre](#estados-de-hambre)
-  - 5.2 [Cómo funciona](#como-funciona)
-  - 5.3 [Tipos de comida](#tipos-de-comida)
-- 6 [Imágenes del juego](#-imágenes-del-juego)
-- 7 [Estructura del proyecto](#-estructura-del-proyecto)
-- 8 [Cómo ejecutar el juego](#-cómo-ejecutar-el-juego)
----
 
 ## 🎯 Funcionalidades principales
 
