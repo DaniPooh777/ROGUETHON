@@ -6,7 +6,20 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 
 ---
 ## Índice
-- 1 [Funcionalidades principales](#Funcionalidades-principales)
+- 1 [Funcionalidades principales](#-funcionalidades-principales)
+- 2 [Controles](#-controles)
+  - 2.1 [Movimiento](#-movimiento)
+  - 2.2 [Interacciones](#-interacciones)
+  - 2.3 [Otros](#-otros)
+- 3 [Enemigos](#-enemigos)
+- 4 [Objetos consumibles](#-objetos-consumibles)
+- 5 [Sistema de hambre](#-sistema-de-hambre)
+  - 5.1 [Estados de hambre](#-estados-de-hambre)
+  - 5.2 [Cómo funciona](#-como-funciona)
+  - 5.3 [Tipos de comida](#-tipos-de-comida)
+- 6 [Imágenes del juego](#-imágenes-del-juego)
+- 7 [Estructura del proyecto](#-estructura-del-proyecto)
+- 8 [Cómo ejecutar el juego](#-cómo-ejecutar-el-juego)
 ---
 
 ## 🎯 Funcionalidades principales
@@ -24,7 +37,7 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 
 ---
 
-## ⌨️ Controles del juego
+## ⌨️ Controles
 
 ### Movimiento
 | Tecla | Acción |
@@ -33,7 +46,7 @@ El juego utiliza la biblioteca [tcod](https://python-tcod.readthedocs.io/) para 
 | `w, a, s, d` | Mover al personaje (alternativo) |
 | `Espacio` | Pasar el turno |
 
-### Interacción
+### Interacciones
 | Tecla | Acción |
 |-------|--------|
 | `g` | Recoger objetos del suelo |
