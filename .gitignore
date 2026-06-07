@@ -9,6 +9,7 @@ ehthumbs_vista.db
 
 # Python cache
 __pycache__
+.ruff_cache
 
 # Python virtual environment
 venv
@@ -18,6 +19,7 @@ venv
 
 # Informes internos (nunca subir a GitHub)
 INFORME_*.md
+sdd
 
 # Skills
 .atl
