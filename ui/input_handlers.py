@@ -829,6 +829,12 @@ class MainGameEventHandler(EventHandler):
             from core.setup_game import MainMenu
 
             return MainMenu(self.engine.context, self.engine.console)
+
+        # Modo debugger — F1 abre el menú de debug
+        elif key == tcod.event.KeySym.F1:
+            from ui.debug_menu import DebugMenuHandler
+            return DebugMenuHandler(self.engine)
+
         # Si se presiona la tecla H, muestra el historial de mensajes.
         elif key == tcod.event.KeySym.H:
             return HistoryViewer(self.engine)

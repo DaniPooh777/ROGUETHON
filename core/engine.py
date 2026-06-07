@@ -58,6 +58,11 @@ class Engine:
         self.scheduled_tasks = []  # Lista para almacenar tareas programadas
         self.last_player_name = player.name  # Guarda el nombre del jugador inicial
         self.mouse_location = (player.x, player.y)  # Posición inicial del mouse
+        
+        # Modo debugger — solo desarrollador
+        self.debug_mode = False  # Activa/desactiva menú de debug (F1)
+        self.debug_god_mode = False  # Modo dios: stats infinitos
+        self.debug_original_stats = None  # Guarda stats originales al activar god mode
 
     def schedule_task(self, turns: int, callback: Callable) -> None:
         """Programa una tarea para ejecutarse después de un número de turnos."""
