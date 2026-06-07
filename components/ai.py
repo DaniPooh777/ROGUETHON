@@ -373,6 +373,104 @@ class RangedEnemy(BaseAI):
         
         return WaitAction(self.entity).perform()
 
+
+class MimicAI(BaseAI):
+    """IA para el Mimic — finge ser un cofre hasta que el jugador se acerca."""
+
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+        self.dormant = True  # Estado inicial: dormido (no hace nada)
+
+    def perform(self) -> None:
+        """El Mimic está dormido hasta que el jugador está a ≤ 2 casillas."""
+        if self.dormant:
+            # Si el jugador es invisible, no se activa
+            if self.engine.player.invisible:
+                return WaitAction(self.entity).perform()
+
+            target = self.engine.player
+            dx = target.x - self.entity.x
+            dy = target.y - self.entity.y
+            distance = max(abs(dx), abs(dy))
+
+            # Activar si el jugador está a 2 casillas o menos
+            if distance <= 2:
+                self.dormant = False
+                self.engine.message_log.add_message(
+                    "¡El Mimic cobra vida!", color.enemy_atk
+                )
+                # Cambiar a HostileEnemy para que persiga y ataque
+                from components.ai import HostileEnemy
+                self.entity.ai = HostileEnemy(self.entity)
+                return self.entity.ai.perform()
+            
+            # Si está dormido y el jugador lejos, no hace nada
+            return WaitAction(self.entity).perform()
+
+        # Si ya se activó, no debería llegar aquí (cambió a HostileEnemy)
+        return WaitAction(self.entity).perform()
+
+
+class DragonAI(BaseAI):
+    """IA para el Dragón — ataque híbrido: cuerpo a cuerpo, fuego a distancia, o avanza."""
+
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+        self.path: List[Tuple[int, int]] = []
+
+    def perform(self) -> None:
+        """Dragón con 3 rangos de distancia."""
+        # Si el jugador es invisible, no ataca
+        if self.engine.player.invisible:
+            return WaitAction(self.entity).perform()
+
+        target = self.engine.player
+        dx = target.x - self.entity.x
+        dy = target.y - self.entity.y
+        distance = max(abs(dx), abs(dy))
+
+        # Rango 1: Cuerpo a cuerpo (≤1 casilla)
+        if distance <= 1:
+            is_orthogonal = (dx == 0) != (dy == 0)
+            if is_orthogonal:
+                return MeleeAction(self.entity, dx, dy).perform()
+            # Si está en diagonal, acercarse
+            self.path = self.get_path_to(target.x, target.y)
+            if self.path:
+                dest_x, dest_y = self.path.pop(0)
+                return MovementAction(
+                    self.entity, dest_x - self.entity.x, dest_y - self.entity.y
+                ).perform()
+            return WaitAction(self.entity).perform()
+
+        # Rango 2: Fuego a distancia (2-5 casillas)
+        if distance <= 5:
+            is_orthogonal = (dx == 0) != (dy == 0)
+            if is_orthogonal:
+                # Bola de fuego — daño directo
+                damage = 8
+                self.engine.message_log.add_message(
+                    f"¡El Dragón lanza una bola de fuego a {target.name}! Hace {damage} puntos de dano.",
+                    color.enemy_atk,
+                )
+                target.fighter.take_damage(damage)
+                return  # No se mueve, solo ataca
+
+        # Rango 3: Avanzar hacia el jugador (>5 casillas o no orthogonal en rango 2)
+        self.path = self.get_path_to(target.x, target.y)
+        if self.path:
+            dest_x, dest_y = self.path.pop(0)
+            if (
+                self.engine.game_map.in_bounds(dest_x, dest_y)
+                and self.engine.game_map.tiles["walkable"][dest_x, dest_y]
+            ):
+                return MovementAction(
+                    self.entity, dest_x - self.entity.x, dest_y - self.entity.y
+                ).perform()
+
+        return WaitAction(self.entity).perform()
+
+
 def _return_to_initial(self) -> None:
         """Huye en dirección opuesta al jugador."""
         target = self.engine.player

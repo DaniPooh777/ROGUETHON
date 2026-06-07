@@ -3,7 +3,7 @@ Este módulo define las fábricas de entidades, incluyendo actores (jugadores y 
 Cada entidad tiene atributos específicos como IA, equipo, inventario y nivel.
 """
 
-from components.ai import HostileEnemy, RangedEnemy  # AI para enemigos hostiles.
+from components.ai import HostileEnemy, RangedEnemy, MimicAI, DragonAI  # AI para enemigos hostiles.
 from components import (
     consumable,
     equippable,
@@ -81,6 +81,47 @@ goblin = Actor(
     ),  # Atributos de lucha (8 HP, defensa 0, poder 4).
     inventory=Inventory(capacity=0),  # Inventario vacío.
     level=Level(xp_given=25),  # Da 25 XP al ser derrotado.
+)
+
+# ==================== NUEVOS ENEMIGOS (Ronda 1) ====================
+
+esqueleto = Actor(
+    char="s",  # Carácter que representa al esqueleto.
+    color=(220, 220, 200),  # Color hueso/blanco.
+    name="Esqueleto",  # Nombre del enemigo.
+    ai_cls=HostileEnemy,  # IA de enemigo hostil (patrulla y ataca).
+    equipment=Equipment(),  # Equipamiento vacío.
+    fighter=Fighter(
+        hp=8, base_defense=0, base_power=3
+    ),  # Atributos de lucha (8 HP, defensa 0, poder 3).
+    inventory=Inventory(capacity=0),  # Inventario vacío.
+    level=Level(xp_given=20),  # Da 20 XP al ser derrotado.
+)
+
+mimic = Actor(
+    char="?",  # Carácter que representa al Mimic (parece cofre).
+    color=(160, 120, 60),  # Color marrón (cofre).
+    name="Mimic",  # Nombre del enemigo.
+    ai_cls=MimicAI,  # IA especial: duerme hasta que el jugador se acerca.
+    equipment=Equipment(),  # Equipamiento vacío.
+    fighter=Fighter(
+        hp=12, base_defense=1, base_power=6
+    ),  # Atributos de lucha (12 HP, defensa 1, poder 6).
+    inventory=Inventory(capacity=0),  # Inventario vacío.
+    level=Level(xp_given=50),  # Da 50 XP al ser derrotado.
+)
+
+dragon = Actor(
+    char="D",  # Carácter que representa al Dragón.
+    color=(255, 50, 50),  # Color rojo fuego.
+    name="Dragon",  # Nombre del enemigo.
+    ai_cls=DragonAI,  # IA híbrida: cuerpo a cuerpo, fuego, o avanza.
+    equipment=Equipment(),  # Equipamiento vacío.
+    fighter=Fighter(
+        hp=25, base_defense=3, base_power=6
+    ),  # Atributos de lucha (25 HP, defensa 3, poder 6).
+    inventory=Inventory(capacity=0),  # Inventario vacío.
+    level=Level(xp_given=200),  # Da 200 XP al ser derrotado.
 )
 
 # Se crean varios ítems, incluyendo pergaminos y pociones consumibles.

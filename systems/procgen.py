@@ -109,6 +109,7 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     ],
     3: [
         (entity_factories.goblin, 30),  # 30% de probabilidad de goblin a partir del nivel 3.
+        (entity_factories.esqueleto, 30),  # 30% de probabilidad de esqueleto a partir del nivel 3.
     ],
     4: [
         (entity_factories.troll, 15),  # 15% de probabilidad de troll a partir del nivel 4.
@@ -116,9 +117,11 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     5: [
         (entity_factories.troll, 30),  # 30% de probabilidad de troll.
         (entity_factories.goblin, 50),  # 50% de probabilidad de goblin.
+        (entity_factories.mimic, 10),  # 10% de probabilidad de Mimic (aparece desde nivel 5).
     ],
     7: [
         (entity_factories.troll, 60),  # 60% de probabilidad de troll.
+        (entity_factories.dragon, 5),  # 5% de probabilidad de Dragón (raro, solo nivel 7+).
     ],
 }
 
@@ -461,6 +464,11 @@ def place_entities(room: Room, dungeon: GameMap, floor_number: int) -> None:
         valid_tiles = room.get_inner_tiles()
 
     for entity in monsters + items:
+        # DRAGON ONCE PER FLOOR: No puede haber más de un dragón por piso
+        if entity is entity_factories.dragon:
+            if any(e.name == "Dragon" for e in dungeon.entities if hasattr(e, 'name')):
+                continue  # Saltar, ya hay un dragón en este piso
+
         for _ in range(10):  # Intenta encontrar una posición válida hasta 10 veces.
             if valid_tiles:
                 x, y = random.choice(valid_tiles)
